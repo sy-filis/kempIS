@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="KempISGatesService/KempISGatesService.csproj">
+    <Platform Project="x86" />
+  </Project>
+</Solution>
