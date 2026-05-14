@@ -1,0 +1,22 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# Publish
+publish/
+*.pubxml.user
+
+# Third-party tools (downloaded via setup; see README / tools/.gitkeep)
+tools/*
+!tools/.gitkeep
+
+LocalPrintServerService/appsettings.json

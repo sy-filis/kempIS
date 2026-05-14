@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="LocalPrintServerService/LocalPrintServerService.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="LocalPrintServerService.Tests/LocalPrintServerService.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>
