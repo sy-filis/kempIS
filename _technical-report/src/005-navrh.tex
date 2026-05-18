@@ -1,0 +1,261 @@
+\chapter{Návrh informačního systému}
+\label{ch:design}
+Tato kapitola navazuje na předchozí analýzy a~legislativní rozbory a~definuje konkrétní technickou architekturu informačního systému pro turistický kemp Olšovec.
+Cílem je popsat řešení, jež zajistí spolehlivost, bezpečnost a~dostupnost systému při zachování provozní pružnosti nezbytné pro sezónní charakter areálu.
+Návrh vymezuje rozdělení systému na komponenty a~jejich odpovědnosti, principy komunikace mezi nimi, datový model vycházející z~dříve popsaného doménového modelu a~zásadní části uživatelského rozhraní.
+Důraz je kladen rovněž na integraci s~externími službami a~na propojení s~fyzickou infrastrukturou areálu, jejíž součástí jsou vjezdové závory ovládané uzavřeným proprietárním systémem.
+
+\section{Komponenty systému a~jejich role}
+\label{sec:komponenty}
+Tato sekce popisuje rozklad systému na jednotlivé komponenty, vymezuje jejich odpovědnosti a~zachycuje způsob jejich vzájemné spolupráce v~rámci výsledného celku.
+Architektura je navržena s~důrazem na vysokou dostupnost, nízkou latenci a~minimalizaci závislosti na externí konektivitě, což odpovídá specifickým provozním podmínkám kempu.
+
+Centrální výpočetní jednotkou systému je lokální aplikační server provozovaný v~rámci vnitřní sítě areálu.
+Toto umístění je motivováno snahou zajistit kontinuitu provozu i~v~případě výpadku internetového připojení, kdy musejí být klíčové procesy\,--\,evidence ubytování, fakturace nebo tisk dokladů\,--\,plně funkční.
+První z~komponent provozovaných na lokálním serveru je backendová aplikační vrstva, do níž je důsledně centralizována veškerá aplikační logika.
+Vrstva představuje jediný autoritativní zdroj pravdy pro všechny klientské aplikace a~poskytuje jim přístup k~funkcionalitě prostřednictvím jednotného aplikačního rozhraní, jehož detailní návrh je rozebrán v sekci \ref{sec:rozhrani}.
+Druhou komponentu na lokálním serveru tvoří perzistentní datová vrstva, která slouží výhradně jako úložiště dat.
+Striktní oddělení odpovědností zajišťuje jednotné chování systému napříč všemi klientskými aplikacemi a~eliminuje riziko nekonzistence způsobené duplikací logiky.
+Přístup k~datům je možný výhradně skrze backendovou vrstvu, která vystupuje jako jediný bod pro jejich čtení i~zápis.
+
+Prezentační vrstva je tvořena trojicí interních klientských aplikací, provozovaných výhradně v~rámci vnitřní sítě areálu, a~doplněna o~veřejně dostupný rezervační portál pro externí hosty.
+Hlavní administrativní rozhraní je koncipováno jako webová aplikace provozovaná na počítači recepce a~slouží jako primární pracovní nástroj personálu pro správu rezervací, hostů, fakturace i~dalších provozních procesů.
+Tabletová aplikace pro hosty je provozována na samostatném zařízení umístěném u~recepčního pultu a~slouží jako rozhraní pro přímou komunikaci s~hostem během odbavovacího procesu.
+Hlavní úlohou je zobrazování shrnutí účtenky a~sběr digitálních podpisů na přihlašovací tiskopisy cizince.
+Oddělení tohoto rozhraní od pracovní stanice recepce přispívá k~plynulosti odbavení a~k~jasnému rozdělení informací určených pro personál a~pro hosta.
+Mobilní aplikace pro personál slouží jako pracovní nástroj různých rolí pohybujících se po areálu\,--\,recepční ji využívají při kontrolách hostů a~jejich vozidel, provozní personál pro evidenci své činnosti přímo v~místě výkonu práce.
+Jádrem aplikace jsou dvě funkce využívající systémová rozhraní mobilního zařízení k~rychlé identifikaci objektů v~terénu.
+První z~nich je automatizované čtení registračních značek vozidel pomocí optického rozpoznávání znaků (OCR), které umožňuje kontrolu oprávněnosti vjetých vozidel bez nutnosti návratu na recepci.
+Druhou je čtení QR kódů ze štítků umístěných na jednotlivých stanech, díky čemuž lze v~terénu okamžitě identifikovat konkrétní ubytovací jednotku, ověřit její obsazenost a~přiřazenou rezervaci či zaznamenat související provozní událost\,--\,například nahlášenou závadu nebo dokončený úklid.
+
+Architekturu doplňují dvě lokálně provozované služby, jejichž rolí je zprostředkovávat komunikaci mezi softwarovou částí systému a~fyzickými zařízeními v~areálu.
+Obě služby vystavují vlastní lokální aplikační rozhraní, liší se však tím, která komponenta systému je jejich volajícím\,--\,toto rozdělení vychází z~povahy operace, kterou každá z~nich obsluhuje.
+
+První z~nich je tisková služba, jež řeší omezení webových prohlížečů v~oblasti přímého přístupu k~tiskovým zařízením.
+Tuto službu volá webová aplikace recepce.
+Princip jediného zdroje pravdy zůstává zachován\,--\,služba nezpracovává doménová data ani neprovádí žádné aplikační rozhodnutí; přijímá výhradně připravená tisková data z~backendu předaná přes prohlížeč a~zajišťuje jejich okamžitý tisk na připojené tiskárně.
+Namísto využití tiskového dialogu prohlížeče jsou tak data doručena přímo službě, čímž dochází k~výraznému zkrácení doby odbavení hosta a~ke zvýšení ergonomie práce recepčního personálu.
+Druhou službou je integrační vrstva pro vjezdovou infrastrukturu, která tvoří komunikační uzel mezi systémem a~uzavřeným proprietárním softwarem stávajícího řešení vjezdových závor.
+Služba je provozována na počítači přímo připojeném k~ovládací jednotce závor a~pokyny přijímá výhradně z~backendu, čímž je zachována centralizace logiky\,--\,backend ověřuje oprávnění a~zachovává konzistenci dat.
+Mechanismus integrace s~původním systémem je detailně popsán v~sekci \ref{sec:zavory}.
+
+Celková architektura systému, viz obrázek \ref{fig:komunikace}, je navržena jako úzce integrovaný celek, v~němž jednotlivé komponenty plní jasně vymezené role a~zároveň sdílejí společné datové jádro.
+Tato úroveň integrace softwarových i~hardwarových prvků vytváří základ pro efektivní, spolehlivou a~moderní správu turistického kempu.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{diagram.png}
+    \caption{Komponenty systému a~směry datové komunikace mezi nimi.}
+    \label{fig:komunikace}
+\end{figure}
+
+\section{Publikace systému do internetu}
+\label{sec:publikace}
+Architektura systému je primárně koncipována pro lokální nasazení v~rámci vnitřní sítě areálu, což se z~bezpečnostního i~provozního hlediska osvědčuje pro interní agendu personálu.
+Pro vytváření rezervací hosty však musí být systém selektivně dostupný také z~veřejné sítě\,--\,prostřednictvím veřejného rezervačního portálu.
+Tato dvojí dostupnost si vyžaduje samostatnou publikační vrstvu, jejíž rolí je zpřístupnit externím klientům výhradně předem vymezenou podmnožinu aplikačního rozhraní určenou pro veřejnou rezervační agendu.
+Administrativní a~ostatní interní rozhraní zůstávají dostupná pouze z~vnitřní sítě a~touto vrstvou neprocházejí, čímž je zachována striktní separace veřejné a~interní plochy systému a~minimalizována potenciální plocha pro útoky.
+
+Aby návrh nebyl pevně vázán na konkrétní podmínky internetového připojení kempu, je publikační vrstva pojata abstraktně jako vstupní brána, jejíž konkrétní provedení může nabývat dvou alternativních forem.
+Z~pohledu backendu a~ostatních komponent jsou obě varianty zaměnitelné\,--\,obě prezentují veřejnosti tutéž podmnožinu aplikačního rozhraní a~na úrovni interní logiky se chovají identicky.
+
+První variantou je reverzní proxy na lokálním serveru přístupná přes pevnou veřejnou IP adresu.
+Reverzní proxy v~tomto uspořádání naslouchá na portu 443 a~směruje validní požadavky na publikované endpointy backendu.
+Příchozí provoz na pevnou IP adresu je k~serveru doručen přesměrováním na směrovači poskytovatele internetového připojení.
+Toto řešení je vhodné v~prostředí, kde poskytovatel garantuje přidělení statické IP adresy a~umožňuje konfiguraci přesměrování příchozích spojení do lokální sítě.
+
+Druhou variantou je reverzní tunel s~veřejně dostupným vstupním bodem.
+V~tomto uspořádání místní agent navazuje trvalé odchozí spojení vůči externí tunelovací službě, která vystavuje veřejný hostname a~veškerý příchozí provoz směřovaný na tento hostname protuneluje zpět agentovi a~následně do publikační vrstvy.
+Toto řešení nevyžaduje pevnou IP adresu ani otevírání příchozích portů na straně lokální sítě\,--\,příchozí provoz je z~pohledu lokálního směrovače fakticky odpovědí na odchozí spojení, terminaci TLS zajišťuje sama tunelovací služba.
+Varianta je vhodná v~prostředí s~dynamickou IP adresou, sdíleným připojením za NAT na straně poskytovatele, nebo v~situaci, kdy kemp nedisponuje technickým zázemím pro správu vlastního TLS certifikátu a~konfigurace směrovače.
+
+Tato architektonická pružnost umožňuje zvolit konkrétní variantu podle reálných síťových podmínek dané lokality a~v~budoucnu mezi nimi případně přejít bez zásahu do zbytku systému.
+
+\section{Návrh aplikačního rozhraní}
+\label{sec:rozhrani}
+Tato sekce vymezuje principy, podle kterých probíhá komunikace mezi backendem a~klientskými aplikacemi systému.
+Cílem není podat úplný výčet operací, nýbrž popsat pravidla, podle nichž jsou navrhovány, autentizovány a~zpřístupňovány různým kategoriím klientů.
+
+Komunikace mezi klienty a~backendem je realizována ve stylu \texttt{REST} nad protokolem \texttt{HTTP}, s~přenosem zpráv ve formátu \texttt{JSON}.
+Bezstavovost zjednodušuje obnovu po výpadcích, jednotná sémantika metod protokolu \texttt{HTTP} snižuje kognitivní zátěž při vývoji různorodých klientů a~formát \texttt{JSON} je pro všechny zamýšlené platformy dostupný bez specifických závislostí.
+Alternativy jako \texttt{RPC} nebo grafová dotazovací rozhraní by úměrný přínos nenabízely\,--\,\texttt{REST} dobře odpovídá doménově orientované struktuře operací nad jasně vymezenými entitami a~při omezeném počtu klientů s~podobnými potřebami nepřináší \texttt{GraphQL} dostatečnou hodnotu, jež by ospravedlnila vyšší implementační složitost.
+
+Zdroje rozhraní odpovídají hlavním entitám datového modelu\,--\,rezervacím, hostům, ubytovacím jednotkám, fakturám.
+Adresní struktura odráží vztahy mezi entitami: cesta podřazeného zdroje navazuje na cestu nadřazené entity (například doklady svázané s~konkrétní rezervací), hlavní entity jsou zároveň dosažitelné přímo přes vlastní cestu.
+Standardní operace vycházejí z~ustálené sémantiky metod protokolu \texttt{HTTP} (\texttt{GET}, \texttt{POST}, \texttt{PUT}, \texttt{PATCH}, \texttt{DELETE}), pro přehledové scénáře jsou definovány konvence dotazovacích parametrů pro filtrování a~textové vyhledávání.
+Operace vyžadující atomický přechod stavu napříč více objekty\,--\,například dokončení odbavovacího procesu hosta nebo ohlášení cizinců cizinecké policii\,--\,jsou exponovány jako dedikované akční endpointy pod příslušným zdrojem ve tvaru \texttt{POST /resource/\{id\}/akce}.
+
+Identita klienta je ověřována tokenovým mechanismem zasílaným v~hlavičkách každého požadavku.
+Interní uživatelé\,--\,personál kempu\,--\,získávají po úspěšném přihlášení krátkodobý přístupový token doplněný o~delší obnovovací token, jenž umožňuje prodloužit přístupový token do určité časové hranice, po které se uživatel musí opět autentizovat.
+Součástí přístupového tokenu jsou nároky popisující identitu uživatele a~jemu přidělené role; autorizace endpointů vychází z~rolí odpovídajících pracovním pozicím\,--\,recepční, účetní, provozní personál a~správce.
+Veřejný rezervační portál naproti tomu nepracuje s~trvalou identitou hosta; bezpečnostní obálkou operací nad konkrétní rezervací je kryptograficky bezpečný náhodný token vygenerovaný při jejím založení a~předaný hostovi odkazem zaslaným na e-mailovou adresu.
+Token nepodléhá rotaci, neboť přes portál není možné získat citlivá data nad rámec údajů, které host sám zadal při tvorbě rezervace.
+Operace prohlížení dostupnosti a~založení nové rezervace jsou ze své povahy plně anonymní.
+
+Příslušnost endpointu k~veřejné nebo interní podmnožině rozhraní je vyjádřena deklarativně v~metadatech jednotlivých operací, nikoliv prostřednictvím odlišné \texttt{URL} předpony.
+Tento zápis slouží jako autoritativní zdroj seznamu veřejně přístupných cest, který přebírá zprostředkovatel připojení do internetu popsaný v~sekci \ref{sec:publikace}; do veřejné sítě tak procházejí výhradně požadavky směřující na endpointy z~tohoto seznamu, ostatní rozhraní zůstává dostupné pouze z~vnitřní sítě.
+Veřejnou podmnožinu tvoří endpointy pro zjištění dostupnosti ubytování, založení a~správu vlastní rezervace, online check-in hostů a~stažení dokladu; administrativní agenda zůstává vyhrazena pro interní část.
+
+Pro signalizaci výsledku požadavku jsou používány standardní stavové kódy protokolu \texttt{HTTP} doplněné o~strukturovanou chybovou odpověď ve formátu inspirovaném doporučením pro problémové detaily (\texttt{RFC~7807}).
+Tělo chybové odpovědi obsahuje strojově čitelný kód, srozumitelný popis a~v~případě validačních problémů detailní rozpis nesouladu po jednotlivých polích, čímž jsou klientům jednoznačně rozlišeny autorizační chyby, validační chyby, konfliktní stavy a~chyby technické povahy.
+Validace vstupních dat probíhá výhradně na straně backendu jakožto autoritativního zdroje pravdy.
+
+\section{Datový model}
+Datový model, konkrétně schéma relační databáze zobrazené na obrázku \ref{fig:db-diagram}, přímo vychází z~dříve popsaného doménového modelu viz obrázek \ref{fig:domain-model}, jenž obsahuje detailní popis jednotlivých entit.
+Tato sekce se proto zaměřuje pouze na prvky, jež jsou pro relační realizaci specifické a~v~doménovém modelu nemají přímou paralelu.
+
+Prvním z~nich jsou mapovací tabulky vyjadřující vztahy typu mnoho-k-mnoha, které relační databáze nedokáže reprezentovat přímo.
+V~navrženém schématu plní tuto roli například \texttt{GroupReservationSpots}, \texttt{EventSpotGroupItems} či \texttt{SpotOofItems}.
+
+Druhou skupinou prvků, které v~doménovém modelu zcela absentují, jsou tabulky identitního subsystému poskytující datovou strukturu pro uživatele systému, jejich přidělení k~pracovním rolím popsaným v~sekci \ref{sec:rozhrani}, vystavené tokeny a~údaje pro alternativní bezheslové přihlášení.
+Identitní subsystém je čistě technickou vrstvou zajišťující autentizaci a~autorizaci přístupu, doménovému modelu kempu proto nenáleží a~objevuje se až v~tomto diagramu.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=1.0\textwidth]{db-schema.pdf}
+    \caption{Návrhový diagram schématu relační databáze\protect\footnotemark.}
+    \label{fig:db-diagram}
+\end{figure}
+\footnotetext{Interaktivní verze viz \url{https://dbdiagram.io/d/DP-6a06fe2f9f1f8ec47b20a0cf}.}
+
+\section{Integrace externích systémů}
+Integrace s~externími rozhraními je v~navrženém systému klíčovým prostředkem k~zajištění datové integrity.
+Namísto manuálního přepisování údajů systém využívá standardizovaná rozhraní k~validaci a~automatickému doplňování informací, což snižuje chybovost a~urychluje proces odbavení hostů v~exponovaných časech.
+
+\subsection{Automatizovaná identifikace právnických osob}
+Pro zjednodušení procesů spojených s~ubytováním a~fakturací právnických osob, jako jsou školy či firmy, systém integruje rozhraní Administrativního registru ekonomických subjektů (ARES)\footnote{Dokumentace viz \url{https://ares.gov.cz/stranky/vyvojar-info}.}.
+Komunikace s~registrem probíhá skrze REST API, jež umožňuje přímý přístup k~veřejným datům o~ekonomických subjektech v~České republice.
+Systém po zadání identifikačního čísla (IČO) odešle dotaz na toto rozhraní, jež vrací strukturovanou odpověď ve formátu \texttt{JSON} nebo \texttt{XML}.
+Získané údaje jsou automaticky zpracovány a~použity pro předvyplnění fakturačních polí, což garantuje správnost dokladů v~souladu s~aktuálními údaji v~registru bez nutnosti jejich ručního opisování.
+
+\subsection{Digitální verifikace identity fyzických osob}
+V~rámci technického návrhu integrace se systémem eDoklady\footnote{Dokumentace viz \url{https://edoklady.gov.cz/docs/technicka-specifikace.zip}.} byly posouzeny čtyři nabízené způsoby realizace, které státní správa pro ověřovatele nabízí.
+Prvním je využití nativní mobilní aplikace, jež je však pro potřeby komplexního informačního systému neintegrovatelná, neboť výsledná data zůstávají izolována v~mobilním zařízení a~vyžadují manuální přepis do databáze.
+Další dvě cesty představuje takzvaná Webová čtečka ověřovatele, která funguje buď na principu zkopírování údajů ve formátu \texttt{JSON} do systémové schránky (vhodné pro manuální vkládání), nebo na principu automatizovaného vyzvednutí dat backendem, což je mechanismus podobný autorizačnímu protokolu OAuth.
+Čtvrtou a~technologicky nejvyspělejší variantou je využití přímého Integračního API, jež zajišťuje čistou komunikaci typu server-to-server (B2B).
+
+Pro účely informačního systému kempu bylo jako optimální zvoleno právě Integrační API.
+Tato volba je nejvhodnější z~hlediska uživatelské přívětivosti i~technické implementace, jelikož umožňuje plnou automatizaci datového toku přímo do backendu bez nutnosti využívat mezikroky v~prohlížeči.
+Z~hlediska vývoje se jedná o~nejčistší řešení, jež nabízí vysokou míru kontroly nad celým procesem a~je přímo určené pro systémy s~vyšší frekvencí ověřování.
+
+Proces předání dat je v~tomto režimu navržen jako přímočarý tříkrokový cyklus, jenž minimalizuje zátěž pro hosta i~personál.
+V~prvním kroku backend systému vygeneruje unikátní požadavek na ověření a~zobrazí jej ve formě QR kódu na tabletu u~recepčního pultu.
+Host tento kód naskenuje svou aplikací eDoklady, čímž dojde k~načtení požadavku na přenos osobních dat.
+Ve druhém kroku host ve své mobilní aplikaci eDoklady vidí přehled požadovaných údajů a~odsouhlasí jejich předání kempu.
+Tímto úkonem udělí digitální souhlas k~jednorázovému poskytnutí identity.
+
+V~závěrečné fázi backend pomocí zabezpečeného tokenu asynchronně údaje načte.
+Data dorazí ve strukturovaném formátu \texttt{JSON} a~jsou následně zpracována.
+Tento postup zaručuje, že do systému vstupují pouze ověřená a~digitálně podepsaná data, čímž se eliminuje riziko chyb vzniklých manuálním opisováním z~fyzických dokladů.
+Kompletní proces ověření s~využitím této varianty je zobrazen na obrázku \ref{fig:edoklady-server}.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1.0\textwidth]{edoklady.pdf}
+    \caption{Sekvenční diagram načtení identity pomocí Integračního API systému eDoklady.}
+    \label{fig:edoklady-server}
+\end{figure}
+
+\subsection{Inteligentní našeptávání a~validace adresních údajů}
+Sběr adresních údajů není pouze administrativní volbou, ale zákonnou povinností ubytovatele, který musí vést evidenci všech ubytovaných osob pro účely hlášení místních poplatků obci a~hlášení pobytu cizinců.
+Pro zajištění maximální kvality těchto dat a~eliminaci manuálních chyb je systém navržen tak, aby uživateli při psaní aktivně nabízel validní adresní body prostřednictvím externích registrů.
+Tento problém částečně řeší možnost využívání digitální identity, většina hostů však stále preferuje fyzický občanský průkaz.
+
+Pro dosažení plné správnosti adres v~rámci České republiky a~zároveň zajištění podpory pro zahraniční turisty systém využívá kombinaci dvou doplňujících se zdrojů komunikujících přes REST API.
+Volba zdroje je řízena explicitním přepínačem ve formuláři (tuzemská versus zahraniční adresa); přepínač je výchozí podle zadané státní příslušnosti hosta, obsluha jej však může kdykoli změnit.
+Pro adresy na území České republiky je primárním zdrojem Registr územní identifikace, adres a~nemovitostí (RÚIAN), jenž poskytuje geokódovací služby skrze REST API.
+Tato integrace nabízí výhodu v~podobě neomezeného počtu dotazů, což je pro kemp s~vysokou sezónní obrátkou hostů klíčové.
+Systém využívá konkrétně službu \texttt{findAddressCandidates}\footnote{Dokumentace viz \url{https://geoportal.cuzk.gov.cz/Dokumenty/Rozhrani_GeocodeSOE.pdf}.}, jež na základě textového řetězce vrací seznam nejpravděpodobnějších adresních bodů v~rámci České republiky.
+
+Pro hosty přijíždějící ze zahraničí, u~kterých je evidence adresy rovněž povinná, systém přepíná na REST API služby Mapy.com\footnote{Dokumentace viz \url{https://developer.mapy.com/cs/rest-api/funkce/geokodovani/}.}.
+Tato platforma poskytuje pokročilé našeptávání a~vyhledávání adres v~globálním měřítku.
+V~rámci navrženého bezplatného tarifu\footnote{Informace o cenovém tarifu viz \url{https://developer.mapy.com/cs/cena/cenova-kalkulacka/}.} umožňuje tato integrace až 62\,500 požadavků za měsíc, což s~velkou rezervou pokrývá potřeby kempu.
+
+\subsection{Hlášení pobytu cizince}
+Pro splnění zákonné povinnosti hlášení pobytu cizinců ubytovatelem definuje Služba cizinecké policie ČR dvě technické cesty pro přenos dat.
+První variantou je generování datového souboru ve formátu UNL, což je specificky strukturovaný textový dokument obsahující údaje o~ubytovaných osobách, jejž ubytovatel následně manuálně nahrává prostřednictvím webového rozhraní aplikace Ubyport.
+Druhou metodou je využití automatizované webové služby\footnote{Dokumentace viz: \url{https://policie.gov.cz/clanek/informace-pro-vyvojare.aspx}} založené na protokolu SOAP (Simple Object Access Protocol), jež umožňuje přímé propojení informačního systému ubytovatele se servery Policie ČR pro automatické zasílání dat.
+
+V~rámci návrhu tohoto informačního systému je jako výhradní metoda zvoleno Integrační API.
+Důvodem pro upuštění od podpory UNL souborů je snaha o~maximální eliminaci manuálních procesů a~lidské chybovosti; manuální generování a~následné nahrávání souborů představuje administrativní zátěž, jež neodpovídá architektuře navrženého systému.
+Webová služba navíc poskytuje okamžitou zpětnou vazbu ve formě takzvané Doručenky, díky které systém ihned ví, zda bylo hlášení přijato v~pořádku, nebo zda obsahuje chyby, jež je nutné opravit.
+V~případě, že Doručenka oznámí neúspěch, je hlášení zařazeno do fronty pro opravu a~personál recepce je upozorněn s~odkazem na konkrétní záznam, k~jehož údajům je třeba se vrátit.
+
+\subsection{Řízení průjezdové infrastruktury}
+\label{sec:zavory}
+Stávající systém pro správu závor od společnosti Technopark využívá pro programování ovládací jednotky závor program Kartoun\footnote{Informace o~systému viz \url{https://eshop.technopark.cz/z6987-kartoun-software-pro-spravu-pristupoveho-systemu}.}, jenž běží na lokálním počítači v~areálu.
+Tento software není ovládacím prvkem pro samotné otevírání, ale slouží jako správce autonomní paměti vjezdových jednotek.
+Kartoun využívá jako své úložiště databázi ve formátu \texttt{.mdb}, jež obsahuje whitelist (seznam povolených) RFID karet.
+
+Hlavní funkcí programu Kartoun je kontinuální synchronizace: jakmile se v~jeho databázi objeví nový identifikátor karty, program jej automaticky nahraje do vnitřní nevolatilní paměti fyzické ovládací jednotky závory.
+Závora pak při přiložení karty nečeká na pokyn z~počítače, ale sama porovná ID karty se svou vnitřní pamětí a~otevře se.
+Tento mechanismus zajišťuje, že vjezd funguje i~při vypnutém počítači nebo výpadku sítě, pokud je karta již v~jednotce uložena.
+
+Protože software Kartoun je uzavřený proprietární systém a~nenabízí žádné programové rozhraní, je nutné se na něj napojit skrze jeho jediné přístupné místo\,--\,zmíněnou databázi \texttt{.mdb}.
+Tato databáze se tak stává integračním bodem, jehož prostřednictvím spolu oba systémy mohou komunikovat.
+Vzhledem k~potřebě propojit backend s~tímto lokálním systémem je na počítači přímo připojeném k~ovládací jednotce závor provozován lehký REST API server, jenž slouží jako komunikační most.
+Tento server přijímá instrukce z~backendu a~následně provádí zápisy do sdílené databáze \texttt{.mdb}, již Kartoun kontinuálně monitoruje.
+Vzhledem k~tomu, že databáze \texttt{.mdb} je sdílena dvěma procesy bez nativního zámkového mechanismu, je přístup k souboru z~obou stran chráněn na úrovni souborového systému; v~případě selhání zápisu integrační vrstva pokus opakuje s~exponenciálním odstupem a~v~krajním případě eskaluje stav obsluze.
+Kartoun v~tomto schématu figuruje jako nezbytný komunikační most mezi novým systémem a~fyzickou ovládací jednotkou.
+
+\section{Uživatelské rozhraní}
+Proces návrhu uživatelského rozhraní (UI) vychází z~analýzy klíčových potřeb uživatelů, jež je následně transformována do podoby strukturních schémat, takzvaných wireframů.
+Tyto nízkoúrovňové modely slouží k~definici informační architektury, rozvržení ovládacích prvků a~celkové navigace, přičemž záměrně abstrahují od vizuálního stylu, barevnosti či detailní grafiky.
+Cílem je vytvořit logickou hierarchii a~zajistit, aby prioritní informace byly pro uživatele okamžitě dostupné.
+V~následující části jsou proto představeny wireframy stěžejních částí systému, jež slouží jako technický podklad pro budoucí implementaci.
+
+Rozhraní na obrázku \ref{fig:ui-1} představuje přehledovou obrazovku určenou pro personál recepce a~slouží jako vstupní obrazovka aplikace po zahájení směny.
+Levý navigační panel umožňuje přechod mezi moduly aplikace a~v~dolní části identifikuje přihlášeného uživatele s~možností ukončit směnu.
+Centrální plocha je strukturována do horizontálních pásem podle informační priority\,--\,přehledových karet s~klíčovými ukazateli dne (obsazenost ubytování, počty hostů a~vozidel v~areálu, zbývající příjezdy a~odjezdy, nezaúčtované tržby), operativní agendy (jména přijíždějících a~odjíždějících hostů, stav úklidu, aktuální stav pokladny), upozornění na faktury po splatnosti a~denního stravovacího plánu, doplněných výhledem na akce a~obsazenost v~následujících sedmi dnech.
+Toto uspořádání od souhrnných ukazatelů přes denní agendu k~budoucímu výhledu odpovídá obvyklému postupu obsluhy při převzetí směny.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ui/ui-dashboard.pdf}
+    \caption{Návrh UI základní navigace v~aplikaci a~přehledové obrazovky.}
+    \label{fig:ui-1}
+\end{figure}
+
+Modul ubytovacího plánu, zobrazený na obrázku \ref{fig:ui-2}, je koncipován jako interaktivní časová osa určená pro detailní správu a~přehled ubytovacích kapacit v~čase.
+V~horní části rozhraní se nacházejí ovládací prvky pro volbu zobrazení, jež uživateli umožňují přepínat mezi aktivní časovou osou (takzvanou plachtou) a~tabulkovým náhledem, případně rychle přistupovat ke zrušeným rezervacím, skupinovým rezervacím a~rezervacím čekajícím na potvrzení.
+Součástí horní lišty je rovněž vyhledávací pole a~tlačítko pro vytvoření nové položky související s~rezervacemi.
+Jádro modulu tvoří matice, jejíž vertikální osa kategorizuje ubytovací objekty seskupené podle typu (například bungalovy a~zděné chaty), zatímco horizontální osa reprezentuje kalendářní dny s~vyznačením konkrétních rezervací a~stavu jednotlivých jednotek.
+Aktuální den je zvýrazněn svislým pruhem napříč celou maticí, čímž je usnadněna časová orientace.
+Vizuální kódování rezervací podle jejich stavu (zaplaceno, skupinová, ze skupiny, potvrzená) je vysvětleno v~legendě pod ovládací lištou a~umožňuje obsluze rozpoznat povahu každé rezervace z~jediného pohledu.
+Celková ergonomie návrhu je podpořena spodní navigační lištou pro rychlý časový posun mezi měsíci doplněnou o~přepínač roku, což recepci usnadňuje operativní plánování i~zvyšuje čitelnost obsazenosti areálu v~dlouhodobějším horizontu.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ui/ui-plachta.pdf}
+    \caption{Návrh UI s~přehledem rezervací v~rezervační plachtě.}
+    \label{fig:ui-2}
+\end{figure}
+
+Modul plánování stravování, zobrazený na obrázku \ref{fig:ui-strava}, je koncipován jako provozní nástroj recepce pro plánování objednávek a~časů výdeje stravy v~rámci jednoho týdne.
+V~horní části rozhraní se nachází přepínač týdnů doplněný o~rychlý souhrn počtu ubytovaných skupin a~celkového počtu porcí v~aktuálně zvoleném týdnu, čímž obsluha okamžitě vidí míru vytížení.
+Hlavní obsah je rozdělen do dvou paralelních panelů sdílejících společnou časovou osu týdne.
+První panel zobrazuje pro každou ubytovanou skupinu počty porcí podle jednotlivých jídel\,--\,snídaně, oběda a~večeře\,--\,s~dalším rozkladem na dietní varianty (normální, vegetariánskou, bezlepkovou a~bezlaktózovou), doplněné o~datum příjezdu, odjezdu a~celkový počet osob.
+Druhý panel pak pro stejné skupiny organizuje konkrétní časy výdejů jídel a~kontaktní osoby zodpovědné za skupinu; výchozí časy jsou patrné z~hlavičky sloupců a~mohou být pro jednotlivé skupiny individuálně upraveny podle jejich denního programu.
+Rozdělení do dvou samostatných panelů odráží skutečnost, že časy výdejů přímo nesouvisí s~objednanými počty porcí; jejich oddělení do samostatných mřížek tak zvyšuje přehlednost obou agend a~umožňuje s~nimi pracovat nezávisle.
+Aktuální den je v~obou panelech zvýrazněn svislým pruhem, čímž je recepčním usnadněna orientace v~okamžitě platné agendě.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ui/ui-strava.pdf}
+    \caption{Návrh UI plánování objednávek a~výdejů stravy.}
+    \label{fig:ui-strava}
+\end{figure}
+
+Pohled „Místa“ v~mobilní aplikaci pro provozní personál, zobrazený na obrázku \ref{fig:ui-mista}, slouží pro zobrazení aktuálního stavu všech ubytovacích jednotek v~areálu.
+Účelem je poskytnout pracovníkům pohybujícím se v~terénu okamžitou informaci o~tom, kde je očekávaný příjezd, odjezd, kde je třeba úklidu a~které jednotky jsou mimo provoz, bez nutnosti kontaktovat recepci.
+V~horní části obrazovky se nachází souhrnná lišta pěti karet s~počty jednotek v~každém ze stavů, jež zároveň plní funkci legendy pro vizuální kódování dlaždic v~mřížce níže.
+Jádro pohledu tvoří mřížka ubytovacích jednotek seskupených podle typu, kde každá dlaždice vyjadřuje současně několik údajů: stav místa vizuálním stylem pozadí, označení chaty, datum plánovaného odjezdu a~indikátor potřeby úklidu.
+Personál tak dokáže rozpoznat povahu každého místa z~jediného pohledu.
+Dolní navigační lišta umožňuje rychlý přechod mezi pěti hlavními moduly mobilní aplikace (úklid, údržba, strava, místa, skener QR kódů) a~její umístění respektuje ergonomii jednoruční obsluhy mobilního zařízení.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{ui/ui-mista.pdf}
+    \caption{Návrh UI navigace v~mobilní aplikaci a~zobrazení stavu jednotlivých míst.}
+    \label{fig:ui-mista}
+\end{figure}

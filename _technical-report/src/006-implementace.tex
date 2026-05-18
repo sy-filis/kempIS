@@ -1,0 +1,183 @@
+\chapter{Implementace}
+\label{ch:implementation}
+Tato kapitola dokumentuje implementaci systému.
+Systém sestává ze~čtyř samostatně nasazovaných komponent.
+Jádrem je serverový backend, jenž obsluhuje veškerou doménovou logiku včetně integrací s~externími systémy státní správy a~komerčních poskytovatelů.
+Klientská strana je realizována jednotnou aplikací rozdělenou na 4 části, jak je popsáno v \ref{sec:komponenty}.
+Dvě pomocné Windows služby zajišťují řízení vjezdových závor a~obsluhu lokálního tisku.
+Následující sekce popisují tyto komponenty v~uvedeném pořadí.
+
+\section{Backend a~datová vrstva}
+\label{sec:impl-backend}
+Serverová část je realizována na~platformě \texttt{.NET~10}\footnote{.NET -- dostupné z:~\url{https://dotnet.microsoft.com/}.} v jazyku \texttt{C\#}; verze balíčků jsou centralizovány mechanizmem centrální správy.
+Z~ekosystému třetích stran jsou nejvýznamnější knihovny \texttt{Scrutor}\footnote{Scrutor -- dostupné z:~\url{https://github.com/khellang/Scrutor}.} (registrace a~dekorování služeb pro \texttt{DI}), \texttt{FluentValidation}\footnote{FluentValidation -- dostupné z:~\url{https://fluentvalidation.net/}.} (validace), \texttt{Serilog}\footnote{Serilog -- dostupné z:~\url{https://serilog.net/}.} s~výstupem do~agregátoru \texttt{Seq}\footnote{Seq -- dostupné z:~\url{https://datalust.co/seq}.} (logování), \texttt{Npgsql.EFCore.PostgreSQL}\footnote{Npgsql Entity Framework Core Provider -- dostupné z:~\url{https://www.npgsql.org/efcore/}.} (databáze), \texttt{RazorLight}\footnote{RazorLight -- dostupné z:~\url{https://github.com/toddams/RazorLight}.} a~\texttt{Playwright}\footnote{Playwright for .NET -- dostupné z:~\url{https://playwright.dev/dotnet/}.} (generování PDF), \texttt{MailKit}\footnote{MailKit -- dostupné z:~\url{https://github.com/jstedfast/MailKit}.} (transakční elektronická pošta) a~\texttt{QRCoder}\footnote{QRCoder -- dostupné z:~\url{https://github.com/codebude/QRCoder}.} (QR kódy).
+Analytický režim je nastaven na~nejpřísnější úroveň a~varování statického analyzátoru \texttt{SonarAnalyzer.CSharp}\footnote{SonarAnalyzer for C\# -- dostupné z:~\url{https://github.com/SonarSource/sonar-dotnet}.} jsou eskalována na~chyby přepínačem \texttt{TreatWarningsAsErrors}.
+
+Projekt je strukturován do~čtyř sestavení odpovídajících vrstvám čisté architektury: doménového jádra (\texttt{Domain}) bez~frameworkových závislostí, aplikační vrstvy s~obsluhami příkazů a~dotazů a~porty pro externí závislosti, infrastrukturní vrstvy implementující perzistenci nad \texttt{EF~Core} a~integrace s~externími systémy, a~prezentační vrstvy (\texttt{Web.Api}) vystavující HTTP rozhraní.
+Kompozice mezi vrstvami je řešena pomocí \texttt{DI} podle principu obrácení závislostí.
+Toto dělení je vynuceno sadou architekturních testů postavených nad knihovnou \texttt{NetArchTest}\footnote{NetArchTest -- dostupné z:~\url{https://github.com/BenMorris/NetArchTest}.}, jež ověřují, že doménová vrstva nezávisí na~žádné jiné a~že vrstva infrastrukturní není referencována z~prezentační.
+
+Pipeline middlewaru je nakonfigurována v~tomto pořadí: kontext pro strukturované logování, globální obsluha výjimek prostřednictvím rozhraní \texttt{IExceptionHandler}, vyhodnocení CORS, autentizace a~autorizace.
+Globální handler převádí nezachycené výjimky na~dokument \emph{Problem Details} ve~formátu \texttt{RFC~9457}.
+Endpointy jsou registrovány pod prefixem \texttt{/api}.
+Specifikace API je generována ve~formátu \emph{OpenAPI}\,3\footnote{OpenAPI Specification -- dostupné z:~\url{https://www.openapis.org/}.} a~slouží jako referenční kontrakt pro vývoj klientských aplikací; prohlížení je možné pomocí interaktivního prohlížeče API \texttt{Scalar}\footnote{Scalar -- dostupné z:~\url{https://scalar.com/}.}.
+
+Pro explicitní organizaci endpointů byl zaveden vlastní vzor \texttt{IEndpoint}, sdružující cestu, HTTP metodu, autorizační požadavek a~obsluhu do~jedné jednotky.
+Při startu aplikace je odpovídající sestavení prohledáno reflexí, všechny nalezené implementace jsou zaregistrovány do~kontejneru závislostí a~jejich registrační metoda je zavolána nad routovacím systémem.
+
+Z~endpointu řízení přechází do~aplikační vrstvy.
+Ta nevyužívá běžně užívanou knihovnu \texttt{MediatR}\footnote{MediatR -- dostupné z:~\url{https://github.com/jbogard/MediatR}.}, ale vlastní abstrakce \texttt{ICommand}, \texttt{IQuery} a~odpovídající rozhraní handlerů, jejichž návratovou hodnotou je typ \texttt{Result} nesoucí buď úspěšný výsledek operace, nebo strukturovanou chybu.
+Handlery jsou registrovány automaticky knihovnou \texttt{Scrutor} a~obaleny dvěma průchozími dekorátory.
+Logovací dekorátor (vnější) zaznamenává začátek a~výsledek operace s~kontextem typu příkazu.
+Validační dekorátor (vnitřní) spouští před~vlastním handlerem všechny registrované validátory \texttt{FluentValidation} dohledané k~danému typu příkazu nebo dotazu; při neúspěchu vrací typ \texttt{Result} s~chybou kategorie \texttt{Validation}, aniž by byl handler vůbec zavolán.
+Validátory jsou umístěny v~témže adresáři jako odpovídající příkaz.
+
+Zpracování chyb je dvouvrstvé.
+Očekávané chybové stavy (chybějící entita, porušení obchodního invariantu, selhání validace) jsou v~handleru reprezentovány návratovou hodnotou \texttt{Result.Failure}.
+Endpoint ji mapuje pomocnou metodou \texttt{CustomResults.Problem} na~odpovídající stavový kód a~dokument \emph{Problem Details} podle kategorie chyby: \texttt{Validation} a~\texttt{Problem} produkují 400, \texttt{NotFound} produkuje 404 a~\texttt{Conflict} produkuje 409.
+
+Neočekávané výjimky procházejí globálním exception handlerem, který zvlášť rozeznává \texttt{BadHttpRequestException} (mapovanou na~400).
+Výjimky vyvolané perzistentní vrstvou, \texttt{DatabaseConstraintViolationException}, jsou mapovány na stavový kód~409 s~uvedením názvu porušeného omezení.
+Veškeré ostatní výjimky jsou logovány v~úrovni \texttt{Error} a~vracejí anonymizovanou odpověď 500.
+
+Autentizace stojí na~knihovně \texttt{ASP.NET~Core~Identity}\footnote{ASP.NET Core Identity -- dostupné z:~\url{https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity}.}, jejíž aktuální vydání přímo zpřístupňuje úložiště pro bezheslové autentizátory podle standardu \emph{WebAuthn}, viz \ref{sec:webauthn}, čímž odpadá potřeba externí knihovny.
+Po~úspěšném ověření vystavuje aplikace pár neprůhledných (opaque) bearer tokenů schématem \texttt{AddBearerToken}\,--\,token přístupový a~obnovovací.
+Na~rozdíl od~formátu JWT není jejich obsah pro klienta čitelný a~server jej rekonstruuje deserializací chráněnou mechanizmem \emph{Data~Protection}\footnote{ASP.NET Core Data Protection -- dostupné z:~\url{https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/introduction}.}.
+Doba platnosti tokenů je konfigurovatelná pomocí proměnného prostředí.
+Pro vývojový režim je předvídatelné autentizační schéma \texttt{NoAuthHandler} aktivovatelné argumentem \texttt{-{}-no-auth}; jeho použití v~produkčním prostředí je zakázáno výjimkou při startu.
+Autorizace je role-based, role jsou definovány konstantami ve~třídě \texttt{Roles} a~na~jednotlivé endpointy či skupiny cest se~aplikují metodou \texttt{HasRole}.
+
+Perzistence je řešena přes \texttt{Entity~Framework~Core}\footnote{Entity Framework Core -- dostupné z:~\url{https://learn.microsoft.com/en-us/ef/core/}.} s~ovladačem \texttt{Npgsql}\footnote{Npgsql -- dostupné z:~\url{https://www.npgsql.org/}.} nad databází \texttt{PostgreSQL}\footnote{PostgreSQL -- dostupné z:~\url{https://www.postgresql.org/}.} a~schéma je verzováno migracemi nástroje \texttt{dotnet~ef}.
+Doménový model využívá vlastněné typy (\emph{owned types}) pro hodnotové objekty jako adresy nebo datové intervaly, čímž je zachována zapouzdřenost beze ztráty relační reprezentace v~podobě sloupců cílové tabulky.
+\texttt{ApplicationDbContext} je registrován s~rozsahem požadavku (\texttt{Scoped}), aby každý souběžně zpracovávaný HTTP požadavek dostal vlastní instanci a~vyhnul se~sdílení tracking stavu mezi vlákny, jež \texttt{EF~Core} nepodporuje.
+
+Tato třída přetěžuje metodu \texttt{SaveChangesAsync}.
+Před uložením označuje časová razítka u~entit hostů a~shromažďuje doménové události evidované entitami v~objektu \texttt{ChangeTracker}.
+Po~úspěšném zápisu jsou tyto události synchronně předány dispatcheru v~rámci téhož DI scope; ten reflexí dohledá odpovídající handlery a~vykoná je.
+Volba synchronního dispatche bez~vzoru \emph{outbox} je vědomá: handlery doménových událostí v~tomto systému neprovádějí žádnou meziprocesovou komunikaci a~jejich případné selhání je akceptovatelné jako stav vyžadující manuální kompenzaci.
+
+Explicitní transakce přes \texttt{BeginTransactionAsync} jsou použity pouze v~generátorech monotónně rostoucích čísel a tvoreb rezervací.
+Souběžnost zápisů je jinak řešena na~úrovni databáze prostřednictvím unikátních omezení; kolize na~obchodních identifikátorech tak vyústí v~chybu, kterou \texttt{SaveChangesAsync} odchytí a~přemapuje na~typovanou výjimku popsanou výše.
+Aktuální čas je v~aplikační i~doménové vrstvě výhradně získáván třídou implementující rozhraní \texttt{IDateTimeProvider}; přímé použití \texttt{DateTime.UtcNow} je v~těchto vrstvách zakázáno architekturním testem skenujícím IL kód z důvodu testování.
+
+Strukturované logování je zajištěno knihovnou \texttt{Serilog}, jejíž konfigurace je čtena přímo z~aplikační konfigurace a~výstup je ve výchozím nastavení směrován do~agregátoru \texttt{Seq}.
+Každý požadavek je obohacen vlastnostmi z~\texttt{RequestContextLoggingMiddleware} a~standardním záznamem \texttt{UseSerilogRequestLogging}, takže korelace události s~konkrétním požadavkem je v~agregátoru triviální.
+Logovací dekorátor v~aplikační vrstvě navíc vkládá do~\texttt{LogContext} informaci o~chybě vrácené handlerem; každý záznam o~selhání obchodní operace je tak propojen s~vyvolávajícím požadavkem.
+
+Konfigurace prostředí je celá vázána přes mechanizmus \texttt{IOptions<T>} a~jednotně validována při startu aplikace.
+Chybějící povinné údaje způsobí selhání aplikace již při startu, aniž by mohla obsloužit první požadavek.
+Typy options jsou definovány pro každou ohraničenou oblast samostatně (nastavení kempu, retenční politiky, frontend, SMTP, tokeny, externí integrace).
+Citlivé hodnoty (hesla, klíče, hesla certifikátu) jsou očekávány v~konfiguračních zdrojích prostředí, nikoli ve~zdrojovém kódu.
+
+Dokumenty (vyúčtování, identifikační nálepky pro hosty, finanční uzávěrky) jsou generovány dvoufázově.
+Razor šablony zabudované do~projektu infrastruktury jako embedded resources jsou nejprve renderovány knihovnou \texttt{RazorLight} s~podporou lokalizace.
+Výsledné HTML je následně převedeno na~PDF knihovnou \texttt{Microsoft.Playwright} v~režimu headless Chromium.
+Instance \texttt{IPlaywright} a~\texttt{IBrowser} jsou držené jako singletony po~dobu života procesu, aby se~předešlo opakovanému startu prohlížeče při každém požadavku na~PDF.
+QR kódy potřebné pro některé dokumenty jsou vykreslovány knihovnou \texttt{QRCoder}.
+
+\section{Integrace externích systémů}
+\label{sec:impl-external}
+Integrace s~externími systémy jsou kompoziční součástí infrastrukturní vrstvy popsané v~předchozí sekci; aplikační vrstva s~nimi pracuje výhradně přes doménově orientovaná rozhraní.
+Komunikace s~protistranami je v~drtivé většině realizována klientem \texttt{HttpClient} registrovaným jako pojmenovaná konfigurace v~továrně \texttt{IHttpClientFactory}.
+Tento mechanizmus centralizuje konfiguraci časových limitů, výchozích adres a~middlewarů a~zaručuje správné životní cykly podkladových socketů.
+Každá externí služba je obalena vlastní třídou implementující doménově orientované rozhraní, takže aplikační vrstva s~konkrétní protistranou nepracuje.
+Veškeré konfigurační hodnoty (adresy, přihlašovací údaje, cesty k~certifikátům) jsou vázány s~validací při startu aplikace.
+
+Dotazy do~registru ekonomických subjektů \texttt{ARES} vracejí JSON odpovědi deserializované knihovnou \texttt{System.Text.Json}.
+Veřejná část registru \texttt{RÚIAN} je publikována ČÚZK jako služba \texttt{ArcGIS~REST} a~je oslovována vlastní třídou \texttt{RuianAddressSuggester}.
+Adresní našeptávač portálu \texttt{Mapy.cz} (vyžadující API klíč) je zapojen do~řetězce za~\texttt{RÚIAN} jako záloha pro adresy, jež primární zdroj nepokrývá.
+Výsledky obou našeptávačů jsou kvůli zatížení protistran kešovány do~databáze \texttt{Redis}\footnote{Redis -- dostupné z:~\url{https://redis.io/}.}.
+
+Volání služby \texttt{eDoklady} pro zpřístupnění digitálního stejnopisu občanského průkazu vyžaduje vzájemnou TLS autentizaci kvalifikovaným serverovým certifikátem.
+Certifikát ve~formátu PFX je načítán z~konfigurované cesty a~připojen do~HTTP handleru.
+QR kód s~přechodovým tokenem, jejž host snímá vlastním zařízením, je vykreslen knihovnou \texttt{QRCoder}.
+
+Hlášení cizinců cizinecké policii \texttt{Ubyport} (časový limit 30~sekund) probíhá nad protokolem SOAP s~HTTP Basic autentizací zajištěnou typem \texttt{NetworkCredential}.
+Vzhledem k~tomu, že WSDL definice protistrany prošla v~průběhu vývoje několika nekompatibilními změnami, je SOAP obálka konstruována ručně bez~generovaného klienta.
+Toto řešení zachovává plnou kontrolu nad tvarem odesílaných hlaviček a~elementů a~umožňuje reagovat na~změny protistrany bodovou úpravou jediné metody namísto regenerace celého proxy.
+
+\section{Klientské aplikace}
+\label{sec:impl-clients}
+Všichni tři klienti systému\,--\,webové rozhraní recepce s~veřejným rezervačním portálem, tabletová aplikace pro hosty u~recepčního pultu a~mobilní aplikace pro provozní personál\,--\,jsou realizováni jako jediný projekt nad frameworkem \texttt{Angular}\footnote{Angular -- dostupné z:~\url{https://angular.dev/}.} ve~verzi~21.
+Projekt je sestavován do~podoby progresivní webové aplikace a~distribuován z~téhož bundlu prostřednictvím servisního workera.
+Cílový klient je rozlišen až na~úrovni směrování: kořenový \texttt{Router} v~\texttt{app.routes.ts} líně načítá tři odlišné podstromy odpovídající jednotlivým klientům\,--\,\texttt{/public}, \texttt{/staff} a~\texttt{/reception-tablet}\,--\,čímž si každý klient po~vstupu na~svou URL stáhne pouze tu část kódu, kterou skutečně potřebuje.
+
+\subsection{Společná infrastruktura}
+\label{subsec:impl-clients-shared}
+Sdílená vrstva projektu obsahuje typové definice doménových modelů a~tenkého klienta nad třídou \texttt{HttpClient}.
+Tento klient je rozšířen o~tři interceptory: první přidává hlavičku \texttt{Authorization} s~přístupovým tokenem, druhý zajišťuje transparentní obnovu vypršelých tokenů přes refresh-token a~třetí překládá serverové chybové odpovědi na~typovaný objekt.
+
+Autentizační služba řeší tři související úlohy.
+Perzistence relace probíhá v~úložišti prohlížeče \texttt{localStorage}.
+Koordinace obnovy tokenů napříč otevřenými záložkami je realizována nad rozhraními \texttt{BroadcastChannel}\footnote{Broadcast Channel API -- dostupné z:~\url{https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API}.} a~\texttt{Web~Locks}\footnote{Web Locks API -- dostupné z:~\url{https://developer.mozilla.org/en-US/docs/Web/API/Web_Locks_API}.}, takže refresh-token není současně použit dvěma instancemi téhož klienta.
+Přihlašování probíhá výhradně bezheslově pomocí passkeys.
+
+Stav komponent je důsledně modelován pomocí signálů\,--\,primitiva \texttt{signal}, odvozených hodnot a~asynchronních zdrojů.
+Změna detekce probíhá v~bezzónovém režimu konfigurovaném přes \texttt{provideZonelessChangeDetection}, takže běhové prostředí \texttt{zone.js} není v~aplikaci zavedeno vůbec.
+Namísto starších reaktivních forem jsou složitější vstupní obrazovky postaveny nad novým signálovým rozhraním \texttt{@angular/forms/signals}, které umožňuje deklarativně skládat typové i~podmíněné validátory přímo nad signálovým modelem formuláře.
+
+Uživatelské rozhraní je sestaveno nad knihovnou \texttt{PrimeNG}\footnote{PrimeNG -- dostupné z:~\url{https://primeng.org/}.} s~tématem \emph{Aura}, ikonografie pochází z~balíčku \texttt{PrimeIcons} a~překlady knihovny jsou inicializovány buď do~češtiny, nebo do~angličtiny podle aktivního \texttt{LOCALE\_ID}.
+Lokalizace samotné aplikace je řešena vestavěným nástrojem \texttt{@angular/localize}\footnote{Angular Internationalization -- dostupné z:~\url{https://angular.dev/guide/i18n}.} s~bilingvním pokrytím přihlašovací stránky a~veřejného portálu, zatímco zbytek personální agendy je úmyslně zafixován do~češtiny, neboť cílovou skupinou jsou pouze tuzemští zaměstnanci kempu.
+
+\subsection{Veřejný rezervační portál}
+\label{subsec:impl-clients-public}
+Veřejný portál vystavuje odděleným vstupním bodem pouze průvodce novou rezervací, detail rezervace a~vícekrokový online check-in.
+Průvodce je postaven nad komponentou \texttt{Stepper} a~obsahuje kroky pro výběr období, výběr míst, kontaktní údaje a~rekapitulaci.
+Online check-in má validaci odstupňovanou podle státní příslušnosti a~věku jednotlivých hostů.
+
+\subsection{Personální desktopová aplikace}
+\label{subsec:impl-clients-desktop}
+Personální podstrom \texttt{/staff} je vnitřně rozdělen na~větev \texttt{desktop} a~\texttt{mobile}.
+Přepínání mezi nimi je vyhodnoceno na základě \texttt{mediaQuery}.
+Rozsah personální agendy v~desktopové variantě sahá od~plánovacího kalendáře a~rezervací přes osmikrokový průvodce sestavením účtu, evidenci faktur a~účetní uzávěrky až po~systémové nastavení, správu uživatelů a~přístupových karet.
+Přístup k~jednotlivým trasám je řízen rolovými strážci tras s~výčtem rolí recepční, účetní a~správce.
+
+\subsection{Tabletová aplikace recepce}
+\label{subsec:impl-clients-tablet}
+Tablet umístěný na~recepčním pultu komunikuje s~odděleným serverem recepce v~reálném čase přes klienta \texttt{socket.io-client}\footnote{Socket.IO Client -- dostupné z:~\url{https://socket.io/docs/v4/client-api/}.}.
+Po~spuštění je tablet spárován s~konkrétní recepční stanicí načtením QR kódu, který je v~desktopovém rozhraní recepce vykreslován balíčkem \texttt{qrcode}\footnote{qrcode -- dostupné z:~\url{https://github.com/soldair/node-qrcode}.}.
+V~průběhu relace tablet přijímá události s~rekapitulací pobytu a~vrací zpět zachycené digitální podpisy hostů; pořizování podpisu je realizováno vlastní obálkou nad knihovnou \texttt{signature\_pad}\footnote{Signature Pad -- dostupné z:~\url{https://github.com/szimek/signature_pad}.}.
+Tablet zpět vrací digitální podpisy cizinců a~ověření občanky přes službu \texttt{eDoklady}.
+
+\subsection{Mobilní aplikace provozního personálu}
+\label{subsec:impl-clients-mobile}
+Mobilní klient pro provozní personál v~obrazovce skenování využívá výhradně nativní prohlížečová rozhraní \texttt{BarcodeDetector}\footnote{Barcode Detection API -- dostupné z:~\url{https://developer.mozilla.org/en-US/docs/Web/API/BarcodeDetector}.} a~\texttt{TextDetector}\footnote{Text Detection API -- dostupné z:~\url{https://wicg.github.io/shape-detection-api/text.html}.} provozovaná ve \texttt{Web Workerech}\footnote{Web Workers API -- dostupné z:~\url{https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API}.}.
+Rozpoznávání QR kódů z~ubytovacích míst i~registračních značek vozidel tak probíhá kompletně lokálně v~zařízení.
+Obě uvedená rozhraní jsou aktuálně dostupná pouze v~prohlížečích postavených na~enginu Chromium; vzhledem k~unifikovanému parku služebních zařízení (Android s~prohlížečem Chrome) jde o~akceptovatelné omezení.
+Rozpoznané hodnoty jsou následně dotazovány proti aplikačnímu rozhraní.
+
+\subsection{Sestavení a~distribuce}
+\label{subsec:impl-clients-build}
+Ze~sdíleného zdrojového stromu vzniká jediný optimalizovaný webový bundle.
+Ve~výrobní konfiguraci je doplněn o~servisního workera generovaného z~konfigurace, čímž se~všichni tři klienti stávají instalovatelnými na~koncových zařízeních jako \texttt{PWA}\footnote{Progresivní webová aplikace.} bez~nutnosti distribuovat samostatné nativní balíčky pro mobilní platformy ani desktopové prostředí.
+Pro anglickou jazykovou variantu se~tentýž zdrojový kód sestavuje s~odlišným \texttt{baseHref} a~předpřeloženými řetězci do~paralelního výstupu; z~hlediska procesu sestavení i~doručení jde o~jedinou systematickou odlišnost mezi klienty.
+
+\section{Ovládání vjezdových závor}
+\label{sec:impl-gate}
+Vjezdová služba je realizována jako aplikace v~jazyce \texttt{C\#} nad platformou \texttt{.NET~10}, hostovaná pomocí balíčku \texttt{Microsoft.Extensions.Hosting.WindowsServices} jako nativní Windows služba spouštěná z~\emph{Service Control Manageru}.
+REST rozhraní pro příjem požadavků z~backendu je vystaveno prostřednictvím \emph{ASP.NET~Core~Minimal~API} nad webovým serverem \texttt{Kestrel}.
+Klientům jsou vystaveny pouze dva idempotentní endpointy nad cestou \texttt{/api/v1/cards/\{key\}}: metoda \texttt{PUT} provádí vložení nebo aktualizaci RFID karty a~metoda \texttt{DELETE} její odstranění.
+Idempotence obou operací umožňuje backendu opakovat selhané volání, aniž by hrozila desynchronizace stavu mezi systémy.
+
+Pro integraci s~legacy systémem Kartoun, jehož datovou vrstvu tvoří dvojice zaheslovaných souborů formátu \texttt{Microsoft Access .mdb} (databáze uživatelů a~databáze auditních událostí), je využita knihovna \texttt{Microsoft.Jet.OLEDB.4.0}\footnote{Microsoft Jet Database Engine -- dostupné z:~\url{https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/microsoft-ole-db-provider-for-microsoft-jet}.}.
+Modernější poskytovatel \emph{ACE~OLEDB} zde nepřichází v~úvahu: existující soubory pocházejí z~období Access~97--2003 a~jejich heslovací schéma zachované ovladačem Jet není s~poskytovatelem ACE plně kompatibilní.
+Veškeré dotazy jsou formulovány jako parametrizované příkazy \texttt{OleDbCommand}, čímž je eliminováno riziko útoku typu SQL injection.
+Vzhledem k~tomu, že jmenovaný OLE~DB poskytovatel je dostupný výhradně v~32bitové variantě, je celá aplikace kompilována pro architekturu \texttt{win-x86}.
+
+Časové sloupce původního schématu (\texttt{ValidFrom}, \texttt{ValidTo}, \texttt{DateTime}) jsou ukládány jako celá čísla představující počet sekund od~proprietární epochy 1.\,1.\,2000; konverze je zapouzdřena v~pomocném typu \texttt{LegacyTime}.
+Každá úspěšná modifikace tabulky \texttt{Card} je doplněna o~odpovídající záznam v~tabulce \texttt{Events}, čímž je zachována konzistence s~auditním modelem původní aplikace.
+
+Při souběžném zápisu uzamyká Jet celý soubor a~konkurenční operace selže okamžitě.
+Toto chování je obslouženo retry strategií s~exponenciálním zpožděním omezeným na~několik desítek pokusů, čímž se~překlene typicky milisekundové okno zámku držené jiným procesem.
+Strukturované logování je opět zajištěno knihovnou \texttt{Serilog} s~výstupem do~lokálního souborového sinku rotovaného po~dnech.
+V~případě nevratného selhání procesu zajišťuje jeho restart \emph{Service Control Manager} podle nakonfigurované obnovovací politiky.
+
+\section{Lokální tiskový server}
+\label{sec:impl-print}
+Tisková služba je realizována stejným způsobem jako ovladač vjezdových závor, viz \ref{sec:impl-gate}.
+Webový server \texttt{Kestrel} naslouchá pouze na~loopback rozhraní a~přijímá požadavky pouze z~webové aplikace povolené zásadami \texttt{CORS}.
+Vazba na~loopback eliminuje vystavení tiskového API mimo lokální stanici, a~je proto základním obranným prvkem této služby.
+
+Rozhraní vystavuje dva koncové body: výpis nainstalovaných tiskáren získaný přes \texttt{System.Drawing.Printing.PrinterSettings} a~odeslání PDF dokumentu na~zvolenou tiskárnu.
+Samotný tisk je delegován na~externí nástroj \texttt{SumatraPDF}\footnote{SumatraPDF -- dostupné z:~\url{https://www.sumatrapdfreader.org/}.} spouštěný v~tichém režimu jako podproces, čímž se~aplikace vyhýbá přímé integraci s~tiskovými ovladači systému Windows a~deleguje renderování PDF na~ověřenou implementaci.
+Selhání podprocesu (nenulový návratový kód, překročení časového limitu) jsou propagována zpět klientovi jako odpověď stavového kódu 502 a~zároveň zaznamenána do~logu prostřednictvím knihovny \texttt{Serilog}.

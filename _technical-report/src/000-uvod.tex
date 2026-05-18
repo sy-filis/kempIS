@@ -1,0 +1,31 @@
+\chapter{Úvod}
+\label{chapter:intro}
+Turistický ruch a~oblast krátkodobého ubytování procházejí v~posledním desetiletí zásadní transformací, která je hnána nejen technologickým pokrokem, ale i~měnícími se nároky moderního hosta.
+Zatímco v~hotelnictví je digitalizace standardem, segment turistických kempů v~České republice za digitalizační vlnou často zaostává.
+Provozovatelé se zde potýkají s~unikátní kombinací správy rozlehlých areálů, různorodých typů ubytovacích kapacit a~vysoké sezónní zátěže.
+Hlavní motivací pro vznik této práce je překonání kritické ne\-e\-fe\-kti\-vi\-ty, která byla identifikována během  dlouholeté praxe na pozici recepčního v~Kempu Olšovec.
+Přímá zkušenost s~každodenním provozem odhalila, že spoléhání se na fragmentované nástroje, jako jsou tabulkové procesory, e-mailová komunikace a~fyzické knihy hostů, vede k~neudržitelné chybovosti, duplicitám v~rezervacích nebo jejich opomenutí a~zbytečné administrativní zátěži personálu, která následně negativně ovlivňuje celkovou spokojenost zákazníka.
+
+Práce se v~teoretické části zaměřuje na legislativní rámec, který je pro české ubytovatele mimořádně náročný a~dynamicky se vyvíjí.
+Nejde pouze o~standardní evidenci hostů, ale o~integraci se státními systémy jako je Ubyport pro ohlašování cizinců, připravovaný systém e-Turista pro centrální evidenci ubytovaných, digitální prokazování totožnosti, či chystanými systémy pro elektronickou evidenci tržeb.
+Vzhledem k~tomu, že systém zpracovává osobní údaje hostů a~finanční doklady, důležitou část teoretické přípravy také tvoří analýza bezpečnostních mechanismů, zejména v~oblasti řízení přístupů do webových aplikací, kde je nutné vyvážit vysokou míru zabezpečení dat s~uživatelskou přívětivostí.
+
+Hlavním cílem této diplomové práce je automatizace klíčových provozních procesů turistického kempu, která nahradí dosavadní ruční práci s~různými nástroji a~odstraní tak chybovost, duplicity a~opomenutí v~rezervacích, sníží administrativní zátěž recepce a~v~konečném důsledku zvýší spokojenost hostů i~zaměstnanců.
+Automatizace se týká celého životního cyklu pobytu hosta\,--\,od~přijetí a~potvrzení rezervace, přes check-in, generování a~odesílání hlášení do~státních systémů až po~vystavení dokladů\,--\,a~dále zahrnuje správu ubytovacích kapacit, plánování úklidu a~údržby či komunikaci s~hosty prostřednictvím šablonovaných e-mailů.
+Stanoveného cíle bude dosaženo návrhem a~implementací komplexního informačního systému, který všechny tyto procesy zaštítí v~jednom robustním celku přizpůsobeném specifickým potřebám Kempu Olšovec.
+Při návrhu bude kladen důraz především na případnou snadnou rozšiřitelnost systému a~na zachování vysoké úrovně zabezpečení.
+
+Realizace systému proběhne postupně ve~všech fázích softwarového vývojového cyklu.
+Nejprve bude provedena podrobná analýza současného stavu, při níž budou identifikovány opakující se činnosti vhodné k~automatizaci, a~stanoveny funkční i~nefunkční požadavky, které také vycházejí z~dlouhodobé recepční praxe v~Kempu Olšovec.
+Na ni naváže návrh datového modelu, softwarové architektury a~uživatelského rozhraní zohledňujícího odlišné role uživatelů, kteří budou se systémem pracovat.
+Stěžejní fází je vlastní implementace, v~níž budou jednotlivé automatizované workflow realizovány propojením backendové logiky s~frontendovým rozhraním a~zajištěna komunikace s~výše zmíněnými externími státními systémy.
+Výsledné řešení bude ověřeno automatizovaným i~uživatelským testováním a~následně nasazeno do~produkčního provozu, kde bude vyhodnocen jeho reálný přínos oproti původnímu fragmentovanému řešení.
+
+Metodologicky je práce strukturována tak, aby pokryla celý životní cyklus vývoje softwarového produktu.
+V~kapitole \ref{ch:legislativa} je komplexně zpracován legislativní rámec dotýkající se provozu turistických ubytovacích zařízení v~České republice.
+Kapitola \ref{ch:access} se věnuje problematice přístupu do webových aplikací\,--\,především moderním přihlašovacím mechanismům a~navazující autorizaci.
+Kapitola \ref{ch:existing} mapuje dostupná řešení na trhu, a~to jak komerční produkty, tak existující vysokoškolské závěrečné práce zabývající se obdobnou problematikou.
+Na ně navazuje analýza požadavků v~kapitole \ref{ch:analyse}, která vychází z~konkrétní situace Kempu Olšovec v~městysu Jedovnice, definuje jednotlivé uživatelské role a~ústí v~doménový model zachycující klíčové entity systému.
+Vlastní návrh je předmětem kapitoly \ref{ch:design}\,--\,od~volby použitých technologií, přes datový model a~integrace s~externími systémy, až po~podobu uživatelského rozhraní.
+Kapitola \ref{ch:implementation} dokumentuje vlastní implementaci serverové části systému, frontendové aplikace a~integračního modulu pro ovládání vjezdových závor.
+Po~ní následuje kapitola \ref{ch:testing-deployment} věnovaná testování a současnému nasazení systému do produkčního provozu včetně postupného začleňování.

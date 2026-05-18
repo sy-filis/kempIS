@@ -1,0 +1,573 @@
+\chapter{Legislativa v~oblasti krátkodobého ubytování}
+\label{ch:legislativa}
+
+V~kontextu rostoucí digitalizace odvětví cestovního ruchu představují aplikace pro hosty a~personál klíčový nástroj pro zefektivnění provozu a~zlepšení zákaznické zkušenosti.
+Vývoj takových aplikací, které často zahrnují komplexní funkce, však naráží na rozmanitou síť legislativních a~regulatorních požadavků platných v~České republice a~v~rámci Evropské unie.
+Zajištění souladu s~těmito předpisy není pouze zákonnou nutností, ale také základním předpokladem pro budování důvěry uživatelů, ochranu citlivých dat a~zajištění univerzální dostupnosti služby.
+
+Tato kapitola poskytuje ucelený přehled legislativních omezení, jejichž zohlednění je nezbytné pro úspěšný a~legálně souladný vývoj informačního systému.
+Postupně se bude věnovat evidenci osobních údajů, včetně jejich ochrany a~zpracování, zákonným požadavkům na doklady vydávané hostům a~zpravodajskou povinnost vůči Českému statistickému úřadu.
+Tyto povinnosti jsou závazné pro poskytovatele ubytování.
+Z~pohledu provozovatele informačního systému je pak nutné se věnovat kybernetické bezpečnosti, přístupnosti uživatelského rozhraní a~pravidlům ohledně užívání souborů cookies, které mohou být pro webové aplikace esenciální.
+
+Pochopení a~správná implementace těchto legislativních mantinelů představuje fundamentální krok k~vytvoření nejen funkčního a~uživatelsky přívětivého, ale především bezpečného, důvěryhodného a~právně nezávadného informačního systému.
+Pro lepší orientaci v~platné legislativě využívám jako pomocný zdroj webový portál Zákony pro lidi\footnote{\url{https://www.zakonyprolidi.cz/}}, který udržuje předpisy Sbírky zákonů v~konsolidovaném znění.
+Tento web je uveden také v~seznamu literatury, přestože nejde o~autentický zdroj právních textů\,--\,tím je elektronická Sbírka zákonů a~mezinárodních smluv vedená Ministerstvem vnitra ČR.
+
+\section{Evidence osobních údajů}
+\label{sec:01-evidention}
+Sběr a~zpracování osobních údajů hostů představuje naprosto klíčovou součást fungování ubytovacích zařízení.
+Vzhledem k~citlivosti těchto informací a~rozsahu jejich zpracování\,--\,od vytvoření rezervace, zápisu hostů do systému, udržování evidenční a~domovní knihy, až po splnění zákonných ohlašovacích povinností\,--\,je tato oblast podrobena přísné právní regulaci.
+Jádrem této regulace je Obecné nařízení o~ochraně osobních údajů (\texttt{GDPR}), které ukládá správcům osobních dat zvláštní povinnosti, dále pak Zákon o~pobytu cizinců a~Zákon o~místních poplatcích.
+Tato sekce se detailně věnuje právním základům pro zpracování údajů tuzemských hostů i~cizinců, principům minimalizace dat a~právům hostů.
+
+\subsection{Evidence pro účely poplatku z~pobytu}
+\label{sec:poplatky}
+Z~hlediska efektivního provozu ubytovacích zařízení je potřeba přizpůsobit podpůrné softwarové aplikace z~důvodu snížení administrativní zátěže pracovníků a~postarat se o~evidenci poplatníků místních poplatků.
+Konkrétně se jedná o~poplatek z~pobytu, který je definován v~Hlavě II Zákona České národní rady o~místních poplatcích~\cite{cz-1990-565}, ve znění pozdějších předpisů.
+Tento zákon dává obcím prostřednictvím obecně závazných vyhlášek pravomoc zavádět na svém území různé místní poplatky.
+V~kontextu této práce je nutné se zabývat pouze poplatkem z~pobytu, známým také jako rekreační poplatek.
+Obecně závazné vyhlášky většinou upravují pouze výši vybíraného poplatku (např. OZV obce Jedovnice č.~5/2023\footnote{Dostupné~z: \url{https://jedovnice.cz/files/jedovnice/gallery/12317/66c59e4144028_OZV-2023-5-o-poplatku-z-pobytu.pdf}.}).
+Ostatní body (např. evidence osobních údajů) je přejímána přímo ze Zákona \cite{cz-1990-565}.
+Provozovatel tedy musí změny sledovat na obou místech.
+
+\vspace{8px} \noindent
+V~souvislosti s~tímto zákonem je nutné definovat následující pojmy:
+\begin{itemize}
+    \item \textbf{poplatník poplatku}~\cite[\S~3]{cz-1990-565}\,--\,osoba, která v~obci není přihlášená k~trvalému pobytu,
+    \item \textbf{předmět poplatku}~\cite[\S~3a]{cz-1990-565}\,--\,úplatný pobyt trvající nejvýše 60 po sobě jdoucích kalendářních dnů u~jednoho poskytovatele pobytu pokud:
+    \begin{itemize}
+        \item není na základě zákona omezována osobní svoboda,
+        \item nejedná se o~lůžkovou péči ve zdravotnickém zařízení hrazenou z~veřejného zdravotního pojištění s~výjimkou lázeňské léčebně rehabilitační péče;
+    \end{itemize}
+    \item \textbf{základ poplatku}~\cite[\S~3c]{cz-1990-565}\,--\,počet započatých dnů pobytu, s~výjimkou dne počátku pobytu (tzn. počet nocí pobytu),
+    \item \textbf{sazba poplatku}~\cite[\S~3d]{cz-1990-565}\,--\,výše poplatku za jeden den úplatného pobytu,
+    \item \textbf{výše poplatku}~\cite[\S~3e]{cz-1990-565}\,--\,součin základu poplatku a~sazby poplatku,
+    \item \textbf{plátce poplatku}~\cite[\S~3f]{cz-1990-565}\,--\,poskytovatel úplatného pobytu, který je povinen poplatek od poplatníka vybrat.
+\end{itemize}
+
+\noindent
+Zákon také definuje skupiny osob, které jsou od poplatku osvobozeny, \cite[\S~3b]{cz-1990-565} (\textit{pozn.: vypsány jsou pouze skupiny osob v~kontextu turistického kempu}):
+\begin{itemize}
+    \item nevidomé osoby,
+    \item osoby, které jsou považovány za závislé na pomoci jiné fyzické osoby podle zákona upravujícího sociální služby,
+    \item osoby, která jsou držiteli průkazu ZTP/P, a~jejich průvodce,
+    \item osoby mladší 18 let,
+    \item osoby pečující o~děti na zotavovací akci nebo jiné podobné akci pro děti,
+    \item osoby vykonávající na území obce sezónní práci\footnote{Práce, která je závislá na střídání ročních období a~zpravidla se každým rokem opakuje \cite[\S~3b~(3)]{cz-1990-565}.},
+    \item osoby vykonávající záchranné nebo likvidační práce podle zákona o~integrovaném záchranném systému,
+\end{itemize}
+
+Nejdůležitějším bodem, z~pohledu informačního systému, je evidenční povinnost poskytovatele ubytování\,--\,plátce poplatku z~pobytu \cite[\S~3g]{cz-1990-565}.
+Plátci poplatku z~pobytu přikazuje vést v~listinné nebo elektronické podobě \textbf{evidenční knihu} za každé zařízení nebo místo, kde poskytuje úplatný pobyt.
+Zápisy do evidenční knihy musí být vedeny správně, úplně, průkazně, přehledně, srozumitelně, způsobem zaručujícím trvalost zápisů.
+Zápisy dále musejí být uspořádány postupně z~časového hlediska.
+Plátce poplatku je povinen uchovávat evidenční knihu po dobu 6 let ode dne provedení posledního zápisu.
+Do evidenční knihy zapisuje osobní údaje každé fyzické osoby, které poskytuje úplatný pobyt.
+Evidovanými údaji jsou:
+\begin{itemize}
+    \item den počátku a~den konce ubytování,
+    \item jméno (případně jména) a~příjmení,
+    \item adresa místa přihlášení (adresa trvalého bydliště) nebo obdobného místa v~zahraničí,
+    \item datum narození,
+    \item číslo a~druh průkazu totožnosti,
+    \item výše vybraného poplatku, nebo důvod osvobození od poplatku.
+\end{itemize}
+
+Dále je také určeno, jakými průkazy totožnosti se může host prokázat.
+Jedná se o~následující doklady:
+\begin{enumerate}
+    \item občanský průkaz,
+    \item cestovní doklad\footnote{Všechny typy cestovních dokladů viz \cite[\S~5(1)]{cz-1999-329}.},
+    \item potvrzení o~přechodném pobytu na území,
+    \item pobytová karta rodinného příslušníka občana Evropské unie,
+    \item průkaz o~povolení k~pobytu,
+    \item průkaz o~povolení k~pobytu pro cizince,
+    \item průkaz o~povolení k~trvalému pobytu,
+    \item průkaz žadatele o~udělení mezinárodní ochrany,
+    \item průkaz žadatele o~poskytnutí dočasné ochrany.
+\end{enumerate}
+
+Každá ubytovaná osoba tedy musí být při registraci součinná při poskytnutí výše zmíněných údajů.
+Přestože zákonem není vynuceno prokázání totožnosti osoby, jíž se úplatný pobyt poskytuje, evidenční kniha musí být vyplněna správně a~plátce je tedy zodpovědný za ověření evidovaných údajů osoby.
+Tuto povinnost lze přenést na zodpovědnou osobu čestným prohlášením.
+
+Nejčastěji se ověření osobních údajů u~tuzemských hostů provádí nahlédnutím do občanského průkazu, neboť podle \cite[\S~39(d)]{cz-2021-269} je možné takto údaje uvedené v~občanském průkazu zpracovat v~případě, že se jedná o~ověření totožnosti, které vyžaduje nebo umožňuje jiný právní předpis.
+V~případě prokázání totožnosti cestovním dokladem (nebo jiným průkazem totožnosti podle \S~5(1)), musí plátce poplatku spoléhat na dodání určitých údajů (nejčastěji adresa místa přihlášení) osobou, neboť tyto údaje se na dokladu nenacházejí.
+Stejná situace nastává u~zahraničních hostů, kteří nemají všechny požadované údaje zapsané v~průkazu totožnosti (opět se nejčastěji jedná o~adresu místa přihlášení).
+
+\label{sec:edoklady}
+Možnosti prokazování totožnosti občanským průkazem při ubytování se \uv{rozšiřují} v~souladu se Zákonem o~právu na digitální služby a~o~změně některých zákonů \cite{cz-2020-12}.
+Tento zákon zavádí možnost pro občany České republiky využívat tzv. digitální stejnopis občanského průkazu prostřednictvím mobilní aplikace eDoklady \cite[\S~9a(1), \S~9b(1)]{cz-2020-12} v~případě fyzické přítomnosti osoby prokazující totožnost \cite[\S~9b(2)]{cz-2020-12}.
+Prokázání totožnosti digitálním stejnopisem průkazu je povinna umožnit osoba, které právní předpis ukládá povinnost ověřit totožnost předložením průkazu, který je veřejnou listinou \cite[\S~9a(2)]{cz-2020-12} od 1.~ledna 2025 podle platného harmonogramu \cite{www-edoklady-harmonogram}.
+Na ověření údajů musí využít elektronickou aplikaci pro ověřování \cite[\S~9b(1)]{cz-2020-12}\,--\,mobilní aplikaci, webovou čtečku nebo API, které je možné zaintegrovat přímo do systému \cite{www-edoklady-overeni}.
+Ověření totožnosti hosta s~českým státním občanstvím může tedy od 1.~1.~2025 proběhnout i~digitálně.
+
+Z~pohledu Zákona České národní rady o~místních poplatcích~\cite{cz-1990-565} a~Zákona o~občanských průkazech \cite{cz-2021-269} může nastat problém s~prokázáním totožnosti osoby české státní příslušnosti mladší 15 let, neboť nemusí mít vydán občanský průkaz \cite[\S~3(1)]{cz-2021-269} a~povinnost mít vydaný cestovní pas z~podstaty této veřejné listiny, kterou je oprávnění pro překračování státních hranic České republiky \cite[\S~2(1)]{cz-1999-329}, nedává smysl.
+Tyto zákony tedy lze považovat za vzájemně rozporné.
+Situaci, kdy mladistvý nemá průkaz totožnosti, je možné řešit následovně:
+\begin{itemize}
+    \item zaznamená se, že se jedná o~mladistvého bez průkazu totožnosti,
+    \item zaznamená se průkaz totožnosti zákonného zástupce.
+\end{itemize}
+
+\subsection{Evidence cizinců}
+Specifickou a~velmi důležitou oblastí evidence hostů v~ubytovacích zařízeních je registrace cizinců.
+Povinnosti ubytovatelů v~této oblasti jsou primárně upraveny Zákonem o~pobytu cizinců na území České republiky a~o~změně některých zákonů, ve znění pozdějších předpisů \cite{cz-1999-326}.
+Tento zákon stanovuje ubytovatelům jednoznačné povinnosti týkající se evidence a~hlášení ubytovaných cizinců příslušným orgánům Policie České republiky.
+
+\vspace{8px} \noindent
+V~souvislosti s~tímto zákonem je nutné definovat následující pojmy:
+\begin{itemize}
+    \item \textbf{ubytovatel} \cite[\S~99(1)]{cz-1999-326}\,--\,každý, kdo poskytuje ubytování za úhradu nebo ubytovává více než 5 cizinců, s~výjimkou případu, kdy lze ubytované cizince a~ubytovatele považovat za osoby blízké,
+    \item \textbf{ubytování} \cite[\S~99(2)]{cz-1999-326}\,--\,vztah založený smlouvou o~ubytování, nájemní smlouvou, podnájemní smlouvou nebo smlouvou s~obdobným obsahem; ubytováním není poskytnutí přenocování v~noclehárně.
+\end{itemize}
+
+\vspace{8px} \noindent
+\begin{samepage}
+Ubytovatel je v~kontextu informačního systému povinen:
+\begin{itemize}
+    \item oznámit policii ubytování cizince,
+    \item vést domovní knihu a~na požádání policie ji předložit ke kontrole; při zahájení kontroly je povinen předložit domovní knihu obsahující údaje k~cizincům ubytovaným v~té době.
+\end{itemize}
+\end{samepage}
+
+\subsubsection*{Oznámení ubytování}
+Podle \cite[\S~102]{cz-1999-326} je ubytovatel povinen oznámit ubytování cizince do 3 pracovních dnů po jeho ubytování na příslušný útvar policie.
+Tuto povinnost může splnit 3 způsoby:
+\begin{enumerate}
+    \item předložením vyplněného přihlašovacího tiskopisu (obrázek \ref{fig:alien-registration}),
+    \item předložením vyplněného stejnopisu listinného dokumentu obsahujícího údaje v~rozsahu přihlašovacího tiskopisu (obrázek \ref{fig:alien-registration}),
+    \item prostřednictvím dálkového přístupu vyplněním elektronického formuláře s~využitím internetové aplikace v~rozsahu údajů vedených v~přihlašovacím tiskopisu.
+\end{enumerate}
+
+\label{sec:ubyport}
+Jde-li o~ubytovatele, který má ubytování jako předmět podnikatelské činnosti, oznamuje ubytování prostřednictvím dálkového přístupu \cite[\S~102(3)]{cz-1999-326}.
+Ten je umožněn pomocí webové aplikace Ubyport, která je provozována Službou cizinecké policie Policie České republiky.
+Internetová aplikace Ubyport umožňuje tři způsoby zasílání dat (v~rozsahu údajů přihlašovacího tiskopisu vyjma podpisu) \cite{www-ubyport-moznosti}:
+\begin{enumerate}
+    \item přímým vypisováním údajů cizince do formuláře aplikace Ubyport,
+    \item nahráním souboru ve formátu UNL\footnote{Popis formátu UNL viz \url{https://policie.gov.cz/soubor/ubyportpr3-pdf.aspx}.} s~požadovanými daty, který umožňuje exportovat SW provádějící evidenci,
+    \item automatizovaně webovou službou pomocí protokolu SOAP\footnote{Popis komunikačního protokolu viz \url{https://policie.gov.cz/clanek/informace-pro-vyvojare.aspx}.}.
+\end{enumerate}
+
+Vyplňování přihlašovacího tiskopisu (obrázek \ref{fig:alien-registration}) se řídí pokyny viz \cite{www-registrace-pokyny}.
+Cizinec musí být při jeho vyplňování součinný a~musí jej vlastnoručně podepsat \cite[\S~103(a)]{cz-1999-326}, přičemž podpis může být elektronický např. pomocí tabletu \cite[bod č. 2]{www-registrace-pokyny}.
+Odmítnutí osobního vyplnění a~podepsání, vyjma osob mladších 15 let \cite[\S~103(b)]{cz-1999-326}, je ubytovatel povinen nahlásit na místně příslušný útvar Cizinecké policie \cite[bod č. 3]{www-registrace-pokyny}.
+Nemá-li u~sebe cizinec svůj cestovní doklad a~není-li zapsán v~cestovním dokladu rodiče, v~případě osoby do 18 let věku, je ubytovatel povinen nahlásit na místně příslušný útvar Cizinecké policie \cite[bod č. 5]{www-registrace-pokyny}.
+
+V~případě nahlášení chybných údajů cizince se do rubriky poznámka uvádí \uv{PŘEDCHOZÍ OZNÁMENÍ OBSAHOVALO CHYBY} \cite[bod č. 7]{www-registrace-pokyny}.
+Pokud cizinec pobyt prodlouží, tato skutečnost se oznamuje novým záznamem, nikoliv úpravou předchozího \cite[r. č. 1.1]{www-registrace-pokyny}.
+
+Jméno a~příjmení cizince musí být vyplněno včetně diakritiky pouze písmeny latinské abecedy \cite[r. č. 1.2–1.3]{www-registrace-pokyny}.
+Chybí-li v~cestovním dokladu cizince den nebo i~měsíc narození, tyto údaje se nahrazují dvěma nulami (např. 00.00.2025).
+Není-li v~cestovním dokladu uvedeno státní občanství cizince, zapisuje se stát, který doklad vydal.
+
+Předloží-li cizinec průkaz povolení k~pobytu vydaný ČR, místo čísla cestovního dokladu se uvede text \uv{NONE} a~do poznámky se uvede \uv{POBYT} s~číslem tohoto povolení \cite[r. č. 6.2]{www-registrace-pokyny}.
+Pokud cizinec předkládá povolení k~pobytu, které vydal stát Schengenského prostoru, musí s~tímto dokladem předložit i~cestovní doklad; vyplňují se čísla obou dokladů s~tím, že číslo průkazu pobytu se vyplní do poznámky a~je prefixováno textem \uv{POBYT} a~sufixováno kódem státu, který průkaz vydal \cite[r. č. 6.3 a~10.4]{cz-1999-326}.
+
+V~případě, že cizinec předkládá potvrzení o~ohlášení ztráty nebo odcizení dokladu, místo čísla cestovního dokladu se uvede text \uv{NONE} a~do poznámky se uvede číslo jednací tohoto potvrzení \cite[r. č. 6.5 a~10.1]{www-registrace-pokyny}.
+Je-li cizinec mladší 18 let a~je uveden v~cestovním dokladu rodiče, místo čísla cestovního dokladu se uvede text \uv{NONE} a~do poznámky se uvede \uv{ČÍSLO DOKLADU RODIČE} s~číslem dokladu, kde je zapsán \cite[r. č. 6.7 a~10.5]{www-registrace-pokyny}.
+
+U~občanů států, které podléhají vízové povinnosti, je nutné vyplnit číslo víza společně s~kódem státu, které vízum udělilo \cite[r. č. 7.1–7.4]{www-registrace-pokyny}.
+Seznam těchto států je k~dispozici na webových stránkách Ministerstva zahraničních věcí České republiky \cite{www-mzcr-viza2} a~\cite{www-mzcr-viza1}.
+Je-li držitel osvobozen od vízové povinnosti proto, že cestovní doklad obsahuje biometriku, vyplní se text \uv{BIOMETRIKA} \cite[r. č. 7.6]{www-registrace-pokyny}.
+Předloží-li cizinec průkaz Povolení k~pobytu vydaný členským státem Schengenského prostoru, vyplní se text \uv{POBYT} \cite[r. č. 7.7]{www-registrace-pokyny}.
+
+Adresa trvalého bydliště v~zahraničí není zpravidla uvedena v~cestovním dokladu; cizinec je povinen poskytnout součinnost s~vyplněním tohoto údaje \cite[\S~103(b)]{cz-1999-326}.
+Eviduje se v~rozsahu stát, obec, ulice a~číslo popisné; nebo pouze některý z~těchto údajů, pokud nelze uvedené zjistit nebo vyplnit z~důvodu použití jiné abecedy než latinky.
+
+Poslední rubrikou v~přihlašovacím tiskopisu je účel pobytu, kam je možné vyplnit možnost z~číselníku Účel pobytu\footnote{Číselník dostupný na: \url{https://policie.gov.cz/soubor/rscp-pril-44-ubyport-prirucka-docx.aspx}.}.
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.5\linewidth]{alien-registration.pdf}
+    \caption{Přihlašovací lístek cizince\protect\footnotemark.}
+    \label{fig:alien-registration}
+\end{figure}
+\footnotetext{Dostupné z: \url{https://policie.gov.cz/soubor/2-prihl-listek-final-jeden-pdf.aspx} [cit. 27. října 2025].}
+
+\subsubsection*{Domovní kniha}
+Domovní kniha je dokument, do kterého ubytovatel zapisuje údaje v~rozsahu přihlašovacího tiskopisu.
+Za domovní knihu se pro účely tohoto zákona považuje též soubor listinných dokumentů podepsaných cizincem podle \cite[\S~103(b)]{cz-1999-326} obsahujících údaje v~rozsahu uvedeném ve větě první.
+Zápisy do domovní knihy musí být provedeny v~aktuálním čase, pravidelně, přehledně a~srozumitelně.
+Tyto zápisy musí být uspořádány postupně z~hlediska časového; to platí obdobně pro uspořádání listinných dokumentů nahrazujících domovní knihu.
+Domovní knihu ubytovatel uchovává po dobu 6 let od provedení posledního zápisu.
+Listinné dokumenty nahrazující domovní knihu je ubytovatel povinen uschovávat po dobu 6 let od ukončení ubytování cizince.
+
+\subsection{Zpracování osobních údajů}
+Všechny osobní údaje fyzických osob zpracovávané v~aplikaci jsou předmětem Nařízení Evropského parlamentu a~Rady (EU) 2016/679 ze dne 27.~dubna 2016 o~ochraně fyzických osob v~souvislosti se zpracováním osobních údajů a~o~volném pohybu těchto údajů \cite{eu-2016-679}, známého spíše pod zkratkou GDPR, a~Zákon o~zpracování osobních údajů \cite{cz-2019-110}, který je adaptačním zákonem GDPR s~účinností od 24.~4.~2019.
+Nařízení GDPR je přímo aplikovatelné v~ČR a~zákon č. 110/2019 Sb., jej doplňuje (tzv. adaptační zákon) zejména z~hlediska pravomocí Úřadu pro ochranu osobních údajů či vymezení věku pro udělení souhlasu.
+
+V~souvislosti s~tímto nařízením je v~kontextu turistického kempu nutné definovat následující pojmy \cite[Článek 4]{eu-2016-679}:
+\begin{itemize}
+    \item \textbf{subjekt}\,--\,fyzická osoba, kterou lze přímo či nepřímo identifikovat, zejména odkazem na určitý identifikátor
+    \item \textbf{osobní údaj}\,--\,veškeré informace o~subjektu, například jméno,
+    \item \textbf{zpracování osobních údajů}\,--\,jakákoliv operace nebo soubor operací s~osobními údaji jako je shromáždění, zaznamenání, uspořádání, strukturování, uložení, pozměnění, vyhledání, nahlédnutí, zpřístupnění, seřazení či zkombinování, výmaz nebo zničení,
+    \item \textbf{pseudonymizace}\,--\,zpracování osobních údajů tak, že již nemohou být přiřazeny konkrétnímu subjektu údajů bez použití dodatečných informací, pokud jsou tyto dodatečné informace uchovávány odděleně,
+    \item \textbf{evidence osobních údajů}\,--\,jakýkoliv strukturovaný soubor osobních údajů přístupných podle zvláštních kritérií, ať již je centralizovaný, decentralizovaný, nebo rozdělený podle určitých aspektů,
+    \item \textbf{správce}\,--\,fyzická nebo právnická osoba, orgán veřejné moci, agentura nebo jiný subjekt, který určuje účely a~prostředky zpracování osobních údajů; jsou-li účely a~prostředky tohoto zpracování určeny právem, může být tento správce určen nebo mohou být určena kritéria pro jeho určení,
+    \item \textbf{zpracovatel}\,--\,fyzická nebo právnická osoba, orgán veřejné moci, agentura nebo jiný subjekt, který zpracovává osobní údaje pro správce,
+    \item \textbf{třetí strana}\,--\,fyzická nebo právnická osoba, orgán veřejné moci, agentura nebo jiný subjekt, který není subjektem údajů, správcem, zpracovatelem ani osobou přímo podléhající ke zpracování osobních údajů,
+    \item \textbf{příjemce}\,--\,fyzická nebo právnická osoba, orgán veřejné moci, agentura nebo jiný subjekt, kterým jsou osobní údaje poskytnuty, ať už se jedná o~třetí stranu, či nikoli. Avšak orgány veřejné moci, které mohou získávat osobní údaje v~rámci zvláštního šetření, se za příjemce nepovažují; zpracování těchto osobních údajů těmito orgány veřejné moci musí být v~souladu s~použitelnými pravidly ochrany údajů pro dané účely zpracování,
+    \item \textbf{souhlas}\,--\,svobodný, konkrétní, informovaný a~jednoznačný projev vůle, kterým subjekt údajů dává prohlášením či jiným zjevným potvrzením své svolení ke zpracování svých osobních údajů,
+    \item \textbf{porušení zabezpečení osobních údajů}\,--\,událost, které vede k~náhodnému nebo protiprávnímu zničení, ztrátě, změně nebo neoprávněnému poskytnutí nebo zpřístupnění přenášených, uložených nebo jinak zpracovávaných osobních údajů.
+\end{itemize}
+
+\subsubsection*{Zpracování osobních údajů}
+\label{sec:gdpr-data-processing}
+Jakákoli operace zpracování osobních údajů, od pouhého shromáždění až po jejich výmaz, musí být v~souladu s~GDPR.
+Pro posouzení, zda je zpracování prováděno legálně, je nutné zkoumat dvě klíčové a~vzájemně neoddělitelné roviny, které jsou definovány především v~\cite[Článek 5]{eu-2016-679} a~\cite[Článek 6]{eu-2016-679}.
+První rovinu představují zásady zpracování, které definují kvalitativní požadavky na celý proces.
+Druhou rovinu tvoří právní základy zpracování, které stanovují taxativní výčet podmínek, za nichž je zpracování vůbec povoleno.
+
+Článek 5 GDPR formuluje soubor základních pravidel, za jejichž dodržování je zodpovědný správce.
+Tyto zásady představují základní stavební kameny celého systému ochrany dat a~mají normativní charakter pro veškeré zpracovatelské operace.
+Patří mezi ně:
+\begin{itemize}
+    \item \textbf{zákonnost, korektnost a~transparentnost}\,--\,zpracování musí mít právní základ, být spravedlivé a~subjekt údajů o~něm musí být srozumitelně informován,
+    \item \textbf{účelové omezení}\,--\,údaje smějí být shromažďovány jen pro určité, výslovně vyjádřené a~legitimní účely,
+    \item \textbf{minimalizace údajů}\,--\,zpracovávány smějí být jen údaje přiměřené, relevantní a~nezbytné pro daný účel,
+    \item \textbf{přesnost}\,--\,údaje musí být přesné a~v~případě potřeby aktualizované,
+    \item \textbf{omezení uložení}\,--\,údaje smějí být uloženy jen po dobu nezbytně nutnou pro daný účel,
+    \item \textbf{integrita a~důvěrnost}\,--\,údaje musí být technicky i~organizačně zabezpečeny proti zneužití, zničení nebo ztrátě.
+\end{itemize}
+
+Zatímco Článek 5 definuje, jak se má zpracovávat, Článek 6 odpovídá na otázku, zda je zpracování vůbec povoleno, přičemž oba články platí kumulativně pro zákonné zpracování.
+První zásada z~Článku 5 (zákonnost) je naplněna pouze tehdy, pokud je zpracování založeno alespoň na jednom z~následujících právních titulů (základů):
+\begin{itemize}
+    \item \textbf{souhlas}\,--\,subjekt údajů udělil svobodný, konkrétní, informovaný a~jednoznačný souhlas se zpracováním pro jeden či více konkrétních účelů
+    \item \textbf{plnění smlouvy}\,--\,zpracování je nezbytné pro splnění smlouvy, jejíž smluvní stranou je subjekt údajů, nebo pro provedení opatření přijatých před uzavřením smlouvy na žádost tohoto subjektu,
+    \item \textbf{právní povinnost}\,--\,zpracování je nezbytné pro splnění právní povinnosti, která se na správce vztahuje,
+    \item \textbf{oprávněný zájem}\,--\,zpracování je nezbytné pro účely oprávněných zájmů příslušného správce či třetí strany, pokud před těmito zájmy nemají přednost zájmy nebo základní práva a~svobody subjektu údajů vyžadujících ochranu osobních údajů,
+    \item a~další, které nejsou pro tuto práci relevantní.
+\end{itemize}
+
+\subsubsection*{Podmínky vyjádření souhlasu}
+Jeden ze zákonných důvodů pro zpracování údajů\,--\,souhlas subjektu\,--\,specifikuje \cite[Článek~7]{eu-2016-679} kogentní podmínky, které musí být splněny, aby byl takový souhlas považován za platný.
+Vzhledem k~ochraně osobních údajů subjektu klade nařízení na souhlas vysoké nároky pro správce, aby byla zajištěna skutečná svoboda a~informovanost jeho poskytnutí.
+
+Pokud se správce rozhodne opřít své zpracování o~souhlas, musí být schopen splnit následující požadavky:
+\begin{itemize}
+    \item \textbf{prokazatelnost}\,--\,správce musí být schopen doložit, že subjekt údajů udělil souhlas se zpracováním svých osobních údajů,
+    \item \textbf{srozumitelnost a~oddělitelnost}\,--\,žádost musí být předložena způsobem, který je od jiných skutečností jasně odlišitelný a~je srozumitelný a~snadno přístupný,
+    \item \textbf{odvolání souhlasu}\,--\,subjekt údajů má právo svůj souhlas kdykoli odvolat, přičemž není dotčena zákonnost zpracování vycházejícího ze souhlasu, který byl dán před jeho odvoláním; odvolání souhlasu musí být stejně snadné jako jeho poskytnutí,
+    \item \textbf{svoboda a~nepodmíněnost}\,--\,zohledňuje se skutečnost, zda je mimo jiné plnění smlouvy, včetně poskytnutí služby, podmíněno souhlasem se zpracováním osobních údajů, které není pro plnění dané smlouvy nutné.
+\end{itemize}
+
+\subsubsection*{Soubory cookies}
+\label{sec:cookies}
+Specifickou kategorií osobních údajů jsou soubory cookies\,--\,malé textové soubory ukládané webovou aplikací do prohlížeče uživatele.
+Pokud cookies obsahují identifikátory umožňující přímou nebo nepřímou identifikaci fyzické osoby (typicky IP~adresa nebo identifikátor prohlížeče), jsou osobním údajem ve smyslu GDPR a~vztahují se na ně
+všechny dříve uvedené zásady zpracování.
+Vedle GDPR je jejich užívání upraveno také \cite[\S~89 (3)]{cz-2005-127}, který vyžaduje předchozí prokazatelný souhlas s~jejich ukládáním, s~výjimkou cookies technicky nezbytných pro poskytnutí požadované služby.
+Právě tato úprava je důvodem, proč se na webových stránkách běžně setkáváme s~tzv. cookie lištami\,--\,nástrojem, jímž provozovatel získává a~eviduje souhlas uživatele před načtením analytických či marketingových skriptů.
+
+\subsection{Práva subjektu údajů}
+Práva subjektů osobních údajů jsou zásadním pilířem ochrany osobních údajů podle GDPR.
+Umožňují jednotlivcům kontrolovat, jak správci nakládají s~jejich daty, a~vyvažují slabší postavení subjektu vůči správci.
+GDPR tato práva posiluje a~zavádí nová.
+Tyto definice se nachází v~\cite[Kapitola III]{eu-2016-679}.
+Subjekty údajů proto mají řadu mechanizmů, jak ovlivnit zpracování svých dat.
+Mezi tato práva patří:
+\begin{itemize}
+    \item \textbf{právo na informace}\,--\,subjekt má právo, aby ho správce při získávání údajů informoval o~způsobu zpracování; informační povinnost leží na správci (např. prostřednictvím zásad ochrany osobních údajů),
+    \item \textbf{právo na přístup}\,--\,subjekt může požádat, zda správce zpracovává jeho osobní údaje, a~získat jejich kopii či detailní výpis včetně plánované doby uložení údajů,
+    \item \textbf{právo na opravu}\,--\,subjekt může požádat o~opravu nepřesných nebo doplnění neúplných osobních údajů, které se ho týkají, přičemž správce má povinnost upozornit všechny příjemce těchto dat,
+    \item \textbf{právo na výmaz}\,--\,subjekt může požadovat vymazání svých osobních údajů, pokud je splněna některá ze zákonných podmínek, avšak toto právo není absolutní,
+    \item \textbf{právo na omezení zpracování}\,--\,subjekt může v~určitých situacích požádat, aby správce zpracování osobních údajů omezil (tj. údaje pouze uchovával, nikoli dál zpracovával),
+    \item \textbf{právo na přenositelnost}\,--\,může získat osobní údaje, které poskytl správci (např. vyplněním formuláře), ve strukturovaném, běžně používaném a~strojově čitelném formátu, a~přenést je k~jinému správci,
+    \item \textbf{právo vznést námitku}\,--\,subjekt může kdykoli (včetně budoucnosti) vznést námitku proti zpracování svých osobních údajů,
+    \item \textbf{právo podat stížnost u~dozorového úřadu}\,--\,subjekt může podat podnět či stížnost Úřadu pro ochranu osobních údajů (ÚOOÚ), jestliže se domnívá, že byla porušena jeho práva,
+\end{itemize}
+
+\subsection{Povinnosti správce a~zpracovatele}
+Obecné nařízení o~ochraně osobních údajů nestanovuje pouze práva subjektů údajů, ale v~komplementární rovině definuje rozsáhlý soubor povinností pro ty, kdo s~daty nakládají\,--\,tedy pro správce a~zpracovatele.
+Cílem těchto povinností je zajistit praktickou implementaci zásad zpracování a~vynutitelnou ochranu dat.
+
+Jako součást naplnění principu odpovědnosti jsou správci (a~v~definovaném rozsahu i~zpracovatelé) povinni vést interní záznamy o~činnostech zpracování.
+Tato dokumentace mapuje, jaké údaje organizace zpracovává, za jakými účely, na základě jakých právních titulů, komu je předává a~jak dlouho je uchovává.
+Tyto záznamy musí být na vyžádání předloženy dozorovému úřadu.
+
+\paragraph{Zabezpečení zpracování \cite[Článek 32--34]{eu-2016-679}}
+Správce i~zpracovatel je povinen zavést vhodná technická a~organizační opatření, aby zajistil úroveň zabezpečení odpovídající danému riziku s~přihlédnutím ke stavu techniky, nákladům na provedení, povaze, rozsahu, kontextu a~účelům zpracování dat.
+Nařízení demonstrativně uvádí opatření jako:
+\begin{itemize}
+    \item pseudonymizace a~šifrování osobních údajů,
+    \item zajistit trvalou důvěrnost, integritu, dostupnost a~odolnost systémů,
+    \item schopnost včas obnovit dostupnost údajů v~případě incidentu,
+    \item procesy pravidelného testování a~hodnocení účinnosti zavedených opatření.
+\end{itemize}
+
+Jakékoli porušení zabezpečení osobních údajů správce bez zbytečného odkladu a~pokud možno do 72 hodin od okamžiku, kdy se o~něm dozvěděl, ohlásí příslušnému dozorovému úřadu, ledaže je nepravděpodobné, že by toto porušení mělo za následek riziko pro práva a~svobody fyzických osob.
+Tato povinnost platí i~vůči subjektu údajů, není-li splněna některá z~podmínek, která toto oznámení ruší.
+
+
+\subsection{Nařízení EU 2024/1028}
+Nařízení Evropského parlamentu a~Rady (EU) 2024/1028~\cite{eu-2024-1028} ze dne 11.~dubna~2024 zavádí jednotná pravidla pro sběr a~sdílení údajů o~krátkodobých pronájmech ubytování napříč členskými státy Evropské unie.
+Hlavním cílem tohoto právního předpisu je posílit transparentnost v~oblasti krátkodobého ubytování a~umožnit veřejným orgánům získávat spolehlivé, porovnatelné a~aktuální informace o~poskytování těchto služeb.
+Tyto informace mají sloužit především ke sledování dopadů krátkodobého ubytování na trh s~bydlením, pro účely statistiky cestovního ruchu, výběru daní a~poplatků z~pobytu či pro zajištění souladu s~místními předpisy.
+
+Nařízení, které vstoupilo v~platnost dne 19.~května~2024, bude pro členské státy plně závazné a~použitelné od 20.~května~2026.
+Jakožto nařízení EU má tento právní akt přímou účinnost ve všech členských státech, nevyžaduje tedy transpozici do národního práva.
+Pro jeho praktické uplatnění však musí členské státy vytvořit odpovídající implementační rámec a~informační systémy, které zajistí výměnu údajů s~evropským registrem spravovaným Komisí prostřednictvím Eurostatu.
+
+Nařízení rozlišuje dvě kategorie povinných subjektů\,--\,poskytovatele krátkodobého ubytování a~digitální zprostředkovatelské platformy, které tyto služby inzerují.
+Poskytovatelé mají povinnost registrovat se v~národním registru a~uvádět přidělené registrační číslo u~každé nabídky ubytování.
+Zprostředkující platformy, jako jsou například Airbnb, Booking.com či Expedia, musí pravidelně poskytovat členským státům údaje o~počtu přenocování, o~umístění ubytovacích zařízení a~o~jejich provozovatelích.
+Tato data se následně předávají Evropské komisi prostřednictvím jednotného digitálního rozhraní.
+Cílem je vytvořit jednotný evropský systém, který umožní efektivní kontrolu, tvorbu statistik a~férové konkurenční prostředí mezi tradičními ubytovacími zařízeními a~pronajímateli.
+
+\subsubsection*{Implementace v~České republice}
+\label{sec:e-turista}
+V~České republice má být uvedené nařízení aplikováno prostřednictvím vládního návrhu zákona o~krátkodobém ubytování~\cite{cz-gov-turism}.
+Tento návrh zákona, předložený Ministerstvem pro místní rozvoj, byl veden jako sněmovní tisk č.~761\footnote{Dostupné z: \url{https://www.psp.cz/sqw/historie.sqw?o=9&t=761}, dne 9.~11.~2025.}.
+Ačkoliv byl návrh doporučen k~přijetí Výborem pro veřejnou správu a~regionální rozvoj, nebyl schválen, protože jeho projednávání v~rámci programu 142.~schůze Poslanecké sněmovny bylo přerušeno\footnote{Dostupné z: \url{https://www.psp.cz/sqw/ischuze.sqw?o=9&s=142}, dne 9.~11.~2025.}.
+Očekává se však, že nová vláda České republiky předloží obdobný návrh, neboť na jeho základě již byla uzavřena smlouva o~vývoji systému \textbf{e-Turista} se společností CS-PROJECT spol. s~r.~o.\footnote{Dostupné z: \url{https://smlouvy.gov.cz/smlouva/soubor/40447916/Smlouva_final_Sign\%20CSP.pdf?backlink=0pmm2}, dne 9.~11.~2025.} s~termínem dokončení do 31.~května~2026.
+
+\subsubsection*{Rozdíly mezi nařízením EU a~českou implementací}
+Zásadním rozdílem mezi evropským rámcem a~českou implementací je rozsah regulace.
+Nařízení se vztahuje na poskytovatele, kteří své služby nabízejí prostřednictvím online platforem (Airbnb, Booking, Expedia atp.).
+Z~působnosti jsou vyloučeny hotely a~podobná zařízení (skupiny 55.1 a~55.2 statistické klasifikace ekonomických činností \texttt{NACE Rev.~2}\footnote{\texttt{NACE Rev.~2} (\textit{Nomenclature statistique desactivités économiques dans la Communauté européenne}, rev.~2) je standardní klasifikace ekonomických činností používaná v~EU; byla zavedena \href{https://eur-lex.europa.eu/legal-content/CS/ALL/?uri=CELEX:02006R1893-20250101}{Nařízením Evropského Parlamentu a~Rady č.~1893/2006}. Český národní ekvivalent \texttt{CZ-NACE} je s~ní plně harmonizován a~spravuje jej Český statistický úřad.}) a~kempy a~parky pro karavany a~obytné přívěsy
+(skupina 55.3 téže klasifikace) \cite[čl.~2 odst.~2 písm.~a) a~b)]{eu-2024-1028}.
+Naproti tomu český návrh zákona uplatňuje povinnost registrace na všechna ubytovací zařízení bez ohledu na způsob zprostředkování, tedy i~na ta, která nejsou nabízena online.
+Tento rozšířený přístup vychází z~koncepce tzv. vícenásobného využití registru, jehož cílem je, aby podnikatel jedním zápisem splnil více povinností vůči různým orgánům veřejné správy.
+
+Registr e-Turista tak nebude sloužit pouze k~naplnění požadavků vyplývajících z~nařízení EU, ale i~k~dalším účelům\,--\,například k~evidenci ubytovaných cizinců, správě místních poplatků z~pobytu a~poskytování údajů Českému statistickému úřadu \cite[A 1]{cz-gov-turism}, přičemž rozsah evidovaných údajů zůstane stejný jako dosud \cite[A 9]{cz-gov-turism}.
+Z~důvodové zprávy k~návrhu zákona vyplývá, že hlavním motivem je získat ucelený přehled o~poskytovatelích ubytování, zlepšit výběr poplatků a~současně zefektivnit komunikaci mezi podnikateli a~veřejnou správou.
+
+\subsubsection*{Systém e-Turista}
+Klíčovým prvkem české implementace je zřízení elektronického registru ubytovaných osob.
+Tento systém bude představovat jednotné digitální kontaktní místo pro příjem a~předávání údajů mezi poskytovateli ubytování, platformami a~veřejnou správou.
+Registr bude propojen s~evropským systémem pro výměnu dat o~krátkodobém ubytování, čímž bude zajištěna interoperabilita a~automatizované sdílení informací s~orgány Evropské unie.
+Každému zařízení bude při registraci přiděleno jedinečné registrační číslo, které musí být uvedeno u~každé nabídky ubytování, a~to i~v~případě zveřejnění prostřednictvím digitální platformy.
+
+Tento přístup má přinést zjednodušení administrativy, odstranění duplicit v~hlášení údajů a~současně posílit dohled nad poskytováním ubytovacích služeb.
+Provozovatelé, kteří nabízejí krátkodobé ubytování prostřednictvím internetu, tak budou povinně zapsáni v~registru e-Turista a~pravidelně sdílet údaje o~ubytovaných.
+Zároveň se však očekává, že zavedení systému povede ke zvýšení administrativních nároků zejména u~menších provozovatelů, kteří doposud podobnou evidenci nevedli.
+
+
+\section{Doklady pro ubytované hosty}
+\label{sec:01-documents}
+Důležitou změnou ohledně redefinice povinnosti poskytovatelů ubytování při vydávání dokladů hostům je zrušení Zákona č. 112/2016 Sb., o~evidenci tržeb (EET) s~účinností od 1.~ledna 2023.
+Zrušení EET mělo zásadní praktický dopad, neboť zanikla plošná a~automatická povinnost evidovat přijaté tržby a~vystavovat hostům doklad se specifickými prvky při každé platbě.
+Tímto krokem se plná odpovědnost za řádné dokladování plateb přesunula zpět na tři základní právní pilíře, které existovaly i~souběžně s~EET, ale byly v~praxi často překryty právě dominantní povinností evidence tržeb.
+
+Po zrušení EET provázanost s~jinými právními náležitostmi zanikla.
+Poskytovatelé služeb se nyní musí aktivně orientovat v~požadavcích tří samostatných zákonů, které mají odlišné cíle, subjekty a~spouštěcí mechanismy:
+\begin{enumerate}
+    \item \textbf{Zákon} č. 634/1992 Sb., \textbf{o~ochraně spotřebitele}\,--\,upravuje právo hosta (spotřebitele) vyžádat si doklad pro účely identifikace nákupu a~případné reklamace,
+    \item \textbf{Zákon} č. 563/1991 Sb., \textbf{o~účetnictví}\,--\,definuje interní povinnost poskytovatele (pokud je účetní jednotkou) vytvořit průkazný záznam o~každé transakci pro své vlastní účetnictví a
+    \item \textbf{Zákon} č. 235/2004 Sb., \textbf{o~dani z~přidané hodnoty}\,--\,stanovuje daňové povinnosti poskytovatele (pokud je plátcem DPH) při vystavování daňových dokladů, zejména pro jiné podnikatele (B2B) nebo u~transakcí nad stanovený limit.
+\end{enumerate}
+
+\subsection{Doklad z~pohledu Zákona o~ochraně spotřebitele}
+\label{sec:ochrana-spotrebitele}
+Zákon o~ochraně spotřebitele \cite{cz-1992-634} se primárně zaměřuje na vztah mezi poskytovatelem a~hostem v~roli spotřebitele (B2C).
+Klíčové ustanovení pro vydávání dokladů je \S~16.   
+Toto ustanovení zakládá povinnost poskytovatele vydat doklad o~zakoupení služby výhradně \uv{na žádost spotřebitele}.
+Na rozdíl od zrušeného zákona o~EET zde neexistuje žádná automatická povinnost vydat doklad ke každé platbě.
+Pokud si spotřebitel o~doklad aktivně nepožádá, poskytovatel se jeho nevydáním nedopouští porušení tohoto zákona.
+Poskytovatel však musí být technicky i~personálně schopen tento doklad na vyžádání okamžitě vystavit.
+Odmítnutí vydání dokladu na žádost spotřebitele je považováno za přestupek.
+
+Pokud spotřebitel o~doklad požádá, musí tento doklad dle stejného paragrafu obsahovat specifické náležitosti:
+\begin{itemize}
+    \item datum poskytnutí služby,
+    \item o~jakou službu se jedná,
+    \item za jakou cenu byla služba poskytnuta,
+    \item identifikační údaje prodávajícího (jméno a~příjmení nebo název / obchodní firma a~IČO).
+\end{itemize}
+
+Smysl těchto náležitostí úzce souvisí s~dalšími ustanoveními, zejména s~\S~19, který upravuje právo na reklamaci služby.
+Doklad slouží spotřebiteli jako primární důkazní prostředek pro případné uplatnění reklamace.   
+Z~tohoto důvodu musí být výklad náležitostí v~souladu s~tímto účelem.
+Například údaj, o~jakou službu se jedná, by neměl být pouze obecný, ale měl by poskytovat dostatečnou specifikaci, aby bylo zřejmé, co bylo předmětem smlouvy a~co může být předmětem reklamace.
+
+\subsection{Zákon o~účetnictví}
+Zákon o~účetnictví \cite{cz-1991-563} nestanovuje primárně povinnost vydat doklad hostovi, nýbrž interní povinnost poskytovatele vytvořit o~každé transakci \uv{účetní doklad} pro potřeby vedení vlastního účetnictví.
+
+Tato povinnost se nevztahuje na všechny poskytovatele, ale pouze na ty, kteří jsou definováni jako \uv{účetní jednotky}.
+Dle \S~1 a~\S~1a tohoto zákona jsou účetními jednotkami zejména:
+\begin{itemize}
+    \item právnické osoby, které mají sídlo na území České republiky,
+    \item zahraniční právnické osoby, pokud v~ČR podnikají,
+    \item fyzické osoby zapsané v~obchodním rejstříku,
+    \item ostatní podnikající fyzické osoby s~obratem vyšším než 25 milionů Kč za bezprostředně předcházející rok,
+    \item ostatní fyzické osoby, které vedou účetnictví dobrovolně.
+\end{itemize}
+Většina profesionálních ubytovacích zařízení (mimo drobné ubytovatele vedoucí pouze daňovou evidenci) tedy spadá do kategorie účetní jednotky a~musí plnit povinnosti ZoÚ.
+
+Každá účetní jednotka je povinna vyhotovovat účetní doklady bez zbytečného odkladu po zjištění skutečností, které se jimi zachycují.
+Cílem je zajistit průkaznost účetnictví.
+Náležitosti interního účetního dokladu definuje \S~11:
+\begin{itemize}
+    \item označení účetního dokladu,
+    \item obsah účetního případu a~jeho účastníky v~případě, že se jedná o~účetní jednotku,
+    \item peněžní částku nebo informaci o~ceně za měrnou jednotku a~vyjádření množství,
+    \item okamžik vyhotovení účetního dokladu,
+    \item okamžik uskutečnění účetního případu, není-li shodný s~okamžikem vyhotovení účetního dokladu,
+    \item podpisový záznam osoby odpovědné za účetní případ a~podpisový záznam osoby odpovědné za jeho zaúčtování.
+\end{itemize}
+V~moderním recepčním provozu je klíčový výklad podpisového záznamu.
+Nejedná se nutně o~fyzický podpis na papírovém dokladu.
+V~§ 33a odst. 4 je podpisový záznam definován jako účetní záznam, jehož obsahem je vlastnoruční podpis, uznávaný elektronický podpis nebo obdobný průkazný účetní záznam v~technické formě.
+Z~toho vyplývá, že tímto \uv{obdobným průkazným záznamem} jsou typicky unikátní přihlašovací údaje, jejichž vlastník transakci do systému zadal a~přijal platbu.
+Pro splnění požadavku je tedy nezbytné, aby interní systém vedl nezpochybnitelný auditní záznam prokazující, který konkrétní autorizovaný zaměstnanec transakci provedl.
+Používání sdílených přihlašovacích údajů činí účetnictví neprůkazným v~případě, že se nevede v~papírové podobě.
+
+\subsection{Zákon o~dani z~přidané hodnoty}
+Povinnosti stanovené Zákonem o~dani z~přidané hodnoty \cite{cz-2004-235} se vztahují výhradně na poskytovatele, kteří jsou registrováni jako \uv{plátci DPH}.
+Poskytovatelé, kteří nejsou plátci DPH, povinnosti tohoto zákona při vystavování dokladů neřeší (a~na svých dokladech nesmí uvádět údaje o~DPH).
+
+Zákon zakládá povinnost vystavit daňový doklad především ve dvou situacích, které je nutné rozlišovat.
+V~případě poskytnutí služby právnické osobě nebo osobě povinné k~dani (B2B) je plátce DPH povinen vystavit daňový doklad.
+Pokud se služba poskytla spotřebiteli, není to pro plátce DPH povinností, pokud si o~něj host nezažádá, ale i~tak je doporučeno jej vystavovat.
+
+Zákon dále dělí daňové doklady podle jejich obsahu a~finančního limitu na dvě základní kategorie: běžné a~zjednodušené.
+
+\subsubsection{Náležitosti běžného daňového dokladu}
+Daňový doklad je písemnost v~listinné nebo elektronické podobě, v~případě, že s~tím odběratel souhlasí, která obsahuje následující náležitosti.
+\begin{itemize}
+    \item identifikace dodavatele: název, sídlo, DIČ,
+    \item identifikace odběratele (host/firma): název, sídlo, DIČ (v~případě, že mu bylo přiděleno),
+    \item evidenční číslo dokladu,
+    \item rozsah a~předmět plnění,
+    \item datum vystavení daňového dokladu,
+    \item datum uskutečnění zdanitelného plnění nebo datum přijetí úplaty,
+    \item rozsah a~druh dodávané služby,
+    \item základ daně,
+    \item sazba daně, viz sekce \ref{sec:sazba-dane},
+    \item výše daně v~české měně,
+    \item celková částka k~úhradě,
+\end{itemize}
+
+\subsubsection{Náležitosti zjednodušeného daňového dokladu}
+Daňový doklad lze vystavit jako zjednodušený daňový doklad, pokud celková částka za plnění na daňovém dokladu není vyšší než 10000 Kč.
+Další omezení, které nejsou relevantní, viz \cite[\S~30 2]{cz-2004-235}.
+Zjednodušený daňový doklad pak nemusí obsahovat následující v~porovnání s~běžným daňovým dokladem:
+\begin{itemize}
+    \item označení osoby, pro kterou se plnění uskutečňuje,
+    \item jednotkovou cenu bez daně,
+    \item základ daně,
+    \item výši daně.
+\end{itemize}
+
+Ostatní údaje z~běžného daňového dokladu se na zjednodušeném dokladu musí nacházet.
+Pokrývá tak všechny požadavky dokladu podle Zákona o~ochraně spotřebitele, viz sekce \ref{sec:ochrana-spotrebitele}.
+
+\subsubsection{Náležitosti opravného daňového dokladu}
+V~nepředvídatelném provozu turistického kempu představují opravné daňové doklady, v~pra-xi běžně označované jako dobropisy nebo vrubopisy, nezbytný nástroj pro zajištění souladu s~\cite[\S~42]{cz-2004-235}.
+Dobropisy, též laicky označované jako stornovací doklady, jsou využívané při snížení základu zaúčtované daně z~přidané hodnoty a~samotné daně, vrubopisy se naopak využívají při zvýšení zaúčtovaného
+základu daně z~přidané hodnoty a~samotné daně.
+Vzhledem k~charakteru ubytovacích služeb, kde k~dodatečnému navyšování ceny po uzavření vyúčtování nedochází, se v~této sekci zaměřuji pouze na problematiku dobropisů.
+Ty je potřeba vystavit například v~případě, kdy host pobyt zkrátí a~poskytovatel služby musí tuto skutečnost reflektovat pro dodržení provozních podmínek společnosti.
+Z~hlediska návrhu informačního systému je tedy klíčové, aby proces vystavení dobropisu nebyl pouhou izolovanou operací, ale aby byl v~databázi pevně svázán s~původním daňovým dokladem, čímž je zajištěna jednoznačná identifikace opravovaného plnění.
+Automatizace tohoto úkonu v~rámci systému minimalizuje riziko lidské chyby při manuálním přepočtu nevyčerpaných služeb a~garantuje, že výsledné exporty pro účetní software budou odpovídat skutečnému stavu pokladny a~bankovních účtů.
+Správně implementovaný mechanismus opravných dokladů je tak nezbytnou podmínkou pro dosažení plné prokazatelnosti finančních toků a~integrity dat při případné kontrole ze strany správce daně.
+
+Opravný daňový doklad musí obsahovat následující informace \cite[\S~45 1]{cz-2004-235}:
+\begin{itemize}
+    \item označení osoby, která uskutečňuje plnění, včetně daňového identifikačního čísla,
+    \item označení osoby, pro kterou se uskutečňuje plnění, včetně daňového identifikačního čísla,
+    \item evidenční číslo původního a~opravného daňového dokladu,
+    \item důvod opravy,
+    \item rozdíl mezi opraveným a~původním základem daně,
+    \item rozdíl mezi opravenou a~původní daní,
+    \item rozdíl mezi opravenou a~původní částkou, kterou osoba, která plnění uskutečňuje, získala nebo má získat za uskutečňované plnění celkem,
+    \item datum, kdy nastaly skutečnosti rozhodné pro provedení opravy základu daně.
+\end{itemize}
+Pokud byl původní daňový doklad vystaven jako zjednodušený daňový doklad a~osoba, pro kterou se plnění uskutečnilo, není plátci dostatečně známa, nemusí opravný daňový doklad obsahovat označení osoby, pro kterou se uskutečňuje plnění \cite[\S~45 2]{cz-2004-235}.
+
+\subsubsection{Sazby DPH}
+\label{sec:sazba-dane}
+Správná klasifikace poskytovaných služeb a~zboží do příslušných sazeb daně z~přidané hodnoty je klíčovým předpokladem pro správnou evidenci a~možnost ušetření výdajů provozovateli.
+V~rámci české legislativy se dle \cite[\S~47]{cz-2004-235} uplatňuje základní sazba daně, která činí 21~\%, a~jedna snížená sazba ve výši 12~\%.
+Pro provozovatele turistických kempů je stěžejní především správná aplikace snížené sazby na ubytovací služby, které jsou specifikovány \cite[příloha č. 2]{cz-2004-235}.
+V~ostatních případech je použita základní sazba daně.
+
+Vedle zdanitelných plnění se v~rámci správy ubytovacího zařízení vyskytují i~položky, které jsou od daně z~přidané hodnoty osvobozeny, což v~praxi znamená, že k~základní ceně plnění není připočítávána žádná sazba daně.
+Dle \cite[\S~51 a~\S~63]{cz-2004-235} je nutné striktně rozlišovat mezi osvobozením bez nároku na odpočet daně, které se může týkat například specifických vzdělávacích či sociálních aktivit kempu, a~osvobozením s~nárokem na odpočet daně, využívaným typicky při dodání zboží či služeb do zahraničí.
+
+Zásadním prvkem je však korektní odlišení plnění osvobozených od plnění, která nejsou předmětem daně, což je typicky případ místních poplatků z~pobytu, viz sekce \ref{sec:poplatky}.
+Tento poplatek není předmětem daně ve smyslu \cite[\S~2]{cz-2004-235}, neboť ubytovatel jej nezískává jako úplatu za poskytnutou službu, ale figuruje pouze jako prostředník mezi hostem a~obcí.
+Z~hlediska stanovení základu daně se jedná o~tzv. přechodnou položku dle \cite[\S~36 odst.~11]{cz-2004-235}, kterou plátce obdrží od jiné osoby na úhradu výdajů vynaložených jménem a~na účet této jiné osoby.
+Zatímco u~osvobozených plnění vyžaduje legislativa uvedení odkazu na příslušné zákonné ustanovení přímo na daňovém dokladu, u~poplatků stojících mimo režim DPH musí systém zajistit, aby tyto částky nevstupovaly do výpočtu daňové povinnosti a~byly v~evidenci i~na finálním dokladu vedeny odděleně.
+
+\section{Zpravodajská povinnost}
+\label{sec:01-reports}
+Zákon o~státní statistické službě \cite{cz-1995-89} představuje základní právní rámec pro sběr, zpracování a~využívání statistických údajů v~České republice.
+Cílem tohoto zákona je zajistit, aby stát disponoval objektivními a~srovnatelnými daty o~ekonomických, sociálních, demografických a~dalších procesech probíhajících ve společnosti.
+Jedním z~klíčových nástrojů pro získávání těchto informací je tzv. zpravodajská povinnost, která ukládá vybraným subjektům povinnost poskytovat údaje pro statistická zjišťování prováděná orgány státní statistické služby.
+
+Podle § 10 zákona jsou zpravodajskou jednotkou právnické a~fyzické osoby, které jsou povinny poskytovat údaje stanovené ve statistických zjišťováních.
+Tyto subjekty jsou vymezeny podle příslušného programu statistických zjišťování, který každoročně vydává v~součinnosti s~ministerstvy a~jinými správními úřady s~formou nařízení \cite[\S~10]{cz-1995-89}.
+Pro oblast cestovního ruchu a~ubytovacích služeb jsou mezi zpravodajské jednotky zařazeni provozovatelé hromadných ubytovacích zařízení.
+Tito provozovatelé mají povinnost předávat statistické údaje o~své činnosti Českému statistickému úřadu (ČSÚ).
+Například pro rok 2026 se jedná o~měsíční hlášení v~rozsahu formuláře \texttt{CR 1--12} \cite{cz-2025-445}.
+Samotná vyhláška zmiňuje možnost plnění statistické povinnosti pomocí portálu e-Turista, viz sekce \ref{sec:e-turista}.
+
+Účelem statistického zjišťování v~oblasti ubytovacích zařízení je získat přehled o~struktuře, kapacitách a~využití ubytovacích zařízení, a~také o~pohybu a~složení ubytovaných hostů.
+Tyto údaje jsou nezbytné pro analýzu vývoje cestovního ruchu, pro potřeby státní správy, regionální politiky, tvorbu hospodářských strategií a~zajištění bezpečnosti.
+Provozovatelé kempu jsou povinni poskytovat zejména tyto údaje\footnote{Dostupné z: \url{https://apl.czso.cz/pll/vykwww/vyk1117?xid_respondenti_interakt=2017452&xid_setreni=2722}, dne 9. 11. 2025.}:
+\begin{itemize}
+    \item počet ubytovaných hostů podle státní příslušnosti,
+    \item počet přenocování, 
+    \item počet provozovaných lůžek a~kapacitu zařízení,
+    \item dobu provozu a~místo působnosti zařízení.
+\end{itemize}
+
+\section{Kybernetická bezpečnost a~odolnost}
+\label{sec:01-security}
+S~účinností od 1. listopadu 2025 vstupuje v~platnost nový \uv{Zákon o~kybernetické bezpečnosti} \cite{cz-2025-264}.
+Tento předpis, který do českého práva přenáší \uv{Směrnici Evropského parlamentu a~Rady (EU) 2022/2555}\footnote{Dostupné z: \url{https://eur-lex.europa.eu/legal-content/CS/ALL/?uri=CELEX:32022L2555}.} známou pod označením \texttt{NIS2}, zásadně mění pravidla kybernetické bezpečnosti a~rozšiřuje okruh povinných subjektů z~několika stovek na tisíce organizací.
+Klíčovou změnou je, že se regulace přesouvá i~na soukromé společnosti v~řadě odvětví, která dosud regulována nebyla, a~zavádí přísná bezpečnostní opatření, povinnosti hlášení incidentů a~vysoké sankce vázané na obrat firmy.
+Povinnosti se navíc nově explicitně zaměřují i~na osobní odpovědnost vrcholového vedení.  
+
+Zákon se však nevztahuje na všechny podniky plošně, ale pouze na definovaný okruh tzv. \uv{poskytovatelů regulovaných služeb}.
+Každá organizace si musí sama vyhodnotit, zda se má zaregistrovat jako poskytovatel regulované služby na základě následujících 2 hlavních kroků.
+Prvním je ověření, zda služba, kterou podnik poskytuje, spadá do seznamu regulovaných služeb definovaných v~prováděcí \uv{Vyhlášce č. 408/2025 Sb.}\footnote{Dostupné z: \url{https://www.zakonyprolidi.cz/cs/2025-408}.}.
+Druhým krokem je posouzení velikosti podniku, přičemž regulace se ve většině případů vztahuje až na střední a~velké podniky.   
+
+Pro provozovatele turistického kempu je klíčové vyhodnocení, zda jeho online rezervační systém spadá do některé z~regulovaných kategorií.
+Seznam regulovaných služeb je velmi specifický a~zaměřuje se na kritické sektory (energetika, zdravotnictví, doprava), digitální infrastrukturu (datová centra, cloudové služby) a~specificky definované digitální služby.
+Pro rezervační systém ubytování je tedy relevantní kategorie \uv{poskytovatelé digitálních služeb}, která však nereguluje běžné e-shopy (tedy prodej vlastních služeb či zboží), ale pouze specifické platformy, jako jsou \uv{online tržiště} (platformy zprostředkovávající prodej třetích stran), internetové vyhledávače a~platformy sociálních sítí.
+Online rezervační systém kempu, který prodává vlastní ubytovací kapacity, není \uv{online tržištěm} a~odvětví ubytovacích služeb není v~seznamu regulovaných služeb explicitně uvedeno.   
+
+Pokud by výklad zákona v~budoucnu směřoval k~širší definici, druhý krok posouzení, velikost podniku, poskytuje pro většinu kempů jasnou výjimku.
+Zákon o~kybernetické bezpečnosti se obecně nevztahuje na mikropodniky a~malé podniky.
+Dle evropské definice používané zákonem je malý podnik ten, který má méně než 50 zaměstnanců a~zároveň roční obrat či bilanční sumu roční rozvahy do 10 milionů EUR.
+Standardní turistický kemp tato kritéria s~vysokou pravděpodobností splňuje, a~proto by se na něj regulace nevztahovala.
+
+Na základě analýzy dostupných informací o~Zákonu č. 264/2025 Sb., a~jeho prováděcích vyhlášek  lze konstatovat, že provoz vlastního online rezervačního systému kempu nespadá do definice regulované služby \uv{online tržiště}.   
+Sektor ubytovacích služeb není v~seznamu regulovaných služeb ve Vyhlášce č. 408/2025 Sb., explicitně uveden.   
+Z~těchto důvodů se nový Zákon o~kybernetické bezpečnosti na provoz online rezervačního systému turistického kempu nevztahuje.
+
+\section{Uživatelské rozhraní a~soulad s~přístupností}
+\label{sec:01-ui}
+S~účinností od 28.~června 2025 vstupuje v~platnost nová legislativa, která zásadním způsobem rozšiřuje povinnosti v~oblasti digitální přístupnosti z~veřejného sektoru na komerční subjekty.
+Právním rámcem je Zákon o~požadavcích na přístupnost některých výrobků a~služeb \cite{cz-2023-424}, který do českého práva přenáší evropskou Směrnici (EU) 2019/882, známou jako Evropský akt o~přístupnosti (EAA) \cite{eu-2019-882}.
+Tato regulace se přímo týká poskytovatelů, kteří spotřebitelům nabízejí specifické služby, mezi které zákon explicitně řadí \uv{služby elektronického obchodování}.
+Do této kategorie spadají nejen klasické e-shopy, ale i~jakýkoli online systém umožňující uzavření spotřebitelské smlouvy na dálku, což se plně vztahuje na online rezervační systémy pro ubytování.
+Povinnost se tedy vztahuje na všechny podnikatele v~cestovním ruchu, kteří takovéto online rezervační služby provozují, pokud nespadají do níže definované výjimky.   
+
+Nejzásadnější informací pro provozovatele je, koho se tato nová povinnost netýká.
+Zákon totiž zavádí klíčovou výjimku pro \uv{mikropodniky}.
+Podle definice je mikropodnikem takový subjekt, který splňuje obě následující podmínky současně: zaměstnává méně než 10 osob (v~přepočtu na plné roční úvazky) a~zároveň jeho roční obrat nebo roční účetní rozvaha nepřevyšuje 2 miliony EUR (cca 50 milionů Kč).
+Provozovatel online rezervačního systému, který splní obě tyto podmínky, je z~působnosti zákona zcela vyjmut a~nemusí žádné technické ani informační požadavky plnit.
+Pro subjekty, které mikropodnikem nejsou, sice teoreticky existuje ještě možnost dovolat se \uv{nepřiměřené zátěže} nebo \uv{zásadní změny} služby, avšak tato cesta se u~nově vyvíjených systémů nedoporučuje.
+Je spojena s~vysokou administrativní zátěží, neboť vyžaduje vypracování, zdokumentování a~pravidelnou aktualizaci formálního posouzení, které musí být na vyžádání předloženo dozorovému orgánu a~které prokazuje, proč je zavedení konkrétního prvku přístupnosti nepřiměřeně náročné.
+
+Pokud subjekt není mikropodnikem a~zákon se na něj tedy vztahuje, musí od 28.~června 2025 implementovat komplexní soubor požadavků, které lze rozdělit na technické, informační a~procesní.
+Zákon je technologicky neutrální, ale stanoví, že shoda je předpokládána, pokud služba splňuje harmonizovanou evropskou normu \texttt{EN 301 549}\footnote{Dostupné z~kapitoly 9: \url{https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/en_301549v030201p.pdf}.}.
+Pro vývojáře webových systémů to v~praxi znamená povinnost dodržovat doporučení webového konsorcia \texttt{W3C} \texttt{2.1}\footnote{Dostupné z: \url{https://www.w3.org/TR/WCAG21/}.} úrovně shody \texttt{AA} jejichž úspěšnostní kritéria jsou převzata do kapitoly 9 normy \texttt{EN~301~549}.
+Rezervační systém tedy musí být navržen tak, aby byl plně ovladatelný pouze pomocí klávesnice, kompatibilní se čtečkami obrazovky pro nevidomé (což vyžaduje sémanticky správný HTML kód prezentace nebo šablon), poskytoval textové alternativy u~všech vizuálních prvků a~měl dostatečný barevný kontrast textů a~pozadí.
+Dále musí být zajištěna srozumitelnost, zejména u~formulářů a~chybových hlášek.
+Dále je vyžadováno plnění informačních povinností: poskytovatel musí na svém webu (např. ve všeobecných podmínkách) zveřejnit informace o~tom, jak jeho služba plní požadavky na přístupnost.
+Musí zde být obsažen všeobecný popis služby a~vysvětlivky nezbytné k~pochopení jejího fungování (např. jak probíhá rezervační proces).
+Nakonec musí být zavedeny procesní povinnosti, což v~praxi znamená vytvoření a~zveřejnění mechanismu zpětné vazby (např. e-mailová adresa nebo kontaktní formulář), kam mohou uživatelé hlásit problémy s~digitální přístupností webu.
+
+Vymáháním zákona u~služeb elektronického obchodování je pověřen příslušný orgán dozoru, kterým je Česká obchodní inspekce (ČOI).
+ČOI bude kontroly provádět zpravidla na základě podnětů a~stížností od uživatelů.
+V~případě zjištění nesouladu a~nezjednání nápravy může ČOI přistoupit k~citelným sankcím.
+Mezi ně patří ukládání finančních pokut, které mohou dosáhnout až 10 milionů Kč, dále možnost zveřejnění subjektu na seznamu nevyhovujících služeb a~v~krajních případech i~nařízení zákazu poskytování dané služby.

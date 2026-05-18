@@ -1,0 +1,268 @@
+\chapter{Testování a~nasazení}
+\label{ch:testing-deployment}
+
+Tato kapitola popisuje testování serverové části systému a~způsob jeho nasazení do~provozu.
+Sekce o~automatizovaném testování shrnuje sestavu testovacích projektů, použité knihovny, architekturní pravidla a~dosažené pokrytí.
+Sekce o~uživatelském testování dokumentuje metodiku a~výsledky validace s~cílovými uživateli.
+Závěrečná sekce popisuje kontejnerizaci backendu, distribuci pomocných Windows služeb.
+
+\section{Automatizované testování}
+\label{sec:test-automated}
+
+Testovací sada backendu je rozdělena do~šesti projektů, jejichž struktura je shrnuta v~tabulce~\ref{tab:test-projects}.
+Z~hlediska zaměření se sada skládá ze tří kategorií: jednotkových testů, integračních testů a~architekturních testů.
+Pro sdílené pomocné typy\,--\,továrny entit, fluent buildery testovacích dat a~falešné implementace adaptérů\,--\,slouží samostatná knihovna \texttt{TestUtilities}, kterou používají všechny testovací projekty.
+
+\begin{table}[h]
+\centering
+\caption{Struktura testovacích projektů backendu}
+\label{tab:test-projects}
+\begin{tabular}{ll}
+\toprule
+Projekt & Předmět testování \\
+\midrule
+\texttt{Application.UnitTests}        & obsluhy příkazů a~dotazů, validátory \\
+\texttt{Web.Api.IntegrationTests}     & HTTP rozhraní přes \texttt{WebApplicationFactory} \\
+\texttt{Infrastructure.UnitTests}     & infrastrukturní adaptéry \\
+\texttt{Domain.UnitTests}             & hodnotové objekty a~doménové invarianty \\
+\texttt{Application.IntegrationTests} & průchod aplikační pipeline \\
+\texttt{ArchitectureTests}            & strukturní pravidla projektů \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Testovací stack}
+\label{subsec:test-stack}
+
+Veškeré testy jsou postaveny nad frameworkem \texttt{xUnit} ve~verzi~2.9 spouštěným runnerem \texttt{xunit.runner.visualstudio}.
+Pro aserce je používána knihovna \texttt{Shouldly}, mockování závislostí zajišťuje knihovna \texttt{NSubstitute}.
+Doménové invarianty jsou na~několika místech ověřovány vlastnostně-orientovaným způsobem nad knihovnou \texttt{CsCheck}, která generuje protipříklady k~vysloveným vlastnostem.
+Vstupy testů jsou sestavovány vlastními fluent buildery v~adresáři \texttt{TestUtilities/Builders}, které zachycují platné výchozí stavy doménových entit a~umožňují přepsat jen relevantní pole.
+
+Integrační testy HTTP rozhraní jsou postaveny nad třídou \texttt{WebApplicationFactory} z~balíčku \texttt{Microsoft.AspNetCore.Mvc.Testing}.
+Test naváže reálný HTTP klient proti běžící instanci backendu v~rámci téhož procesu, což umožňuje ověřovat plnou pipeline od~směrování přes autorizaci, validaci a~handler až po~odpověď.
+Závislost na~externí databázi je nahrazena \emph{in-memory} \texttt{SQLite} spojením.
+V~jednotkové testovací třídě \texttt{HandlerTestBase} je spojení per-test izolováno, zatímco ve~třídě \texttt{ApiFactory} je sdíleno mezi všemi testy téhož integračního scénáře a~mezi nimi resetováno mazáním tabulek.
+Schéma se buduje voláním \texttt{EnsureCreatedAsync()} nad EF~Core modelem.
+
+\subsection{Architekturní testy}
+\label{subsec:test-architecture}
+
+Architekturní vrstva systému je vynucena testy v~projektu \texttt{ArchitectureTests}, postavenými nad knihovnou \texttt{NetArchTest} a~vlastním IL skenerem nad knihovnou \texttt{Mono.Cecil}.
+Testy lze rozdělit do~tří skupin.
+
+První skupina ověřuje izolaci čtyř vrstev podle pravidel popsaných v~kapitole~\ref{ch:implementation}: doménová vrstva nesmí záviset na~ničem jiném, aplikační vrstva na~infrastruktuře ani na~prezentaci a~infrastrukturní vrstva na~prezentaci.
+Druhá skupina na~IL úrovni zakazuje přímé použití časových údajů ze třídy \texttt{DateTime} v~doménové i~aplikační vrstvě a~vynucuje tak průchod přes třídu implementující \texttt{IDateTimeProvider}.
+Třetí skupina na~stejné úrovni detekuje volání metod \texttt{.ToList(Async)} a~\texttt{.ToArray(Async)} nad kolekcemi entit vyúčtování (\texttt{Bill}) a~účetních uzávěrek (\texttt{FinancialClosing}) bez~předchozí projekce metodou \texttt{.Select()}.
+Pravidlo brání náhodnému natažení dokumentových entit do~paměti v~plném rozsahu a~zpřísňuje výkonnostní kontrakt mezi aplikační a~datovou vrstvou.
+
+\subsection{Rozložení testů}
+\label{subsec:test-distribution}
+
+Většina objemu sady připadá na logiku obsluhovanou aplikační vrstvou: obsluhy příkazů, obsluhy dotazů a~validátory \texttt{FluentValidation}, přičemž nejhustší pokrytí má doména rezervací a~financí.
+Projekt \texttt{Application.IntegrationTests} obsahuje testy procházející úplnou pipeline aplikační vrstvy včetně logovacího a~validačního dekorátoru a~ověřuje jejich vzájemné kombinování.
+HTTP rozhraní je pokryto integračními testy jednotlivých tematických oblastí odpovídající jednotlivým endpointům.
+
+\subsection{Testování externích integrací}
+\label{subsec:test-integrations}
+
+Externí HTTP integrace jsou testovány proti vlastnímu typu \texttt{StubHttpMessageHandler}, jenž ve~frontě uchovává předem připravené odpovědi a~zaznamenává URI a~tělo posledního požadavku.
+Tento přístup umožňuje rychlé deterministické testy bez~potřeby \texttt{WireMock} nebo lokálního proxy serveru.
+Pokrývá registry \texttt{RÚIAN} a~\texttt{Mapy.cz} a~HTTP klient služby \texttt{eDoklady}.
+Hraniční rozhraní obchodního registru \texttt{ARES} a~zákazníka služby \texttt{eDoklady} jsou v~aplikační vrstvě dále mockována přes \texttt{NSubstitute} na~úrovni doménového kontraktu (\texttt{ILegalEntityProvider}, \texttt{IEDokladyClient}), takže obchodní logika je nezávislá na~tvaru drátového protokolu.
+
+Pro SOAP rozhraní cizinecké policie \texttt{Ubyport} jsou předmětem testů pouze konstruktory XML obálky.
+Samotný HTTP transport není integračně testován, neboť jediná dostupná protistrana je produkční systém Ministerstva vnitra a~přístup do testovacího prostředí pro tuto službu se z důvodu připouštěcích podmínek nepodařilo zajistit.
+
+Odesílání e-mailů je v~testech nahrazeno typem \texttt{CapturingEmailSender} v~knihovně \texttt{TestUtilities}, jenž místo SMTP volání zachycuje odeslané zprávy do~paměťové fronty pro následné aserce.
+Testy na~úrovni handlerů doménových událostí i~HTTP endpointů ověřují, že odpovídající obchodní akce vede k~odeslání zprávy o~očekávaném obsahu a~adresátech.
+
+Generování PDF dokumentů je rozděleno na~dvě části.
+Renderování HTML z~Razor šablon knihovnou \texttt{RazorLight} je pokryto jednotkovými testy se snapshotovými asercemi nad výsledným řetězcem.
+Vlastní převod HTML do~PDF přes \texttt{Microsoft.Playwright} je ověřen jediným \uv{smoke} testem nad \texttt{Playwright}, jenž spouští reálný Chromium proces a~kontroluje pouze, že výstupní byty začínají signaturou PDF.
+Test je nákladný a~vyžaduje stažené binární soubory Chromia.
+
+Testy cache adresního našeptávače proti databázi \texttt{Redis} vyžadují skutečnou běžící instanci Redis na~lokálním portu; integrace přes \emph{Testcontainers} v~projektu zavedena není.
+Pro lokální vývoj postačuje kontejner Redis spouštěný v~rámci souboru \texttt{docker-compose.yml} popsaného v~sekci~\ref{subsec:deploy-containers}.
+
+\subsection{Pokrytí kódu a~statická kontrola}
+\label{subsec:test-coverage}
+
+Měření pokrytí je zajištěno knihovnou \texttt{Coverlet} s~kolektorem \texttt{XPlat Code Coverage} do spuštění testů.
+Z~měření jsou vyloučeny migrace EF~Core, vstupní bod \texttt{Program.cs}, automaticky generované vlastnosti a~typy označené atributy \texttt{[Obsolete]}, \texttt{[GeneratedCode]}, \texttt{[CompilerGenerated]} nebo \texttt{[ExcludeFromCodeCoverage]}.
+Žádný kvalitativní práh pokrytí není v~projektovém ani v~kontinuálním sestavení vynucen.
+Souhrnné výsledky posledního měření jsou shrnuty v~tabulce~\ref{tab:coverage}.
+
+\begin{table}[h]
+\centering
+\caption{Pokrytí kódu po~vrstvách (řádkové, poslední měření)}
+\label{tab:coverage}
+\begin{tabular}{lr}
+\toprule
+Vrstva / projekt & Pokrytí řádků \\
+\midrule
+\texttt{Web.Api}        & 97{,}1\,\% \\
+\texttt{Application}    & 95{,}3\,\% \\
+\texttt{TestUtilities}  & 93{,}0\,\% \\
+\texttt{SharedKernel}   & 89{,}4\,\% \\
+\texttt{Domain}         & 83{,}1\,\% \\
+\texttt{Infrastructure} & 74{,}6\,\% \\
+\midrule
+Celkem                  & 91{,}0\,\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Větvové pokrytí (\emph{branch coverage}) dosahuje 76{,}0\,\% (1050 z~1\,373~větví).
+Z~výsledků je patrný rozdíl mezi vrstvami.
+Aplikační a~prezentační vrstva, jež obsahují většinu obchodní logiky a~jsou nejintenzivněji procvičovány integračními testy nad \texttt{WebApplicationFactory}, dosahují pokrytí přes~90\,\%.
+Naopak infrastrukturní vrstva, jejíž části jsou pevně svázány s~podobou drátového protokolu protistran, s~prací s~certifikáty a~s~PDF rendererem, klesá na~73\,\%; tato hodnota je vědomě akceptována, neboť další testování by se z~velké části zvrhlo v~testování chování externích systémů.
+
+Statická kontrola kódu je doplněna zásadami ze souboru \texttt{Directory.Build.props}.
+Veškerá varování překladače i~analyzátoru \texttt{SonarAnalyzer.CSharp} jsou eskalovány na~chyby přepínači \texttt{TreatWarningsAsErrors} a~\texttt{CodeAnalysisTreatWarningsAsErrors}.
+Více než padesát stylistických pravidel v souboru \texttt{.editorconfig} jsou eskalovány z~úrovně \emph{suggestion} na~\emph{error}.
+Pravidla pokrývají kvalifikaci členů (zákaz \texttt{this.}), používání jazykových klíčových slov místo BCL aliasů (\texttt{int} namísto \texttt{Int32}), striktní politiku použití \texttt{var}, vynucení \emph{file-scoped} namespaců, povinné svorky u~kontrolních konstrukcí, \emph{expression-bodied} členy, \emph{pattern matching} přes \texttt{is}/\texttt{as} s~null kontrolou, preferenci \emph{switch-expression}, povinné inicializátory kolekcí a~objektů a~povinné použití operátorů \texttt{??} a~\texttt{?.}.
+Migrační soubory mají dvě z~těchto pravidel uvolněna pro pohodlí čtení.
+
+\subsection{Limity testování}
+\label{subsec:test-limits}
+
+Sada se spouští v~defaultní paralelizaci runneru \texttt{xUnit} a~neobsahuje žádné přeskakované (\texttt{[Skip]}) ani označeně nestabilní testy.
+Jedinou oddělenou kategorií zůstává již zmíněný Playwright smoke test.
+
+Sada má tři vědomě akceptovaná omezení:
+\begin{enumerate}
+    \item \textbf{Použití SQLite místo PostgreSQL}\,--\,integrační testy běží proti SQLite v~paměti namísto reálné instance PostgreSQL.
+        Volba je motivována rychlostí běhu, izolací mezi testy a~absencí jakékoli externí závislosti během vývoje.
+        Důsledkem je, že nelze testovat chování specifické pro PostgreSQL\,--\,konkrétně typovaná výjimka \texttt{DatabaseConstraintViolationException}, jak je popsáno v~sekci~\ref{sec:impl-backend}.
+        Na~úrovni SQLite navíc není vynucena referenční integrita, takže ani porušení cizích klíčů není ve~stávajících testech zachyceno.
+    \item \textbf{Migrace nejsou testovány}\,--\,schéma testovací databáze je budováno přímo z~EF Core modelu metodou \texttt{EnsureCreatedAsync()}, která ignoruje sled migračních souborů.
+        Inkonzistence mezi modelem a~aktuální migrací tak nemůže být odhalena testovací sadou; takovou regresi odhalí pouze ruční spuštění nástroje \texttt{dotnet~ef} během vývoje.
+    \item \textbf{Cache proti reálnému Redis}\,--\,sedm testů cache adresního našeptávače vyžaduje běžící lokální instanci Redis.
+        Pro každodenní spouštění není tento požadavek nepřiměřený, neboť kontejner Redis je součástí vývojového sestavení \texttt{docker-compose.yml}; pro zcela uzavřené spuštění (například v~prostředí bez~Docker daemonu) je však tato podsada testů přeskočena.
+\end{enumerate}
+
+\section{Uživatelské testování}
+\label{sec:test-user}
+
+Cílem uživatelského testování bylo ověřit, zda klíčové pracovní postupy systému odpovídají skutečnému provoznímu chování cílových uživatelů, a~zachytit konkrétní problémy použitelnosti.
+Validace byla realizována dvoufázově: průběžnými konzultacemi v~průběhu vývoje a~závěrečným ověřovacím sezením s~vedoucí recepce cílového nasazení.
+Vzhledem k~rozsahu práce a~dostupnosti uživatelů má testování charakter pilotní validace.
+
+\subsection{Účastníci a~kontext}
+\label{subsec:user-test-participant}
+
+Závěrečné sezení proběhlo v~prostorách recepce Kempu Olšovec, tedy přímo na~pracovišti, kde je systém určen k~provozu.
+Účastnicí byla vedoucí recepce s~přibližně patnáctiletou praxí, jež se podílí na~rezervační i~odbavovací agendě, systémové správě a~výjimečně řeší také provozní záležitosti kempu.
+Sama se označuje za~běžnou, nikoli pokročilou uživatelku počítače; tato charakteristika odpovídá typickému profilu pracovníka recepce v~ubytovacím zařízení, pro něhož je systém určen.
+Sezení trvalo přibližně jednu hodinu.
+
+Druhý plánovaný respondent\,--\,vedoucí kempu s~přibližně pětiletou praxí\,--\,se z~časových důvodů nakonec nezúčastnil; jeho roli pokryla vedoucí recepce, jež se systémem pracuje též v~roli vedoucího.
+
+\subsection{Průběžná konzultace v~průběhu vývoje}
+\label{subsec:user-test-iterative}
+
+Závěrečné ověřovací sezení nebylo prvním kontaktem účastnice se systémem.
+V~průběhu vývoje byly jednotlivé moduly a~vybrané pracovní postupy průběžně konzultovány formou opakovaných ukázek UI, zkoušení jejich použití a~bezprostředního hodnocení; připomínky byly zapracovávány iterativně.
+Takový postup představuje zavedenou alternativu k~jednorázovému testování použitelnosti po~dokončení vývoje a~je vhodný zejména v~prostředí s~úzkým okruhem cílových uživatelů.
+Závěrečné sezení tak mělo charakter potvrzovací validace, nikoli prvního setkání s~rozhraním; tato skutečnost vysvětluje plynulý průběh všech scénářů popsaný dále a~současně představuje jednu z~výhrad uvedených v~sekci o~limitacích.
+
+\subsection{Závěrečné ověřovací sezení}
+\label{subsec:user-test-procedure}
+
+Účastnice byla požádána o~průběžný komentář svých kroků a~úvah, zatímco autor jako pozorovatel zaznamenával pozorování a~bez~nutného důvodu nezasahoval.
+Po~průchodu scénáři následoval polostrukturovaný rozhovor zaměřený na~subjektivní hodnocení a~náměty ke~zlepšení.
+
+Scénáře pokrývaly dvě cílové role.
+Pro recepční šlo o~zapracování telefonické rezervace s~individuálním ubytováním, příjezd hosta a~check-in u~recepčního pultu, přípravu podkladů pro účetní, plánování stravy a~hromadnou rezervaci pro skupinu.
+Pro vedoucího kempu šlo především o~konfiguraci systému a~správu uživatelů.
+Doplňkově byla pokryta také mobilní agenda pro úklidový personál.
+
+Všemi scénáři účastnice prošla plynule; v~průběhu sezení padlo pouze několik upřesňujících dotazů ohledně provádění jednotlivých rezervací v~rámci skupinové rezervace.
+V~závěrečném rozhovoru vyjádřila nejvýraznější nadšení z~modulu plánování stravy a~z~modulu pro správu záloh za~ubytování\,--\,tedy z~funkcí, jejichž manuální obsluha jí dosud zabírala největší podíl pracovního času.
+Jako konkrétní podnět ke~zlepšení uvedla, aby ve~stravovacím modulu byly skryty sloupce dietních variant, jež daný kemp v~aktuální sezóně nevyužívá; podnět byl po~sezení akceptován a~zařazen do~plánu nejbližších úprav.
+
+\subsection{Limitace}
+\label{subsec:user-test-limits}
+Vzorek tvořila jediná účastnice, což znemožňuje statistické zobecnění zjištění.
+Účastnice byla díky průběžným konzultacím obeznámena s~rozhraním ještě před závěrečným sezením; toto uspořádání odpovídá účasti uživatele na~průběžném vývoji a~je metodicky obhajitelné, omezuje však výpovědní hodnotu sezení pro hodnocení prvního dojmu a~strmosti učební křivky.
+Sezení zaznamenával a~vyhodnocoval výhradně autor systému, takže nelze vyloučit zkreslení potvrzením předpokladů; nezávislý pozorovatel ani druhý kódovač nebyli k~dispozici.
+
+Tyto výhrady jsou pro pilotní fázi přijatelné a~v~kontextu cílového nasazení nepředstavují praktické omezení: se systémem v~kempu pracuje jedna stálá recepční\,--\,zároveň účastnice testování jakožto primární uživatelka\,--\,a~přibližně osm sezónních pracovníků.
+Rozšířené uživatelské testování v~rámci tohoto nasazení proto není opodstatněné; systematické šetření s~větším vzorkem účastníků z~více typů ubytovacích zařízení by získalo smysl teprve v~souvislosti s~případným nasazením systému v~dalších kempech.
+
+\section{Nasazení}
+\label{sec:deployment}
+
+Backend systému je distribuován jako kontejnerová aplikace.
+Pomocné Windows služby pro ovládání vjezdových závor a~lokální tiskový server jsou naopak distribuovány jako nativní binárky instalované přímo do~cílového operačního systému.
+Tato sekce popisuje obě distribuční cesty, plán postupného nasazení v~cílovém prostředí.
+
+\subsection{Kontejnerizace backendu a~webové aplikace}
+\label{subsec:deploy-containers}
+
+Serverová část se sestavuje vícefázovým Dockerfile nad obrazem \texttt{aspnet:10.0}.
+Fáze \emph{build} a~\emph{publish} obstará SDK obraz, runtime obraz obsahuje pouze produkční artefakty a~publikuje  porty \texttt{8080} a~\texttt{8081} do hostitele.
+Vzhledem k~použití hlavičkového Chromia pro generování PDF jsou do~runtime obrazu doinstalovány systémové závislosti Chromia (fonty a~sdílené knihovny grafiky).
+Vstupním bodem je \texttt{dotnet Web.Api.dll}.
+
+Webová aplikace se sestavuje pomocí dvoufázového \texttt{Dockerfile}.
+Fáze sestavení probíhá nad obrazem \texttt{node:24.15} příkazem \texttt{npm run build -{}-configuration=production}; runtime obraz \texttt{caddy:2.11.2} pak slouží statický bundle a~obsluhuje SPA fallback.
+Konfigurace probíhá pomocí konfiguračního souboru \texttt{Caddyfile}.
+
+Výsledné sestavení popisuje soubor \texttt{docker-compose.yml}.
+Ten paralelně spouští backend, instanci \texttt{PostgreSQL~18}, agregátor logů \texttt{datalust/seq:2024.3} a~Redis~7 s~persistentním úložištěm.
+
+\subsection{Konfigurace a~tajemství}
+\label{subsec:deploy-config}
+
+Aplikace čte konfiguraci přes \texttt{appsettings.json} a proměnné prostředí.
+Povinné položky jsou validovány vzorem \emph{ValidateOnStart} popsaným v~kapitole~\ref{ch:implementation}.
+Vyžadovány jsou připojovací řetězce k~PostgreSQL a~Redis, base URI registrů ARES, RÚIAN a~Mapy.cz, API klíč Mapy.cz, doménové nastavení WebAuthn passkey, parametry vystavovaných tokenů, přihlašovací údaje Ubyport, cesta a~heslo k~certifikátu eDoklady, SMTP přihlašovací údaje, identifikace kempu, retenční intervaly, CORS politika a~base URI frontendu.
+
+Žádné centrální tajemství úložiště typu \emph{Azure Key Vault}, \emph{AWS Secrets Manager} nebo \emph{Doppler} není v~kódu integrováno z důvodu nasazení na lokální síti.
+Produkční tajemství jsou očekávána jako proměnné prostředí dosazované deployovacím nástrojem nebo orchestrátorem.
+
+\subsection{Databázové migrace}
+\label{subsec:deploy-migrations}
+
+Migrační strategie je dělena podle prostředí ve~vstupním bodu \texttt{src/Web.Api/Program.cs}.
+Ve~vývojovém režimu jsou migrace aplikovány automaticky při startu invokováním metody \texttt{ApplyMigrations()}.
+Současně se v~tomto režimu spouští \texttt{SeedTestDataAsync()} naplňující databázi referenčními záznamy pro vývoj.
+V~produkčním režimu se naopak žádné migrace v~procesu aplikace nespouštějí; jejich aplikace je ruční operace mimo aplikační proces, typicky příkazem \texttt{dotnet~ef~database~update} proti produkční databázi v~rámci samostatného deployovacího kroku.
+Metody \texttt{SeedReferenceDataAsync()} a~\texttt{SeedRolesAsync()}, jež plní pouze nezbytné referenční číselníky a~role, se spouštějí v~obou prostředích.
+
+\subsection{Distribuce pomocných Windows služeb}
+\label{subsec:deploy-windows}
+
+Tiskový server a~služba ovládání vjezdových závor se distribuují bez~kontejnerizace.
+Obě jsou pevně svázány s~operačním systémem Windows\,--\,se \emph{Service Control Managerem}, OLE~DB poskytovatelem pro Microsoft Access a~tiskovými ovladači\,--\,a~kontejnerizace by žádný přínos nepřinesla.
+Instalaci na~cílový stroj obstará skript \texttt{scripts/Install-Service.ps1}.
+
+Aktualizace již nasazené služby je čistě manuální: zastavení služby, přepsání binárek, opětovné spuštění.
+Žádný automatický aktualizační kanál ani plnohodnotný instalátor  nejsou v~tomto okamžiku nasazeny.
+Vzhledem k~tomu, že se služba instaluje pouze na~několik konkrétních strojů na~recepci kempu, je manuální údržba akceptovatelná.
+
+\subsection{Postupné nasazení v~cílovém prostředí}
+\label{subsec:deploy-rollout}
+
+Backend systému je v~současné době nasazen na~recepčním počítači Kempu Olšovec prostřednictvím \texttt{Dockeru}; toto nasazení zároveň slouží jako východisko pro plánovanou migraci na~nový recepční stroj.
+Plán postupného uvedení systému do~provozu byl dohodnut s~provozovatelem s~ohledem na~rozdělení agend mezi nový systém a~stávajícími používanými systémy.
+
+V~sezóně 2026 je systém v~ostrém provozu pro modul plánování stravy.
+V~sezóně 2027 má být rozšířen o~modul finančních toků, a~to na~základě požadavku ekonomického úseku kempu.
+Plné nasazení včetně rezervační a~odbavovací agendy je plánováno na~sezónu 2028.
+
+Posun plného nasazení až~na~sezónu 2028 je dán stavem stávajícího rezervačního softwaru, v~němž je evidováno přes 350 rezervací na~sezónu 2027, jejichž spolehlivá automatická migrace do~nového systému není v~současném stavu možná.
+Pokud by tyto rezervace recepční obsluha přenesla ručně, bylo by možné plné nasazení posunout již do~sezóny 2027.
+
+\subsection{Provozní rámec}
+\label{subsec:deploy-gaps}
+
+Repozitář obsahuje sadu workflow GitHub~Actions pro build, automatizované testy a~lint, jež se spouští u~každého pull~requestu.
+Hlavní větev (\texttt{master}) je chráněna proti přímému pushování, takže veškeré změny vstupují prostřednictvím pull~requestů a~vyžadují úspěšný průchod uvedenými kontrolami.
+Publikování kontejnerových obrazů je naopak v~současné fázi prováděno manuálně z~vývojářského stroje.
+
+Topologie produkčního prostředí\,--\,reverzní proxy, správa TLS certifikátů a~monitorování\,--\,není v~repozitáři dokumentována a~spadá do~kompetencí provozovatele.
+Stejně tak neexistuje zálohovací politika pro \texttt{PostgreSQL}; zálohování je očekáváno jako provozní.
+Tyto mezery jsou důsledkem zaměření práce na~návrh a~implementaci systému, nikoli na samotný provoz.

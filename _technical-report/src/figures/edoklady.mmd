@@ -1,0 +1,41 @@
+%%{init: {'sequence': {'showSequenceNumbers': true}}}%%
+
+sequenceDiagram
+    actor Overovatel as Ověřovatel
+    participant NapojenySystem as Napojený systém
+    participant IntegracniAPI as Integrační API
+    participant WebovaCtecka as Webová čtečka
+    participant eDoklady as eDoklady
+    actor Drzitel as Držitel
+
+    Overovatel->>+NapojenySystem: Požadavek na ověření
+    NapojenySystem->>+IntegracniAPI: Zahájení transakce pro virtuální přepážku
+    IntegracniAPI->>+WebovaCtecka: Vytvoření transakce
+    WebovaCtecka-->>-IntegracniAPI: ID transakce
+    IntegracniAPI-->>-NapojenySystem: ID transakce
+
+    Overovatel->>Drzitel: Vyzve k naskenování QR kódu
+
+    loop počkej na dokončení transakce
+        NapojenySystem->>+IntegracniAPI: Zjisti stav transakce
+        IntegracniAPI->>+WebovaCtecka: Zjisti stav transakce
+        WebovaCtecka-->>-IntegracniAPI: Stav transakce
+        IntegracniAPI-->>-NapojenySystem: Stav transakce
+    end
+
+    Drzitel->>+eDoklady: Naskenuj QR kód
+    eDoklady->>+WebovaCtecka: Stažení Request Object
+    WebovaCtecka-->>-eDoklady: Request Object
+    eDoklady->>+Drzitel: Výzva pro udělení souhlasu
+    Drzitel-->>-eDoklady: Souhlas
+    eDoklady->>+WebovaCtecka: Zaslání údajů
+    WebovaCtecka->>WebovaCtecka: Dočasné uložení údajů
+    WebovaCtecka-->>-eDoklady: potvrzení
+    eDoklady-->>-Drzitel: potvrzení
+
+    NapojenySystem->>+IntegracniAPI: Získání údajů podle ID transakce
+    IntegracniAPI->>+WebovaCtecka: Získání údajů podle ID transakce
+    WebovaCtecka->>WebovaCtecka: Validace předaných údajů
+    WebovaCtecka-->>-IntegracniAPI: Výsledek ověření
+    IntegracniAPI-->>-NapojenySystem: Výsledek ověření
+    NapojenySystem-->>-Overovatel: Zobrazení výsledku ověření

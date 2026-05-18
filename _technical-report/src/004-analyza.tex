@@ -1,0 +1,311 @@
+\chapter{Analýza a~specifikace požadavků}
+\label{ch:analyse}
+Analýza a~specifikace požadavků tvoří most mezi reálným prostředím a~technickou realizací informačního systému.
+Cílem této kapitoly je porozumět každodennímu provozu ubytovacího zařízení\,--\,od rezervačních procesů přes správu jednotlivých ubytovacích jednotek až po doplňkové služby\,--\,a~na tomto základě formulovat požadavky na nový systém.
+Důraz je kladen na přesnou identifikaci uživatelských rolí, neboť ty vymezují kompetence i~interakce v~rámci budoucí aplikace a~zajišťují, že výsledné řešení bude odpovídat nárokům personálu i~očekávání hostů.
+
+Závěrečná část kapitoly se věnuje návrhu doménového modelu, který prostřednictvím základní datové struktury vizualizuje klíčové entity a~jejich vzájemné vazby a~tvoří základ pro pozdější datový model.
+
+\section{Současná situace Kempu Olšovec}
+Kemp Olšovec je rekreační areál ležící na území městyse Jedovnice na hranici Chráněné krajinné oblasti Moravský kras.
+Hostům nabízí širokou paletu ubytovacích možností\,--\,přijet je možné se stanem, osobním automobilem, obytným vozem či karavanem, případně lze využít některou z~ubytovacích jednotek přímo v~areálu.
+Ten zahrnuje turistické chaty v~původním i~modernizovaném provedení, dřevěné chaty s~vyšším standardem výbavy a~kompletně vybavené zděné chaty a~bungalovy.
+
+Areál zaujímá rozlohu přibližně 8{,}5~hektaru a~rozprostírá se podél břehu rybníka Olšovec, jehož vodní plocha o~výměře 40~hektarů je jedním z~hlavních důvodů návštěvnosti lokality.
+Celková ubytovací kapacita dosahuje až 1\,500~míst v~různých formách ubytování, přičemž pevná lůžková kapacita v~chatách, bungalovech a~pokojích zděné budovy činí přibližně 370~lůžek.
+V~hlavní sezóně (červenec a~srpen) je obsazenost areálu prakticky stoprocentní\,--\,počet pokojodnů\footnote{Pokojoden vyjadřuje obsazení jedné ubytovací jednotky po dobu jednoho dne.} v~tomto období dosahuje téměř 4\,000.
+Celkový roční počet poskytnutých noclehů se pohybuje kolem 45\,000 při přibližně 21\,000 ubytovaných hostech\footnote{Provozní data byla poskytnuta vedením kempu Olšovec a~reflektují stav v~roce 2025.}.
+Bungalovy a~pokoje ve zděné budově jsou v~provozu celoročně, zatímco chatky, stanové plochy a~místa pro karavany jsou zpřístupněny od dubna do října.
+Tato sezónnost přímo ovlivňuje požadavky na systém, který musí zvládat výrazné výkyvy zátěže\,--\,od minimálního provozu v~zimních měsících po plnou obsazenost v~letní sezóně.
+
+Cenová politika kempu je nastavena s~ohledem na široké spektrum návštěvníků a~řadí areál mezi cenově dostupná ubytovací zařízení v~Jihomoravském kraji.
+Atraktivní volbou je zejména pro rodiny s~dětmi, mladé páry a~skupinové pobyty.
+Provozovatel zveřejňuje samostatné ceníky pro jednotlivce, skupiny a~školy, což se musí promítnout do struktury ceníků v~novém systému.
+Areál disponuje vlastní jídelnou se zázemím pro plnou penzi i~polopenzi, společenskými prostory a~sportovním vybavením, díky čemuž zde lze realizovat školní výlety, vzdělávací kurzy, adaptační pobyty, sportovní soustředění i~firemní akce pro početné skupiny.
+Vedle vlastního ubytovacího provozu se v~kempu i~v~jeho bezprostředním okolí konají hudební a~kulturní akce, závody horských kol na navazujících tratích Singletrail Moravský kras a~další pravidelné události, které dále posilují návštěvnost lokality.
+
+Samostatnou skupinu klientely tvoří zahraniční hosté, mezi nimiž tradičně převažují návštěvníci z~Německa, Nizozemska, Slovenska, Belgie a~Polska.
+Jejich podíl na celkovém počtu ubytovaných v~hlavní sezóně dosahuje přibližně 14~\% všech hostů a~75~\% všech cizinců.
+Hlavním důvodem návštěvnosti této skupiny je strategická poloha kempu na okraji Moravského krasu, který svými jeskyněmi (Balcarka, Kateřinská, Punkevní, Sloupsko-šošůvská), propastí Macocha a~hustou sítí cyklotras i~turistických tras patří k~nejnavštěvovanějším přírodním lokalitám v~České republice~\cite{ochranaprirody-moravskykras}.
+Hosté zde nacházejí pohodlnou základnu pro výlety do Brna (25~km), Blanska (11~km) i~k~okolním kulturním památkám a~chráněným územím.
+Přímo v~areálu a~jeho nejbližším okolí je k~dispozici koupání v~rybníce, trasy Singletrail v~přilehlém lese, půjčovna šlapadel a~paddleboardů, vodní lyžování, minigolf, plážový volejbal, dětské hřiště, trasy pro horská kola a~v~letních měsících také rybolov.
+Olšovec tak nepředstavuje pouze přechodné ubytovací zařízení, ale plnohodnotné rekreační středisko sezónního cha\-ra\-kte\-ru, což klade na rezervační i~provozní systém vyšší nároky než u~tradičního ubytovacího zařízení.
+
+\subsection{Práce v~kempu z~pohledu recepčních}
+
+Tato sekce představuje pracovní náplň recepčního, který v~rámci ubytovacího procesu plní centrální koordinační roli a~zodpovídá za plynulý chod areálu.
+Jeho činnost lze rozdělit do několika tematických okruhů, jež zhruba odpovídají typickému průběhu směny\,--\,od odbavení přijíždějících hostů přes správu vjezdových karet a~check-out až po závěrečnou denní uzávěrku.
+Souběžně s~těmito úkony probíhá vyřizování rezervací a~průběžná komunikace s~hosty.
+
+Primárním úkonem je odbavení hosta, jež zahrnuje evidenci, platbu a~předání informací o~pobytu.
+V~první fázi se zjišťuje typ a~forma požadovaného ubytování a~existence případné rezervace.
+Od všech ubytovaných osob jsou poté vyžadovány doklady totožnosti, na jejichž základě probíhá evidence v~ubytovacím systému.
+Do něj se zadávají další údaje\,--\,registrační značka vozidla, konkrétní typ ubytovací jednotky (zděná chata, dřevěná chata, bungalov, karavan, obytný vůz, stan apod.) a~doložky promítající se do finální ceny, jako jsou rekreační poplatky a~poplatky za osoby a~vozidla, jejichž výše se liší podle typu ubytování.
+Po úhradě se tiskne doklad, jehož kopii host podepisuje.
+U~cizinců přibývá podpis evidenčního formuláře pro cizineckou policii.
+Závěrem odbavení se předávají klíče a~další informace o~ubytování\,--\,provozní doba, postup při opouštění areálu, vybavení chaty i~režim sprch.
+
+Na odbavení navazuje systém vjezdových karet do areálu.
+Host si může u~recepce, obvykle při příjezdu, vyzvednout kartu, prostřednictvím které během pobytu samostatně reguluje vjezd a~výjezd.
+Recepční vybírá vratnou kauci a~v~samostatném systému kartu aktivuje na sjednanou dobu pobytu, přičemž zaznamenává i~výši kauce.
+
+Ranní směna obstarává check-out odjíždějících hostů.
+Prvním krokem je vyplnění tzv.\ úklidového formuláře, který na základě ubytovacího plánu identifikuje chaty určené k~úklidu daného dne a~od nichž je nutné do desáté hodiny dopolední převzít klíče.
+Vytištěný formulář se předává úklidové směně.
+V~případě, že host povinnost vrácení klíčů zakotvenou v~provozním řádu kempu nedodrží, řeší recepční situaci operativně tak, aby mohl úklid v~plánovaném čase proběhnout.
+Do agendy ranní směny dále spadá řešení reklamací, stížností a~případných škod na ubytovacích jednotkách či jiném majetku v~areálu.
+
+Stěžejním úkonem konce směny je denní uzávěrka, tedy souhrnné vyrovnání tržeb za daný den.
+Vytváří se ve dvou kopiích: jedna putuje v~obálce do kanceláře vedení kempu, druhá zůstává na recepci spolu s~účtenkami za hotovostní a~bezhotovostní platby a~s~doklady o~ubytovaných cizincích.
+Do téže obálky se přikládá také denní evidence tržeb vytištěná ze stejného systému.
+Ve stejném systému se poté zaeviduje seznam cizinců ubytovaných během daného dne a~tato evidence se nahraje na webový portál Ubyport, odkud ji načítá cizinecká policie; portál zároveň generuje tzv.~doručenku, kterou recepční e-mailem zasílá vedení kempu.
+Veškeré dokumenty spojené s~uzávěrkou včetně evidence tržeb jsou archivovány v~elektronické podobě (PDF) v~recepčním počítači a~jejich kopie se z~recepčního e-mailu odesílá hlavní účetní.
+
+Souběžně s~výše popsanými úkony probíhá během směny také vyřizování rezervací.
+Týkají se nejčastěji všech typů chat, prostor pro karavany a~obytné vozy, firemních setkání a~prostor pro oslavy.
+Komunikace s~hosty probíhá zpravidla telefonicky či e-mailem.
+Rezervace se ukládá do ubytovacího portálu s~uvedením jména a~kontaktu hosta a~v~případě online objednávky též údajů z~rezervačního formuláře\footnote{viz \url{https://www.olsovec.cz/rezervace/}}.
+Mezi další průběžné povinnosti patří řešení storen, předávání požadavků pracovníkům údržby, dohled nad dodržováním provozního řádu a~poskytování informací o~areálu i~službách v~jeho okolí.
+
+\section{Neformální specifikace požadavků}
+\label{sec:pozadavky}
+Turistický kemp Olšovec,~s.r.o. se z~důvodu provozní neefektivity rozhodl implementovat nový centrální informační systém.
+Současná správa rezervací pomocí roztříštěných nástrojů (aplikace Excel ze sady nástrojů MS Office, e-mail, telefon, osobní domluvy s~hosty přímo na recepci, samostatný software používaný k~vystavování dokladů a~evidenci osob) vede k~vysoké chybovosti, chybějícím nebo duplicitním rezervacím a~pomalému odbavení.
+Cílem je zavedení jednotného systému do půl roku, přičemž minimální funkcionalita v~podobě vyřizování rezervací musí být k~dispozici od nového roku z~důvodu plynulého přechodu na nový systém a~seznamování zaměstnanců se systémem během nevytíženého zimního období.
+
+Stěžejním prvkem systému je veřejně dostupný online \textbf{rezervační formulář} nacházející se na webových stránkách kempu.
+Každá rezervovatelná jednotka (chata, karavanové stání, stanové místo) zde obsahuje základní parametry (kapacita, přípojka elektřiny, bezbariérový přístup,\,\ldots) a~odkaz na prezentaci, která se nachází na webových stránkách.
+Kdokoliv zde může provést rezervaci ve zvolený termín na jednu rezervovatelnou jednotku.
+Každou takto vytvořenou rezervaci musí recepční \textbf{potvrdit}.
+
+Systém ovšem musí umět pracovat i~se \textbf{složitějšími rezervacemi} (např. rezervace více míst, skupinové rezervace, stěhování mezi ubytovacími jednotkami v~průběhu pobytu).
+Tyto specifické rezervace není potřeba řešit v~rezervačním formuláři pro hosty, neboť tvoří přibližně 2~\% z~celkového množství rezervací a~přistupuje se k~nim individuálně.
+Jejich vyřízení je proto ponecháno na recepčních.
+U~větších rezervací musí systém navíc umožnit \textbf{objednání stravy}, kterou pak recepce předá kuchyni.
+
+Z~důvodu zákonné povinnosti evidovat osobní údaje všech ubytovaných hostů musí systém u~hromadných a~skupinových rezervací umožnit organizátorovi provést \textbf{online check-in} všech ubytovaných hostů, případně zadat registrační značky vozidel, která se budou v~kempu vyskytovat.
+Příjezd například 150 osob v~krátkém časovém úseku by jinak recepci zcela ochromil.
+Účastníci školních výletů u~sebe často doklad totožnosti nemají nebo jím vůbec nedisponují, a~tato funkcionalita tak zároveň řeší praktický provozní problém.
+Osobní údaje hostů musí být přehledně dohledatelné v~digitální \textbf{knize ubytovaných hostů} v~souladu s~platnou legislativou.
+
+V~případě dražšího pobytu vystavují recepční podklady pro účetní, aby v externím účetním softwaru vystavila \textbf{fakturu}, kterou host hradí část ceny z pobytu.
+Fakturu účetní zasílá hostovi na e-mail a její stav průběžně eviduje v systému.
+Výsledný zúčtovací doklad, vystavený recepčním v~den příjezdu po kompletním odbavení hosta na recepci, je automaticky ponížen o cenu položek již uhrazených prostřednictvím faktury.
+
+Omezený přístup do systému náleží \textbf{provoznímu personálu} (uklízečky, údržbáři), který bude využívat \textbf{zjednodušenou mobilní aplikaci}.
+Uklízečky zde uvidí denní plán úklidů s~informací, ke kterým chatám již byly vráceny klíče.
+Po dokončení úklidu mění stav jednotky tak, aby bylo recepčním zřejmé, že je již možné vydat klíče dalšímu hostovi.
+Údržbáři v~aplikaci vidí nahlášené závady, které do systému zadávají recepční na základě hlášení od hostů.
+
+Přístup do systému musí mít také \textbf{účetní} společnosti, jež veškeré vystavené doklady zaúčtovává.
+Systém jí musí umožnit nahlížet na všechny \textbf{vydané doklady} (účtenky, faktury), \textbf{přijaté platby} a~\textbf{peněžní deník}.
+Nezbytné jsou rovněž \textbf{denní uzávěrky} a~další finanční sestavy, které systém musí poskytovat.
+Všechny tyto doklady musí být v~souladu s~platnou legislativou, přehledné a~strukturované.
+
+Se systémem dále pracuje \textbf{vedoucí kempu}, který sleduje přehled obsazenosti, nahlíží na účetní přehledy a~vyhodnocuje provozní a~ekonomické statistiky areálu.
+Spravuje rovněž \textbf{ceníky}, \textbf{položky možné k~zaúčtování} a~\textbf{rezervovatelné jednotky} (jejich dostupnost, kapacitu a~parametry).
+Do jeho kompetencí spadá také \textbf{správa zaměstnanců} včetně přidělování jejich systémových rolí.
+
+Nejintenzivněji budou se systémem pracovat \textbf{recepční}.
+Vykonávají klasickou recepční práci a~navíc \textbf{kontrolu hostů a~vozidel}, kteří se nenacházejí v~chatách (stany, osobní automobily, karavany, obytné vozy,\,\ldots).
+Pro tuto kontrolní činnost budou používat mobilní aplikaci umožňující načítání QR~kódů z~nalepovacích štítků (hosté tyto štítky obdrží při check-inu na recepci) i~skenování registračních značek vozidel, případně jejich ruční zadání.
+
+Při \textbf{klasické recepční práci} pracují recepční pouze s~desktopovým rozhraním, kde především přijímají rezervace, provádějí odbavení hostů a~obsluhují procesy popsané výše.
+Pro recepční je rovněž důležitá \textbf{integrace s~externími systémy}: systémem pro prokazování totožnosti \texttt{E-doklady}, viz \ref{sec:edoklady}, systémem pro ohlašování pobytu cizinců \texttt{Ubyport}, viz \ref{sec:ubyport}, a dalšími.
+Některé z~těchto systémů aktuálně nejsou v~plném provozu, případně se očekává jejich legislativní úprava; architektura nového systému proto musí být navržena tak, aby umožňovala jejich snadné napojení či úpravu napojení do budoucna.
+
+Z~hlediska \textbf{nefunkčních požadavků} jsou na systém kladeny následující nároky.
+\textbf{Uživatelské rozhraní} musí být přehledné a~moderní; klíčové ovládací prvky\,--\,zejména \uv{plachta} obsazenosti, tedy tabulkové znázornění rezervací jednotek v~čase\,--\,však musí dodržovat konvence známé z~obdobných ubytovacích systémů, aby si recepční rychle osvojili práci s~novým systémem a~orientace v~něm zůstala intuitivní.
+Vzhledem k~významnému podílu zahraničních hostů uvedenému v~úvodu kapitoly musí být zajištěna \textbf{lokalizace} uživatelského rozhraní rezervačního formuláře i~vystavovaných dokladů.
+Systém musí zvládat \textbf{souběžnou práci} všech recepčních a~pracovníků provozního personálu v~hlavní sezóně, a~současně musí být schopen obsloužit hosty.
+Vystavované doklady, evidence ubytovaných hostů i~zpracování osobních údajů musí splňovat požadavky \textbf{platné legislativy}.
+Implementace systému musí v~maximální možné míře využít \textbf{stávající infrastrukturu} kempu (recepční počítače, tiskárny, síťové prvky, čtečky), čímž se minimalizují pořizovací náklady, a~zároveň musí být zajištěna snadná přenositelnost serverové části a~nasazení na další pracovní stanice.
+Architektura systému musí být \textbf{rozšiřitelná}, a~to především s~ohledem na legislativní nestabilitu, napojení na externí státní systémy; změny v~těchto integracích musí být proveditelné bez zásadních zásahů do zbytku systému.
+
+\section{Uživatelské role}
+\label{sec:role}
+Se systémem budou pracovat uživatelé v~následujících rolích:
+\begin{itemize}
+    \item \textbf{Host}\,--\,osoba, která má zájem o~vytvoření rezervace, případně organizátor skupinové rezervace; využívá veřejný rezervační formulář a~provádí online check-in členů své skupiny; nemá vytvořený uživatelský účet v~systému.
+    \item \textbf{Recepční}\,--\,hlavní denní operátor systému; v~desktopovém rozhraní spravuje rezervace, manuálně zadává složité a~skupinové rezervace, provádí check-in a~check-out hostů, eviduje ubytované a~vystavuje doklady; rovněž zadává požadavky na údržbu a~úklid a~prostřednictvím mobilní aplikace provádí kontrolu hostů a~vozidel v~areálu (skenování registračních značek a~QR~kódů ze štítků).
+    \item \textbf{Účetní}\,--\,osoba zodpovědná za zaúčtování vystavených dokladů; přistupuje k~vydaným dokladům, přijatým platbám a~peněžnímu deníku, pracuje s~denními uzávěrkami a~dalšími finančními sestavami a~exportuje data do účetního softwaru.
+    \item \textbf{Uklízečka}\,--\,provozní pracovník využívající mobilní aplikaci, ve které vidí denní plán úklidů (včetně informace o~vrácení klíčů) a~po dokončení práce zaznamenává úklid každé jednotky.
+    \item \textbf{Údržbář}\,--\,provozní pracovník využívající mobilní aplikaci; přijímá v~ní požadavky na opravy, které do systému zadali recepční na základě hlášení od hostů, a~po vyřešení požadavek v~aplikaci uzavírá.
+    \item \textbf{Vedoucí kempu}\,--\,sleduje celkovou obsazenost, finanční přehledy a~provozní statistiky; spravuje konfigurační nastavení systému (ceníky, položky k~zaúčtování, dostupnost a~parametry rezervovatelných jednotek); obdobně jako recepční spravuje rezervace; zajišťuje správu zaměstnanců a~přidělování jejich systémových rolí.
+\end{itemize}
+
+\subsection{Činnosti jednotlivých uživatelů se systémem}
+Jednotlivé uživatelské role v~systému provádějí následující činnosti:
+\begin{itemize}
+    \begin{samepage}
+        \item \textbf{Host}
+        \begin{itemize}
+            \item prohlížení volných kapacit v~rezervačním formuláři,
+            \item vyplnění a~odeslání jednoduché rezervace přes webový formulář,
+            \item zobrazení informací o~své rezervaci,
+            \item provedení online check-inu (zadání osobních údajů a~registračních značek vozidel),
+            \item rozeslání odkazu na online check-in členům skupiny (v~případě skupinové rezervace),
+            \item zrušení rezervace.
+        \end{itemize}
+    \end{samepage}
+
+    \item \textbf{Recepční}
+    \begin{itemize}
+        \begin{samepage}
+            \item \underline{kontrola areálu}
+            \begin{itemize}
+                \item skenování QR~kódů z~nalepovacích štítků,
+                \item načítání registračních značek zaparkovaných vozidel,
+                \item manuální vyhledání hostů nebo vozidel.
+            \end{itemize}
+        \end{samepage}
+
+        \begin{samepage}
+            \item \underline{zajištění provozu}
+            \begin{itemize}
+                \item vytváření rozpisů úklidu,
+                \item zadávání nahlášených závad,
+                \item úprava dostupnosti chat (např. z~důvodu poruch),
+                \item plánování objednávek a výdejů stravy.
+            \end{itemize}
+        \end{samepage}
+
+        \begin{samepage}
+            \item \underline{správa rezervací}
+            \begin{itemize}
+                \item potvrzování webových rezervací,
+                \item vytváření složitějších rezervací,
+                \item úprava a~rušení rezervací,
+                \item objednávání stravy pro skupinové rezervace,
+                \item komunikace s~hosty.
+            \end{itemize}
+        \end{samepage}
+
+        \begin{samepage}
+            \item \underline{ubytování hostů a~finanční operace}
+            \begin{itemize}
+                \item evidence ubytovaných hostů a~registračních značek vozidel v~areálu,
+                \item vystavování podkladů pro účetní,
+                \item vystavování účtenek,
+                \item tisk kontrolních nalepovacích štítků,
+                \item vystavování opravných daňových dokladů.
+            \end{itemize}
+        \end{samepage}
+
+        \begin{samepage}
+            \item \underline{administrativní operace}
+            \begin{itemize}
+                \item odesílání zákonných údajů do státních systémů dle platné legislativy,
+                \item vytváření denních uzávěrek.
+            \end{itemize}
+        \end{samepage}
+    \end{itemize}
+
+    \begin{samepage}
+        \item \textbf{Účetní}
+        \begin{itemize}
+            \item kontrola vydaných dokladů,
+            \item evidence stavu úhrad vystavených faktur a~jeho předávání recepčním,
+            \item stahování denních účetních závěrek,
+            \item stahování finančních sestav a~přehledů,
+            \item export dat do účetního softwaru.
+        \end{itemize}
+    \end{samepage}
+
+    \begin{samepage}
+        \item \textbf{Uklízečka}
+        \begin{itemize}
+            \item zobrazení denního plánu úklidu,
+            \item náhled na stav jednotlivých chat (včetně informace o~vrácení klíčů),
+            \item změna stavu chaty po dokončení úklidu.
+        \end{itemize}
+    \end{samepage}
+
+    \begin{samepage}
+        \item \textbf{Údržbář}
+        \begin{itemize}
+            \item zobrazení seznamu nahlášených závad,
+            \item náhled na detail jednotlivých požadavků,
+            \item uzavření požadavku po vyřešení závady.
+        \end{itemize}
+    \end{samepage}
+
+    \item \textbf{Vedoucí kempu}
+    \begin{itemize}
+        \item správa rezervací ve stejném rozsahu jako recepční (viz výše),
+        \item nahlížení na strategické statistiky a~finanční přehledy,
+        \begin{samepage}
+            \item \underline{správa systému}
+            \begin{itemize}
+                \item správa uživatelských účtů a~přiřazování rolí,
+                \item správa ceníků a~položek k~zaúčtování,
+                \item konfigurace rezervovatelných jednotek (dostupnost, kapacita, parametry),
+                \item konfigurace dalších systémových nastavení.
+            \end{itemize}
+        \end{samepage}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Diagram případů užití}
+Diagram případů užití, který vychází z~rolí a~činností uvedených v~předchozích 2 sekcích, je znázorněn na obrázcích \ref{fig:uc-guest} a~\ref{fig:uc-receptionist}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{uc-1.pdf}
+    \caption{Diagram případů užití\,--\,hosté a~správa kempu.}
+    \label{fig:uc-guest}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{uc-2.pdf}
+    \caption{Diagram případů užití\,--\,recepční, vedoucí.}
+    \label{fig:uc-receptionist}
+\end{figure}
+
+\section{Doménový model}
+Doménový model, znázorněný na obrázku~\ref{fig:domain-model}, představuje stěžejní artefakt fáze analýzy požadavků.
+Tvoří konceptuální vrstvu mezi neformální specifikací zadavatele a~technickým návrhem systému prostřednictvím formalizace problémové domény do podoby entit a~jejich vzájemných vztahů.
+
+Zařazení doménového modelu do analytické části práce je metodologicky odůvodněné.
+Model vznikal iterativní konzultací s~cílovými uživateli systému, zejména s~vedením kempu a~zkušenými recepčními; po každém návrhu byly identifikovány nepřesnosti a~model byl upravován tak, aby věrně odpovídal reálným provozním procesům kempu, a~nikoliv pouze jejich vývojářské interpretaci.
+
+Pro vytvoření doménového modelu v~této fázi vývoje hovoří několik důvodů.
+Slouží jako sdílený konceptuální jazyk mezi vývojářem a~zadavatelem, neboť terminologie zachycená v~entitách a~vazbách se promítá do uživatelského rozhraní, dokumentace i~budoucí komunikace nad systémem, a~obě strany ji proto musí interpretovat shodně.
+Vizuální podoba modelu dále umožňuje netechnickým účastníkům konzultace ověřit věrnost zachycení provozu kempu, což u~rozsáhlejších textových specifikací zpravidla není snadno dosažitelné.
+Modelování rovněž odhaluje rozpory či neúplnosti v~požadavcích, jejichž náprava je řádově méně nákladná než v~průběhu návrhu či implementace, a~současně tvoří východisko pro pozdější návrh datové vrstvy.
+Pro lepší orientaci jsou entity rozděleny do čtyř barevně odlišených skupin odpovídajících hlavním funkčním okruhům systému.
+
+Oranžově vyznačená skupina tvoří jádro rezervační logiky a~evidence ubytovaných hostů.
+Mapuje vztahy mezi tím, kdo ubytování poptává (entity \texttt{Reservation} a~\texttt{GroupReservation}), kdo je skutečně ubytován (\texttt{Guest}), na jakém místě (\texttt{Spot}, \texttt{SpotGroup}) a~kdo za pobyt platí.
+Skupinové rezervace umožňují \uv{předrezervaci} více míst najednou s~nutností dodatečného ověření před vytvořením rezervace již předrezervovaných jednotek, čímž je pokryt scénář komplexních rezervací popsaný v~sekci~\ref{sec:pozadavky}.
+Entita \texttt{Vehicle} reflektuje praktickou potřebu evidovat registrační značky pro kontrolu vjezdu a~parkování, pomocí entity \texttt{Nationality} je pak evidována státní příslušnost ubytovaných hostů.
+Entita \texttt{ReservationServiceItem} propojuje rezervaci s~jednotlivými službami, které se k~ní vážou (např. objednanou stravou pro skupinové rezervace či doplňkovými poplatky).
+Entita \texttt{AccessCard} je použita pro ukládání informací o fyzických kartách na ovládání závor v~areálu a výše přijaté kauce.
+
+Žlutozelená skupina reprezentuje operativní a~personální vrstvu systému, jež se uplatňuje především při práci zaměstnanců v~terénu a~při správě fyzických prostředků areálu.
+Entity \texttt{CleaningPlan} a~\texttt{CleanInfo} zajišťují plynulý cyklus přípravy ubytovacích kapacit\,--\,od plánování úklidu přes zaznamenání jeho dokončení až po informaci, že jednotka může být předána dalšímu hostovi.
+Entita \texttt{MaintenanceIssue} eviduje nahlášené závady; vazba na entitu \texttt{User} (vyhrazená pro pracovníky provozního personálu) zachycuje, který konkrétní zaměstnanec danou závadu vyřešil, čímž je zajištěna dohledatelnost údržbářských zásahů.
+Entita \texttt{OutOfOrder} slouží k~označení dočasně nedostupných jednotek (např. z~důvodu poruchy nebo plánované údržby), a~brání tak chybnému ubytování hostů na neprovozuschopných místech.
+Entita \texttt{Event} reprezentuje akce konané v~areálu a~slouží k~informování potenciálních hostů již při vytváření rezervace, čímž se předchází stížnostem hostů, kteří by jinak nemuseli být na konání akcí v~areálu připraveni.
+
+Růžová skupina pokrývá ekonomickou agendu a~definici nabízených produktů kempu.
+Tato vrstva transformuje poskytnuté služby do finanční podoby.
+Entita \texttt{Service} představuje jednotku poskytované služby, pro niž jsou dále specifikovány \texttt{ServiceType} (kategorie), \texttt{ServiceText} (textový popis na dokladech) a~\texttt{VatRate} (sazba DPH).
+Samostatnou entitou je \texttt{Meal}, která zachycuje stravovací položky vázané na rezervaci s fixními typy jídel.
+Model rozlišuje mezi účtenkami (\texttt{Bill}) a~fakturami (\texttt{Invoice}); účtenky slouží jako zúčtovací doklady, faktury jsou určeny především pro předčasné platby\,--\,\uv{zálohy} na pobyt.
+Účtovatelné položky na účtenkách jsou prostřednictvím entity \texttt{BillItem} navázány přímo na entitu \texttt{Service}, čímž je zajištěna konzistence mezi definovanou nabídkou kempu a~jejím promítnutím do vystavovaných dokladů.
+Sebereferenční vazba u~účtenky umožňuje realizaci opravných daňových dokladů.
+Entita \texttt{Language} umožňuje vystavování dokladů v~jazyce hosta, což je relevantní zejména pro významný podíl zahraničních klientů zmíněný v~úvodní sekci kapitoly.
+\texttt{FinancialClosing} reprezentuje účetní závěrky, díky nimž je zajištěna transparentnost finančních toků a~předání podkladů hlavní účetní.
+
+Šedé entity tvoří průřezovou vrstvu autentizace a~oprávnění uživatelů systému.
+Entita \texttt{User} reprezentuje konkrétního uživatele pracujícího se systémem, entita \texttt{Role} definuje jeho systémovou roli odpovídající rolím popsaným v~sekci~\ref{sec:role}.
+Entita \texttt{Passkey} obsahuje autentizační informace uživatele pro přihlášení do systému.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{domain-model.pdf}
+    \caption{Doménový model informačního systému.}
+    \label{fig:domain-model}
+\end{figure}

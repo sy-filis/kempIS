@@ -1,0 +1,299 @@
+\chapter{Přístup do webových aplikací}
+\label{ch:access}
+V~kontextu současného vývoje webových aplikací, distribuovaných systémů a~cloudové infrastruktury představuje správa identity, autentizace a~autorizace jeden z~nejkritičtějších a~architektonicky nejnáročnějších aspektů softwarového inženýrství.
+Tradiční přístupy k~ověřování uživatelů, historicky založené na sdílených tajemstvích (heslo zadávané k~uživatelskému jménu), se v~moderním kybernetickém prostoru ukazují jako fundamentálně nedostatečné.
+Tento stav je důsledkem rostoucí sofistikovanosti útoků, jako je phishing, credential stuffing či man-in-the-middle (MitM), ale také zvyšujících se nároků na uživatelskou přívětivost a~interoperabilitu mezi systémy.
+Tato kapitola obsahuje teoretický i~technický rozbor mechanismů řízení přístupu, s~důrazem na přechod od monolitických stavových architektur k~distribuovaným bezstavovým modelům a~detailní analýzu standardu WebAuthn (Web Authentication API), který v~rámci sady specifikací FIDO2 představuje paradigmatický posun v~bezpečnosti webu a~nabízí možnost využití bezheslového přihlašování.
+
+Identita v~digitálním prostoru není vnímána pouze jako izolovaný technický identifikátor, nýbrž jako obsáhlý soubor atributů, které definují entitu\,--\,ať už jde o~lidského uživatele, softwarový proces nebo IoT zařízení\,--\,v rámci určitého bezpečnostního kontextu.
+Správné pochopení a~implementace separace ověření identity (autentizace) a~následného přidělení oprávnění (autorizace) je nezbytným předpokladem pro návrh bezpečného informačního systému.
+
+\section{Autentizace vs. autorizace}
+Ačkoliv jsou pojmy autentizace a~autorizace v~běžné mluvě a~v~rámci laické veřejnosti často zaměňovány nebo slučovány, v~oblasti informační bezpečnosti a~softwarové architektury představují dva různé, byť úzce provázané procesy.
+Jejich striktní oddělení je klíčové pro modulární návrh systémů a~pro důsledné uplatnění principu nejmenších privilegií (PoLP\,--\,Principle of Least Privilege) v~autorizační vrstvě.
+
+\textbf{Autentizace} (\texttt{AuthN}) je proces verifikace nárokované identity entity.
+Cílem autentizace je s~dostatečnou jistotou odpovědět na otázku, zda je entita skutečně tou, za kterou se vydává.
+NIST ve svém glosáři definuje autentizaci jako proces ověřování identity uživatele, procesu nebo zařízení, často jako nezbytnou prerekvizitu pro umožnění přístupu ke zdrojům v~informačním systému \cite{NIST-800-63B-4}.
+Tento proces spoléhá na prokázání jednoho nebo více autentizačních faktorů, které se dělí do tří základních kategorií \cite[2.3.1]{NIST-800-63-4}:
+\begin{itemize}
+    \item \textbf{znalost}\,--\,informace, kterou zná pouze uživatel (heslo, PIN, odpověď na otázku),
+    \item \textbf{vlastnictví}\,--\,předmět, který uživatel fyzicky vlastní (hardwarový token, mobilní telefon, čipová karta),
+    \item \textbf{bytí}\,--\,biometrická charakteristika uživatele (otisk prstu, sken duhovky, rozpoznání obličeje, hlasová analýza).
+\end{itemize}
+
+V~moderních systémech, zejména v~těch s~vyššími bezpečnostními požadavky, je standardem vyžadovat kombinaci alespoň dvou z~těchto faktorů, což označujeme jako dvoufaktorovou (2FA) nebo vícefaktorovou autentizaci (MFA).
+Důležitým konceptem, který doplňuje autentizaci, je \emph{Identity Proofing} (ověření totožnosti), což je proces, který předchází vydání digitální identity a~jehož cílem je vázat digitální identitu k~reálné fyzické osobě.
+
+\textbf{Autorizace} (\texttt{AuthZ}) je následný proces rozhodování o~tom, zda má již úspěšně autentizovaná entita oprávnění provést konkrétní akci nebo přistoupit ke konkrétnímu zdroji dat.
+Podle definic NIST a~OWASP je autorizace procesem verifikace, že požadovaná akce nebo služba je schválena pro specifickou entitu.
+Autorizace odpovídá na otázku, co může entita v~systému provádět.
+
+Klíčovým poznatkem pro návrh aplikací je, že autentizace nutně neimplikuje autorizaci.
+Uživatel může být úspěšně přihlášen (autentizován), ale systém mu musí explicitně odepřít provádění určitých akcí, pokud k~tomu nemá příslušná oprávnění (autorizace).
+Naopak v~některých případech může být autorizace prováděna bez explicitní autentizace uživatele v~daném koncovém systému, například pokud je přístup k~veřejnému zdroji povolen anonymním uživatelům, nebo pokud je autorizace delegována prostřednictvím tokenu OAuth 2.0, kde příjemce služby nemusí znát identitu uživatele, ale pouze rozsah jeho oprávnění.
+
+\section{Správa relací a~přenos identity}
+Web je ze své podstaty bezstavový, což znamená, že protokol HTTP, který se používá pro přenos dat, sám o~sobě neudržuje informaci o~předchozích požadavcích klienta.
+Aby bylo možné vytvořit stavovou aplikaci, musí být implementován mechanismus správy relací.
+Po úspěšné autentizaci musí webová aplikace udržet kontext přihlášení uživatele napříč jednotlivými HTTP požadavky.
+Existují dva dominantní architektonické přístupy k~řešení tohoto problému:
+\begin{itemize}
+    \item správa relací na straně serveru (session-based),
+    \item použití tokenů na straně klienta (token-based).
+\end{itemize}
+
+Historicky se k~autentizaci používaly metody HTTP Basic a~následně HTTP Digest.
+Basic AuthN funguje na principu přenosu uživatelského jména a~hesla zakódovaných pomocí Base64 v~každém požadavku.
+Nejedná se o~šifrování, a~proto je tento způsob bezpečný pouze při použití zabezpečeného připojení, jinak mohou být přihlašovací údaje snadno zachyceny.
+Digest AuthN se snaží zvýšit bezpečnost tím, že heslo neposílá přímo, ale používá kryptografický hash spolu se serverem zaslanou náhodnou hodnotou (nonce).
+Tím omezuje možnost odposlechu a~opakování zachycených požadavků.
+V~praxi se však Digest autentizace používá jen zřídka, protože poskytuje omezenou úroveň zabezpečení a~nevyhovuje moderním požadavkům na flexibilitu či integraci s~komplexnějšími systémy.
+
+Vedle těchto přístupů se v~určitých kontextech uplatňuje autentizace pomocí mTLS (mutual TLS), která řeší řadu jejich bezpečnostních i~provozních omezení.
+V~případě mTLS se identita klienta ověřuje již při navazování šifrovaného spojení, a~to pomocí klientského X.509 certifikátu vydaného důvěryhodnou certifikační autoritou.
+Klient tak neprokazuje svou identitu sdíleným tajemstvím, ale vlastnictvím privátního klíče, který nikdy neopouští jeho prostředí.
+Server po úspěšném ověření certifikátu získá kryptograficky silnou identitu klienta a~může ji přímo mapovat na aplikační oprávnění, role nebo konkrétní povolené operace.
+Autorizace je tak pevně svázána s~transportní vrstvou, odpadá nutnost přenášet přihlašovací údaje či tokeny v~každém požadavku a~výrazně se snižuje riziko jejich zneužití.
+mTLS se proto uplatňuje zejména v~mikroservisních architekturách, interních systémech a~B2B integracích, kde je klíčová vysoká úroveň důvěry, automatizace a~jasná správa identit jednotlivých klientů.
+
+Společnou nevýhodou všech těchto přístupů (Basic, Digest i~mTLS) je absence řízeného odhlášení; relace fakticky končí teprve po uzavření prohlížeče, případně po vypršení platnosti certifikátu.
+
+
+\subsection{Stavová správa relací}
+V~tradičním modelu session-based interakce server po úspěšném ověření uživatele vytvoří záznam o~relaci (session) ve svém úložišti (paměť RAM, databáze).
+Tento záznam obsahuje identifikátor uživatele, čas vytvoření, čas vypršení platnosti a~případně další metadata o~kontextu přihlášení.
+Uživateli je následně zaslán pouze jedinečný, náhodně vygenerovaný identifikátor této relace (Session ID), obvykle ve formě HTTP cookie.
+Při každém dalším požadavku klient (nejčastěji prohlížeč) automaticky odešle cookie se Session ID, případně ji zašle ve speciální HTTP hlavičce.
+Server tento identifikátor extrahuje, vyhledá jej ve svém úložišti relací, a~pokud je nalezen platný, načte kontext uživatele.
+
+Hlavní výhodou tohoto přístupu je okamžitá kontrola platnosti sezení.
+Jelikož je stav relace uložen na serveru, relace může být kdykoliv okamžitě ukončena (např. při detekci podezřelé aktivity, změně hesla nebo odebrání práv).
+Změna se projeví okamžitě při dalším požadavku uživatele.
+Cookie obsahuje pouze krátký identifikátor (řetězec), nikoliv samotná data o~uživateli, což minimalizuje datovou zátěž v~hlavičkách požadavků, což je výhodné pro sítě s~vysokou latencí či nízkou propustností.
+Zásadní nevýhodou je omezená horizontální škálovatelnost.
+U~distribuovaných systémů a~mikroslužeb musí být úložiště relací sdílené a~dostupné pro všechny instance aplikace.
+Pokud by byly relace uloženy pouze v~paměti jedné instance, požadavek směřující na jiný server by nebyl rozpoznán.
+Použití cookies pro autentizaci činí aplikaci náchylnou k~útokům Cross-Site Request Forgery (CSRF), kdy útočník donutí prohlížeč oběti odeslat požadavek na server, kde je oběť přihlášena.
+Cookies se totiž odesílají automaticky.
+Obrana vyžaduje implementaci Anti-CSRF tokenů nebo striktní nastavení atributu SameSite.
+
+\vspace{8px}
+\noindent Aktuální a~detailní doporučení ohledně implementace a~bezpečnosti jsou popsány v~\cite{www-owasp-session}.
+
+\subsection{Bezstavová správa relací}
+S~nástupem Single Page Applications (SPA), mobilních aplikací a~architektury REST API se stal dominantním token-based přístup, nejčastěji využívající formát JSON Web Token (JWT).
+V~tomto modelu server po autentizaci nevytváří trvalý záznam v~paměti (stav), ale vygeneruje kryptograficky podepsaný token, který obsahuje veškeré potřebné informace o~entitě a~jejích oprávněních přímo ve svém těle (payload).
+Tento token je odeslán klientovi, který jej musí explicitně uložit (např. v~\texttt{localStorage}, \texttt{sessionStorage} nebo \texttt{HttpOnly} cookie).
+Volba úložiště má bezpečnostní důsledky\,--\,\texttt{localStorage} a~\texttt{sessionStorage} jsou přístupné z~JavaScriptu, a~tak je token vystaven útokům typu Cross-Site Scripting (XSS), zatímco \texttt{HttpOnly} cookie tento problém eliminuje, ale otevírá otázku CSRF (viz dále).
+Ke každému požadavku se přidá do HTTP hlavičky \texttt{Authorization} token ve formátu \texttt{Bearer~<token>}. 
+Server ověří digitální podpis tokenu pomocí veřejného klíče vydavatele (u~asymetrických algoritmů, např. RS256, ES256) nebo pomocí sdíleného tajemství (u~symetrických algoritmů, např. HS256).
+Pokud je podpis validní a~token nepřekročil dobu platnosti, server důvěřuje jeho obsahu bez nutnosti dotazovat se do databáze relací.
+
+V~praxi však bezstavová autentizace přináší několik specifických výzev, které je nezbytné zohlednit, zejména v~souvislosti s~revokací tokenů, jejich obnovováním a~ochranou proti případnému zneužití.
+Formát JWT je koncipován jako samostatně přenositelný a~kryptograficky podepsaný objekt, jenž nevyžaduje uchovávání stavových informací na straně serveru.
+Tato charakteristika však současně znamená, že server nemá přirozenou možnost vydaný token jednostranně invalidovat.
+Pokud je tedy JWT jednou vygenerován, zůstává až do vypršení své časové platnosti považován za důvěryhodný, bez ohledu na okolnosti, které mohou nastat po jeho vydání (například změna oprávnění uživatele či podezření na kompromitaci).
+
+Z~uvedeného důvodu se v~moderních systémech běžně uplatňuje mechanismus tzv. refresh tokenů, které umožňují omezení doby platnosti přístupových tokenů na minimum.
+Access token má typicky velmi krátkou životnost\,--\,v~rozmezí jednotek minut až několika desítek minut\,--\,a~slouží výhradně k~autorizaci jednotlivých operací.
+Refresh token naopak disponuje výrazně delší platností (řádově hodiny až týdny) a~používá se k~vystavení nového access tokenu bez nutnosti opakované autentizace uživatele.
+Tento model snižuje riziko zneužití odcizeného tokenu, protože útočník by mohl zneužít pouze krátkodobý access token, jehož platnost brzy vyprší.
+
+Vzhledem k~delší platnosti refresh tokenu je jeho úložiště zvlášť kritickým bezpečnostním rozhodnutím.
+Doporučenou praxí, zejména u~webových aplikací, je ukládání refresh tokenu do \texttt{HttpOnly} cookie s~atributy \texttt{Secure} a~\texttt{SameSite=Strict} (případně \texttt{Lax}), čímž je token nedostupný JavaScriptu, a~tedy odolný vůči XSS útokům.
+Access token, který se používá výhradně při API voláních, lze naopak držet v~paměti aplikace (např. v~proměnné JavaScriptové runtime).
+U~mobilních a~nativních aplikací se pro úložiště refresh tokenů využívají systémové bezpečnostní enklávy (Keychain v~iOS, Keystore v~Androidu).
+
+Pro zvýšení bezpečnosti se refresh tokeny často organizují do tzv. tokenových rodin (\texttt{token families}).
+Při každém použití refresh tokenu (tj. při výměně za nový access token) je původní refresh token okamžitě zneplatněn a~klient obdrží nový.
+Pokud je serveru předložen refresh token, který již není součástí aktuální tokenové linie, lze tuto skutečnost považovat za indikaci možné kompromitace.
+Tento princip umožňuje detekovat replay útoky a~současně zamezit nekontrolovanému šíření validních tokenů.
+
+Doplňkovou ochranu proti odcizení a~následnému použití tokenu třetí stranou poskytují tzv. sender-constrained tokens, jejichž platnost je kryptograficky vázána na konkrétní klientské zařízení.
+Klient prokazuje vlastnictví privátního klíče, vůči kterému byl token vydán, a~bez tohoto klíče nelze token použít, i~kdyby byl odcizen.
+Mezi standardizované přístupy patří mTLS-bound tokeny vázané na klientský X.509 certifikát \cite{rfc-8705} a~mechanismus DPoP (Demonstrating Proof of Possession), který využívá samostatný JWT podepsaný klientovým klíčem \cite{rfc-9449}.
+
+Revokace tokenů v~bezstavové architektuře dále vyžaduje použití doplňkových mechanismů, protože samotný JWT nelze po vydání zpětně změnit ani zneplatnit.
+Systémy často využívají kolekci odvolaných tokenů (tzv. revocation list), kterou server kontroluje při každém ověřování. Alternativně lze revokace dosáhnout rotací kryptografických klíčů používaných k~podpisu JWT.
+Změna podpisového klíče způsobí, že veškeré dříve vydané tokeny přestanou být validní, avšak tato strategie má značný dopad na všechny aktivní uživatele a~používá se spíše výjimečně.
+
+Celkově lze konstatovat, že přestože JWT a~obecně token-based autentizace umožňují efektivní škálování a~snadnou integraci v~moderních distribuovaných systémech, vyžadují pečlivý návrh dodatečných bezpečnostních mechanismů pro revokaci, obnovu a~detekci zneužití tokenů.
+Teprve kombinací těchto postupů lze dosáhnout úrovně zabezpečení, která odpovídá požadavkům současných webových a~mobilních aplikací.
+
+\vspace{8px}
+\noindent Aktuální a~detailní doporučení ohledně implementace a~bezpečnosti jsou popsány v~\cite{rfc-8725}.
+
+\section{Přihlašování do informačních systémů}
+\label{sec:prihlasovani}
+Základním referenčním bodem pro hodnocení síly autentizace může být např. \cite{NIST-800-63B-4}, která definuje autentizátory a~jejich technické požadavky.
+Podle tohoto standardu je možné prokazovat identitu pomocí \cite[2.1.1]{NIST-800-63B-4}:
+\begin{enumerate}
+    \item \textbf{heslo}\,--\,sdílené tajemství vybrané uživatelem,
+    \item \textbf{vyhledatelné tajemství}\,--\,sada tajemství vygenerovaných poskytovatelem používaná k~odpovědi na dodanou výzvu,
+    \item \textbf{jiné zařízení}\,--\,doručení tajemství (SMS, email) na jiné zařízení nebo schválení přihlášení na zařízení,
+    \item \textbf{jednorázové tajemství (OTP)}\,--\,heslo vygenerované OTP generátorem, nebo kód zaslaný druhotným kanálem,
+    \item \textbf{jednorázové chráněné tajemství}\,--\,heslo vygenerované OTP generátorem, který vyžaduje aktivaci dalším faktorem,
+    \item \textbf{kryptografické ověření}\,--\,důkaz vlastnictví zařízení za využití asymetrické kryptografie,
+    \item \textbf{kryptografické ověření s~aktivací}\,--\,kryptografické ověření po aktivaci dalším faktorem.
+\end{enumerate}
+
+Klíčovým konceptem je zde Úroveň záruky autentizátoru (Authenticator Assurance Level\,--\,AAL), která kategorizuje sílu autentizačního procesu do tří stupňů na základě odolnosti vůči různým vektorům útoků \cite[2.1--2.5]{NIST-800-63B-4}:
+
+\paragraph{AAL1}
+Vyžaduje minimálně jeden faktor (typicky znalostní\,--\,heslo).
+Umožňuje širokou škálu autentizátorů, ale neposkytuje ochranu proti phishingu nebo online útokům hrubou silou, pokud nejsou aplikovány striktní politiky zamykání účtů.
+Kryptografické autentizátory na této úrovni musí používat schválenou kryptografii.
+
+\paragraph{AAL2}
+Vyžaduje důkaz o~kontrole dvou různých autentizačních faktorů (např. heslo + OTP).
+Musí používat schválené kryptografické techniky.
+V~USA je AAL2 typickým požadavkem pro federální systémy a~doporučovanou úrovní pro komerční aplikace zpracovávající citlivá data.
+
+\paragraph{AAL3}
+Vyžaduje hardwarový kryptografický autentizátor a~odolnost vůči podvržení ověřovatele.
+Autentizace je založena na asymetrické kryptografii, přičemž privátní klíč je bezpečně uložen v~hardwarovém autentizátoru uživatele tak, aby jej nebylo možné exportovat, zatímco server (Relying Party) uchovává pouze odpovídající veřejný klíč.
+Vyžaduje dva faktory, z~nichž jeden musí být hardwarový.
+
+\vspace{8px}
+\noindent Ačkoliv se nejedná o~standard platný v~České republice nebo Evropské unii, vývojářům dává ucelenou představu o~možnostech autentizace uživatelů.
+Standard nepokrývá pouze autentizaci, ale zabývá se uživatelskou přívětivostí, hrozbami a~bezpečnostními úvahami, ale také možnostmi obnovení účtu \cite[4.2]{NIST-800-63B-4}.
+\vspace{8px}
+\noindent Politika hesel podle NIST \cite[3.1.1.1, 3.1.1.2]{NIST-800-63B-4}:
+\begin{enumerate}
+    \item \textbf{expirace}\,--\,hesla by neměla expirovat, pokud neexistuje podezření na kompromitaci,
+    \item \textbf{délka nad složitost}\,--\,důraz je kladen na délku a~podporu větných hesel, která mají vyšší entropii a~jsou jednodušeji zapamatovatelná,
+    \item \textbf{zákaz umělých pravidel}\,--\,nevyžadovat povinné střídání velkých písmen, symbolů a~číslic,
+    \item \textbf{kontrola proti únikům}\,--\,při vytváření hesla ověřovat vůči známým databázím uniklých hesel,
+    \item \textbf{podpora kopírování a~vložení}\,--\,možnost použití správce hesel, který generuje silná kryptograficky náhodná hesla.
+\end{enumerate}
+
+Při návrhu zabezpečení uživatelských dat je kritickým požadavkem, aby hesla nebyla v~databázích nikdy ukládána v~prostém textu.
+V~případě kompromitace úložiště by totiž útočník získal okamžitý přístup k~identitám uživatelů, což s~ohledem na častou recyklaci hesel napříč službami představuje riziko pro celou digitální stopu subjektu.
+Obecné kryptografické hašovací funkce jako \texttt{MD5}, \texttt{SHA-1} či \texttt{SHA-256} jsou pro přímé hašování hesel nevhodné.
+\texttt{MD5} a~\texttt{SHA-1} jsou navíc kryptograficky prolomené a~nelze je považovat za bezpečné ani v~jiných kontextech.
+Funkce z~rodiny \texttt{SHA-2} a~\texttt{SHA-3} sice zůstávají kryptograficky bezpečné, byly však navrženy pro vysoký výpočetní výkon, což útočníkovi umožňuje provádět miliardy pokusů za sekundu na běžně dostupném hardwaru.
+
+Pro eliminaci útoků pomocí předem vypočítaných tabulek a~zajištění jedinečnosti otisku i~u~shodných hesel je nezbytné používat mechanismus soli (\texttt{salt}).
+Sůl musí být kryptograficky bezpečně vygenerovaný náhodný řetězec, který je jedinečný pro každé heslo a~je společně s~jeho hašem uložen v~databázi.
+Vyšší úroveň bezpečnosti pak poskytuje použití tzv. pepře (\texttt{pepper}), což je tajná hodnota společná pro celý systém.
+Na rozdíl od soli se pepř ukládá odděleně od databáze, například v~konfiguraci aplikace nebo v~hardwarovém bezpečnostním modulu.
+Tento přístup zajišťuje, že útočník nemůže zahájit offline útok na hesla ani v~případě, že získá úplný výpis databázové tabulky uživatelů, pokud zároveň nepronikne do aplikační infrastruktury.
+
+Současná metodika OWASP pro bezpečné ukládání hesel prioritně doporučuje využití adaptivních algoritmů typu \texttt{Argon2id}\footnote{\url{https://datatracker.ietf.org/doc/rfc9106/}}, \texttt{scrypt}\footnote{\url{https://datatracker.ietf.org/doc/rfc7914}} či \texttt{bcrypt}\footnote{\url{https://static.usenix.org/event/usenix99/provos/provos.pdf}}, které prostřednictvím nastavitelné výpočetní a~paměťové náročnosti (work factor) efektivně brání masivně paralelním útokům.
+Tyto funkce záměrně prodlužují dobu výpočtu haše na stovky milisekund, což zůstává pro legitimního uživatele transparentní, ale pro útočníka činí hromadné offline prolamování ekonomicky i~časově neúnosným.
+Správa těchto údajů však musí být dynamická, aby reflektovala neustálý nárůst dostupného výpočetního výkonu; systém by měl při každém úspěšném přihlášení kontrolovat parametry uloženého haše a~v~případě jejich zastarání jej pomocí mechanismu adaptivního re-hašování transparentně aktualizovat.
+Tento přístup zajišťuje, že úroveň zabezpečení databáze kontinuálně graduje v~souladu s~aktuálními technologickými standardy, aniž by byla vyžadována interakce ze strany uživatele \cite{www-owasp-password}.
+
+\subsection{Bezheslové přihlašování}
+\label{sec:webauthn}
+Standard WebAuthn (Web Authentication API), který je součástí širšího rámce FIDO2, představuje v~kontextu moderní webové bezpečnosti fundamentální posun od autentizace založené na sdílených tajemstvích k~využití asymetrické kryptografie, tedy páru veřejného a~soukromého klíče.
+Tato sekce poskytuje analýzu samotné specifikace, zkoumá různé implementační vzory\,--\,od použití jako druhého faktoru (2FA) až po úplnou náhradu uživatelských jmen a~hesel pomocí přístupových klíčů (passkeys)\,--\,a~detailně rozebírá bezpečnostní aspekty synchronizace klíčů v~cloudových ekosystémech v~porovnání s~využitím hardwarových bezpečnostních modulů.
+
+Pro pochopení hloubky standardu WebAuthn je nutné vymezit jeho místo v~hierarchii standardů FIDO2.
+Nejedná se o~izolovaný protokol, ale o~propojení několika vrstev, které společně zajišťují důvěryhodný řetězec od uživatele až po server.
+Celý systém je definován interakcí tří hlavních entit, jak je nastíněno na obrázku \ref{fig:passkeys}, přičemž každá komunikace probíhá prostřednictvím specifického protokolu:
+
+\begin{enumerate}
+\item \textbf{Relying Party (RP)}\,--\,backendová část aplikace (server), která vyžaduje autentizaci; RP je zodpovědná za generování kryptografických výzev (challenges), ukládání veřejných klíčů a~validaci kryptografických podpisů.
+\item \textbf{WebAuthn Client (User Agent)}\,--\,typicky webový prohlížeč, který implementuje WebAuthn API\footnote{\url{https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API}}; funguje jako prostředník zajišťující kontrolu původu (origin matching) a~přenos požadavků mezi RP a~autentizátorem.
+\item \textbf{Authenticator}\,--\,kryptografická entita (hardwarová nebo softwarová), která generuje páry klíčů a~provádí kryptografické podpisy; komunikace mezi klientem a~autentizátorem probíhá prostřednictvím protokolu CTAP (Client to Authenticator Protocol).
+\end{enumerate}
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.75\linewidth]{passkeys-flow.pdf}
+    \caption{Postup ověření identity při využití WebAuthn.}
+    \label{fig:passkeys}
+\end{figure}
+
+WebAuthn lze nasadit jak jako primární autentizační mechanismus, tak jako dodatečný faktor v~kombinaci s~existujícími metodami.
+V~bezheslovém scénáři uživatel místo hesla použije autentizátor\,--\,například ověření pomocí otisku prstu, rozpoznání obličeje nebo zadání lokálního PINu na zařízení\,--\,čímž prokáže vlastnictví odpovídajícího privátního klíče.
+Tento přístup, označovaný jako \texttt{passkeys}, je inherentně odolný vůči phishingovým útokům i~útokům na databáze s~hesly (resp. na jejich haše).
+WebAuthn nahrazuje hesla kryptografickými klíči jedinečnými pro každou službu, takže ani v~případě úniku veřejných klíčů není možné provést autentizaci na jiném webu.
+
+V~tomto modelu tzv. zjistitelných identit (discoverable credentials, dříve označovaných jako resident keys) je pár klíčů spolu s~metadaty uložen perzistentně v~paměti autentizátoru.
+WebAuthn Client po zahájení autentizace nabídne uživateli seznam účtů nalezených v~paměti autentizátoru, z~nichž si uživatel vybere požadovanou identitu.
+V~závislosti na konfiguraci mohou být vyžadovány další kroky ověření identity, jako je biometrie nebo PIN.
+Tento způsob autentizace využívají například služby společností Google, GitHub, Amazon nebo Discord.
+
+Alternativním způsobem nasazení WebAuthn je jeho použití jako dodatečného faktoru v~rámci vícefaktorového ověřování (MFA).
+V~takovém režimu se uživatel nejprve autentizuje pomocí primárního faktoru a~následně potvrdí přihlášení pomocí WebAuthn.
+Tento model, založený na tzv. server-side credentials (dříve označovaných jako non-resident keys), navazuje na starší standard U2F\footnote{\url{https://fidoalliance.org/specs/u2f-specs-master/fido-u2f-overview.html}}.
+Při registraci autentizátor vygeneruje pár klíčů, přičemž privátní klíč je zašifrován symetrickým \uv{master klíčem} pevně uloženým v~hardwaru autentizátoru.
+Výsledný zašifrovaný blob, označovaný jako Credential ID, je následně odeslán na server a~uložen do databáze.
+Autentizátor si tedy privátní klíč trvale neukládá.
+Při autentizaci uživatel nejprve zadá uživatelské jméno, server dohledá odpovídající Credential ID a~pošle jej zpět autentizátoru, který jej dešifruje (pokud byl vytvořen jeho vlastním master klíčem) a~dočasně získá přístup k~privátnímu klíči pro provedení kryptografických operací.
+Tímto způsobem využívají WebAuthn například služby provozované společnostmi Meta nebo Cloudflare.
+
+WebAuthn API je implementováno ve všech hlavních webových prohlížečích.
+Webové aplikace tak mohou prostřednictvím metod \texttt{navigator.credentials.create} (registrace) a~\texttt{navigator.credentials.get} (autentizace) vyvolat nativní dialog autentizátoru.
+V~moderních operačních systémech jsou autentizátory často integrovány přímo do jádra systému, nebo poskytují rozhraní pro komunikaci s~externími zařízeními.
+
+WebAuthn rozlišuje dva základní typy autentizátorů: \textbf{roaming} a~\textbf{platform}.
+Roaming autentizátor představuje samostatné přenosné zařízení, typicky USB, NFC nebo Bluetooth bezpečnostní klíče.
+Mezi nejrozšířenější patří YubiKey společnosti Yubico, Google Titan Security Key či open-source SoloKey.
+Tyto klíče existují v~několika formátových provedeních\,--\,USB-A, USB-C, Lightning a~varianty s~podporou NFC pro přiložení k~mobilním zařízením.
+Hlavní výhodou roaming autentizátorů je jejich přenositelnost mezi zařízeními a~odolnost vůči útokům na samotný hostitelský systém, neboť privátní klíč nikdy neopouští bezpečnostní prvek klíče.
+
+Platformní autentizátor je integrován přímo do zařízení uživatele a~využívá zpravidla biometrické senzory.
+Typickými představiteli jsou Windows Hello (využívající TPM ve spojení s~rozpoznáním obličeje, otiskem prstu nebo PINem), Touch ID a~Face ID na zařízeních Apple, Android Biometric API u~mobilních zařízení s~Androidem či iCloud Keychain a~Google Password Manager pro správu synchronizovaných passkeys.
+Platformní autentizátory poskytují vyšší komfort, protože nevyžadují manipulaci s~externím zařízením, na druhou stranu jsou vázány na konkrétní zařízení nebo ekosystém.
+
+Pro překlenutí rozdílu mezi platformními a~roaming autentizátory zavedla specifikace CTAP 2.2 tzv. hybridní transport (dříve označovaný jako caBLE\,--\,Cloud-Assisted Bluetooth Low Energy), který umožňuje použít autentizátor z~jednoho zařízení k~přihlášení na druhém.
+Typickým scénářem je přihlášení na desktopu pomocí mobilního telefonu: uživatel naskenuje QR kód zobrazený na obrazovce počítače, čímž se naváže šifrovaný BLE kanál mezi oběma zařízeními a~telefon poskytne kryptografický důkaz vlastnictví passkeys.
+Tento mechanismus představuje zásadní krok k~použitelnosti bezheslového přihlašování napříč platformami, aniž by uživatel musel ručně synchronizovat klíče nebo přenášet hardwarový klíč.
+
+Oba typy autentizátorů lze v~aplikaci jednotně používat díky abstrakční vrstvě, kterou poskytuje WebAuthn Client.
+Volba konkrétního typu je tak primárně otázkou bezpečnostních požadavků a~uživatelského komfortu, nikoliv implementačním rozhodnutím na straně serveru.
+
+Ve srovnání s~tradičními metodami založenými na heslech nebo OTP přináší WebAuthn významné zvýšení bezpečnosti.
+Klíčovou vlastností je odolnost proti phishingu, neboť autentizátor reaguje pouze na výzvy pocházející ze správného původu (domény).
+Další zásadní výhodou je eliminace sdílených tajemství na straně serveru\,--\,RP uchovává pouze veřejné klíče, které nejsou pro útočníka prakticky zneužitelné.
+Současně WebAuthn účinně brání replay útokům, jelikož každá autentizace je svázána s~jedinečnou jednorázovou kryptografickou výzvou.
+
+V~současnosti umožňují správci hesel synchronizaci přístupových klíčů mezi zařízeními prostřednictvím cloudových úložišť, což výrazně zvyšuje použitelnost, avšak současně přináší nové bezpečnostní výzvy.
+Přenos i~ukládání klíčů je sice realizováno pomocí end-to-end šifrování, takže ani provozovatel služby nemá přímý přístup k~privátním klíčům, nicméně uživatel musí důvěřovat bezpečnosti zálohovací infrastruktury i~kvalitě implementovaných kryptografických mechanismů.
+Útok na cloudový účet by teoreticky mohl umožnit získání zašifrovaných klíčů.
+V~praxi však tato synchronizace výrazně zvyšuje komfort uživatelů, zejména z~hlediska zálohování a~přechodu mezi zařízeními.
+Někteří poskytovatelé, například společnost Google, navíc experimentují s~automatickou konverzí hesel uložených ve správci hesel na WebAuthn klíče, což umožňuje plynulý přechod na bezheslové přihlašování~\cite{www-google-passkeys-creation}.
+
+Z~bezpečnostního hlediska představuje volba mezi hardwarovými a~platformními autentizátory kompromis mezi izolací klíče a~zálohovatelností.
+Hardwarové bezpečnostní klíče poskytují nejvyšší úroveň ochrany privátního klíče, který je uložen v~zabezpečeném prvku a~nelze jej exportovat ani softwarově extrahovat.
+Riziko ztráty fyzického zařízení však může vést k~úplné ztrátě přístupu, a~proto je nezbytné registrovat alespoň jeden záložní autentizátor nebo využít obnovovací kódy.
+Platformní autentizátory tento problém částečně řeší díky synchronizaci passkeys přes cloudové ekosystémy, čímž obětují část striktní izolace klíče ve prospěch dostupnosti a~plynulého přechodu mezi zařízeními.
+
+Celkově lze WebAuthn označit za technologicky vyspělý a~bezpečnější přístup k~ověřování identity.
+Jeho plný potenciál se však projeví až s~důslednou edukací všech zúčastněných aktérů, což odpovídá i~dosavadnímu vývoji\,--\,přestože je standard široce podporován prohlížeči, k~masovějšímu nasazení bezheslového přihlašování dochází teprve v~posledních dvou letech.
+
+\section{Útoky na webové aplikace}
+Robustní autentizace je nezbytným, nikoliv však dostatečným předpokladem bezpečné webové aplikace.
+Útoky se zdaleka neomezují na přihlašovací mechanismy\,--\,cílí napříč všemi vrstvami architektury, od konfigurace prostředí a~aplikační logiky až po závislosti třetích stran.
+Souhrnný pohled na nejčastější vektory útoků poskytuje projekt OWASP Top 10, jehož aktualizovaná edice pro rok 2025 \cite{www-owasp-top10} odráží zásadní posun: bezpečnost již není vnímána pouze jako problém chybného kódu, ale jako otázka systémových selhání, složitosti architektur a~rizik dodavatelských řetězců.
+Na první příčce tohoto hodnocení se drží chyby kategorie \emph{Broken Access Control}, které představují nejčastější a~nejkritičtější riziko.
+Tato kategorie nyní absorbuje i~dříve samostatnou hrozbu \emph{Server-Side Request Forgery}, což zdůrazňuje, že SSRF je ve své podstatě selháním v~řízení toho, kam má server povolen přístup.
+Typickým projevem selhání řízení přístupu jsou útoky typu \emph{Broken Object Level Authorization}\footnote{\url{https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/}}, kdy útočník manipulací s~identifikátory v~URL (např. změnou ID objednávky) přistupuje k~datům jiných uživatelů.
+Dalšími častými vektory jsou vertikální eskalace privilegií, kdy běžný uživatel získá administrátorská práva, a~vynucené procházení skrytých endpointů.
+
+Významný vzestup ve výskytech útoků na druhou pozici zaznamenala kategorie \emph{Security Misconfiguration}, což je přímým důsledkem rostoucí komplexity cloudových prostředí a~kontejnerizace.
+Útoky zde necílí na chybu v~samotné aplikaci, ale na její prostředí\,--\,například na ponechané výchozí účty, zapnuté ladicí režimy v~produkci nebo nesprávně nastavená oprávnění v~clusterech.
+Těsně za ní následuje zcela nová a~kritická kategorie pro rok 2025, \emph{Software Supply Chain Failures}.
+Tato kategorie reaguje na trend, kdy útočníci neútočí přímo na cílovou firmu, ale infikují knihovny a~závislosti, které vývojáři používají, případně v~nich vyhledávají zranitelnosti, jichž se následně snaží využít.
+Pokud útočník kompromituje populární balíček, škodlivý kód se stane legitimní součástí aplikace ještě před jejím nasazením.
+
+Tradiční technické zranitelnosti stále přetrvávají, byť s~mírným poklesem v~žebříčku.
+\emph{Cryptographic Failures} zahrnují používání zastaralých hašovacích algoritmů (MD5, SHA-1) na aplikační vrstvě, ukládání hesel a~klíčů v~prostém textu, nevynucení zabezpečeného připojení na transportní vrstvě TCP/IP modelu, možnost degradace použitých algoritmů nebo například chybějící či nedostatečnou validaci certifikátů.
+Kategorie \emph{Injection}, kam spadají \emph{SQL Injections} a~\emph{Cross-Site Scripting}, klesla na páté místo díky rozšíření moderních frameworků, které vstupy automaticky ošetřují.
+Přesto zůstává hrozbou u~starších systémů.
+\emph{Insecure Design} pak upozorňuje na chyby, které nelze opravit záplatou v~kódu, protože jsou součástí samotného návrhu byznys logiky\,--\,například možnost uplatnit slevový kupón opakovaně nebo absence rate-limitingu, což umožňuje útoky na vyčerpání zdrojů.
+
+Oblast autentizace, shrnutá v~kategorii \emph{Authentication Failures}, čelí sofistikovaným automatizovaným útokům.
+Dominantní hrozbou je Credential Stuffing, kdy útočníci masivně zkoušejí přihlašovací údaje uniklé z~jiných služeb.
+Dále se rozšiřují útoky na správu relací, jako je Session Hijacking (krádež aktivního tokenu) a~Session Fixation (vnucení známého tokenu oběti).
+Specifickým fenoménem je \emph{MFA Fatigue}, kdy útočník zahltí uživatele opakovanými push notifikacemi k~potvrzení přihlášení, dokud uživatel rezignovaně jednu nepotvrdí.
+Obranou proti těmto útokům je důsledné nasazení vícefaktorové autentizace (MFA) s~ověřováním pomocí porovnání čísel (number matching), zákaz slabých hesel a~kontrola proti databázím uniklých údajů, viz sekce \ref{sec:prihlasovani}.
+Problémem je také implementace zpracování hlavičky JWT tokenu v~případě, že útočník změní typ použitého algoritmu na \texttt{none}, kdy podpis dat není možné ověřit.
+
+Novinkou v~žebříčku pro rok 2025 je kategorie \emph{Mishandling of Exceptional Conditions}, která sjednocuje 24 dříve roztroušených CWE a~soustředí se na odolnost systému.
+Útoky v~této oblasti zneužívají chybová hlášení, která prozrazují příliš mnoho informací (stack traces, verze databází), nebo stavy, kdy aplikace při chybě \texttt{fail open} selže a~umožní přístup bez autorizace.
+Seznam doplňují kategorie \emph{Software and Data Integrity Failures} zaměřená na nebezpečnou deserializaci a~nepodepsané aktualizace, a~\emph{Security Logging and Alerting Failures}, která kritizuje neschopnost detekovat probíhající útok v~reálném čase.
