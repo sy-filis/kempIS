@@ -1,0 +1,134 @@
+<kemp-is-staff-screen-header
+  title="Úklid"
+  [subtitle]="subtitle()"
+>
+  <div
+    slot="below"
+    class="kemp-is-cleaning__plan"
+  >
+    <p-datepicker
+      [ngModel]="pickerDate()"
+      (ngModelChange)="onDateChange($event)"
+      dateFormat="dd. mm. yy"
+      iconDisplay="input"
+      [showIcon]="true"
+      appendTo="body"
+      placeholder="Vybrat datum"
+      class="kemp-is-cleaning__plan-select"
+    />
+  </div>
+</kemp-is-staff-screen-header>
+
+<div class="kemp-is-cleaning__progress">
+  <p-progressBar
+    [value]="progressPercent()"
+    [showValue]="false"
+    class="kemp-is-cleaning__progress-bar"
+  />
+</div>
+
+@if (isEmpty()) {
+  <div class="kemp-is-cleaning__empty">
+    <i
+      class="pi pi-sparkles"
+      aria-hidden="true"
+    ></i>
+    <span>Pro vybraný den nejsou naplánovány žádné úklidy.</span>
+  </div>
+}
+
+@for (group of groups(); track group.type) {
+  <section class="kemp-is-cleaning__group">
+    <header class="kemp-is-cleaning__group-head">
+      <h3 class="kemp-is-cleaning__group-title">{{ group.type }}</h3>
+      <span class="kemp-is-cleaning__group-count kemp-mono"
+        >{{ group.done }}/{{ group.total }}</span
+      >
+    </header>
+
+    <ul class="kemp-is-cleaning__list">
+      @for (cottage of group.items; track cottage.cleanInfoId) {
+        <li class="kemp-is-cleaning__row">
+          <div
+            class="kemp-is-cleaning__lead"
+            [class.kemp-is-cleaning__lead--done]="cottage.done"
+          >
+            <span
+              class="kemp-is-cleaning__lead-id kemp-mono"
+              [class.kemp-is-cleaning__lead-id--done]="cottage.done"
+              >{{ cottage.spotName }}</span
+            >
+            @if (cottage.occupied) {
+              <span class="kemp-is-cleaning__lead-occupied">
+                <span
+                  class="kemp-is-cleaning__dot kemp-is-cleaning__dot--occupied"
+                ></span>
+                Obsazeno
+              </span>
+            }
+          </div>
+
+          <div class="kemp-is-cleaning__body">
+            <div class="kemp-is-cleaning__pills">
+              @if (cottage.done) {
+                <p-tag
+                  severity="success"
+                  icon="pi pi-check"
+                  value="Uklizeno"
+                  [rounded]="true"
+                />
+              } @else {
+                <p-tag
+                  severity="secondary"
+                  value="K úklidu"
+                  [rounded]="true"
+                />
+              }
+              @if (cottage.note) {
+                <p-tag
+                  severity="warn"
+                  icon="pi pi-info-circle"
+                  value="Poznámka"
+                  [rounded]="true"
+                />
+              }
+            </div>
+
+            @if (cottage.note) {
+              <p class="kemp-is-cleaning__note">{{ cottage.note }}</p>
+            } @else {
+              <p class="kemp-is-cleaning__hint">
+                {{
+                  cottage.occupied
+                    ? "Hosté se odhlásí dnes do 11:00."
+                    : "Bez poznámky."
+                }}
+              </p>
+            }
+          </div>
+
+          <div class="kemp-is-cleaning__action">
+            @if (cottage.done) {
+              <span
+                class="kemp-is-cleaning__check kemp-is-cleaning__check--done"
+                aria-label="Hotovo"
+              >
+                <i class="pi pi-check"></i>
+              </span>
+            } @else if (canAckCleaning()) {
+              <button
+                type="button"
+                class="kemp-is-cleaning__check"
+                [disabled]="isPending(cottage.cleanInfoId)"
+                (click)="markCleaned(cottage.cleanInfoId, cottage.done)"
+                aria-label="Označit hotovo"
+              >
+                <i class="pi pi-check"></i>
+              </button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}

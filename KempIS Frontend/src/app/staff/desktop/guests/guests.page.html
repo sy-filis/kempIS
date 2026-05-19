@@ -1,0 +1,174 @@
+<div class="kemp-is-guests">
+  <header class="kemp-is-guests__toolbar">
+    <div class="kemp-is-guests__title">
+      <div class="kemp-is-guests__title-eyebrow">Recepce</div>
+      <div class="kemp-is-guests__title-main">Hosté</div>
+    </div>
+    <div class="kemp-is-guests__filters">
+      <div class="kemp-is-guests__field">
+        <span class="kemp-is-guests__field-label">Od</span>
+        <p-datepicker
+          [ngModel]="from()"
+          (ngModelChange)="from.set($event)"
+          dateFormat="dd. mm. yy"
+          [showIcon]="true"
+          appendTo="body"
+        />
+      </div>
+      <div class="kemp-is-guests__field">
+        <span class="kemp-is-guests__field-label">Do</span>
+        <p-datepicker
+          [ngModel]="to()"
+          (ngModelChange)="to.set($event)"
+          [minDate]="minToDate()"
+          dateFormat="dd. mm. yy"
+          [showIcon]="true"
+          appendTo="body"
+        />
+      </div>
+      <p-iconfield
+        iconPosition="left"
+        class="kemp-is-guests__search"
+      >
+        <p-inputicon class="pi pi-search" />
+        <input
+          pInputText
+          type="text"
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+          placeholder="Hledat (jméno, doklad, adresa…)"
+        />
+      </p-iconfield>
+    </div>
+  </header>
+
+  <div class="kemp-is-guests__content">
+    <p-table
+      [value]="rows()"
+      [loading]="loading()"
+      dataKey="id"
+      sortField="lastName"
+      [sortOrder]="1"
+      styleClass="kemp-is-table"
+      [tableStyle]="{ 'min-width': '64rem' }"
+    >
+      <ng-template pTemplate="caption">
+        <div class="kemp-is-guests__caption">
+          <div class="kemp-is-guests__totals">
+            <span>
+              Počet záznamů: <strong>{{ count() }}</strong>
+            </span>
+          </div>
+          <div class="kemp-is-guests__caption-spacer"></div>
+        </div>
+        @if (hasError()) {
+          <div class="kemp-is-guests__error">
+            <p-message
+              severity="error"
+              text="Načtení selhalo. Zkuste to znovu."
+            />
+            <p-button
+              label="Zkusit znovu"
+              icon="pi pi-refresh"
+              size="small"
+              severity="secondary"
+              (onClick)="onRetry()"
+            />
+          </div>
+        }
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="lastName">
+            Příjmení a jméno <p-sortIcon field="lastName" />
+          </th>
+          <th pSortableColumn="dateOfBirth">
+            Datum narození <p-sortIcon field="dateOfBirth" />
+          </th>
+          <th>Doklad</th>
+          <th pSortableColumn="nationalityName">
+            Národnost <p-sortIcon field="nationalityName" />
+          </th>
+          <th pSortableColumn="stayDateRange.from">
+            Pobyt <p-sortIcon field="stayDateRange.from" />
+          </th>
+          <th pSortableColumn="checkInAt">
+            Stav <p-sortIcon field="checkInAt" />
+          </th>
+          <th class="kemp-is-guests__signature-col">Podpis</th>
+        </tr>
+      </ng-template>
+
+      <ng-template
+        pTemplate="body"
+        let-guest
+      >
+        <tr
+          class="kemp-is-guests__row"
+          (click)="openGuest(guest)"
+          (keydown.enter)="openGuest(guest)"
+          tabindex="0"
+        >
+          <td>{{ guest.lastName }} {{ guest.firstName }}</td>
+          <td>{{ formatDob(guest.dateOfBirth) }}</td>
+          <td class="kemp-is-guests__doc">
+            @if (guest.documentType !== null && guest.documentNumber !== null) {
+              <span>{{ documentTypeLabel(guest.documentType) }}</span>
+              <span class="kemp-mono"> · {{ guest.documentNumber }} </span>
+            } @else {
+              <span class="kemp-is-guests__muted">—</span>
+            }
+          </td>
+          <td>{{ guest.nationalityName }}</td>
+          <td>
+            {{ formatStay(guest.stayDateRange.from, guest.stayDateRange.to) }}
+          </td>
+          <td>
+            @let status = computeStatus(guest);
+            <p-tag
+              [value]="statusLabel(status)"
+              [severity]="statusSeverity(status)"
+              [icon]="statusIcon(status)"
+            />
+          </td>
+          <td class="kemp-is-guests__signature-cell">
+            @if (!isCzechGuest(guest.nationalityAlpha2)) {
+              @if (guest.hasSignature) {
+                <i
+                  class="pi pi-pencil"
+                  title="Podepsáno"
+                ></i>
+              } @else {
+                <i
+                  class="pi pi-minus kemp-is-guests__muted"
+                  title="Bez podpisu"
+                ></i>
+              }
+            }
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td
+            colspan="7"
+            class="kemp-is-guests__empty"
+          >
+            Žádné záznamy ve zvoleném rozsahu.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-toast />
+
+<kemp-is-guest-editor-dialog
+  [visible]="editorVisible()"
+  (visibleChange)="onEditorVisibleChange($event)"
+  [guest]="editorInput()"
+  (saved)="onGuestSaved()"
+/>

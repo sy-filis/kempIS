@@ -1,0 +1,81 @@
+<p-dialog
+  header="Vystavit fakturu"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '32rem' }"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+>
+  <div class="kemp-is-mc-dialog">
+    <div class="kemp-is-mc-dialog__field">
+      <label for="mc-number"
+        >Číslo faktury <span class="kemp-is-mc-dialog__required">*</span></label
+      >
+      <input
+        pInputText
+        id="mc-number"
+        type="text"
+        [maxlength]="numberMaxLength"
+        [ngModel]="number()"
+        (ngModelChange)="number.set($event)"
+        placeholder="např. 2026001"
+      />
+    </div>
+
+    <div class="kemp-is-mc-dialog__field">
+      <label for="mc-issued"
+        >Datum vystavení
+        <span class="kemp-is-mc-dialog__required">*</span></label
+      >
+      <p-datepicker
+        inputId="mc-issued"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+        [ngModel]="issuedAt()"
+        (ngModelChange)="issuedAt.set($event)"
+      />
+    </div>
+
+    <div class="kemp-is-mc-dialog__field">
+      <label for="mc-due"
+        >Datum splatnosti
+        <span class="kemp-is-mc-dialog__required">*</span></label
+      >
+      <p-datepicker
+        inputId="mc-due"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+        [ngModel]="dueAt()"
+        (ngModelChange)="dueAt.set($event)"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="warn"
+        [text]="msg"
+      />
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      (onClick)="onCancel()"
+    >
+      Zrušit
+    </p-button>
+    <p-button
+      size="small"
+      [disabled]="!canSubmit()"
+      [loading]="submitting()"
+      (onClick)="onSubmit()"
+    >
+      Vystavit
+    </p-button>
+  </ng-template>
+</p-dialog>

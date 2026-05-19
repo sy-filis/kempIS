@@ -1,0 +1,21 @@
+<div class="kemp-is-signature-pad__frame">
+  <canvas
+    #canvas
+    class="kemp-is-signature-pad__canvas"
+  ></canvas>
+  <span
+    class="kemp-is-signature-pad__placeholder"
+    aria-hidden="true"
+    >{{ placeholder }}</span
+  >
+</div>
+<div class="kemp-is-signature-pad__actions">
+  <p-button
+    severity="secondary"
+    [text]="true"
+    size="small"
+    icon="pi pi-eraser"
+    [label]="clearLabel"
+    (onClick)="onClear()"
+  />
+</div>

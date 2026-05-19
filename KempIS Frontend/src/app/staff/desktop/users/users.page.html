@@ -1,0 +1,122 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="kemp-is-users">
+  <header class="kemp-is-users__toolbar">
+    <h1 class="kemp-is-users__title">Uživatelé</h1>
+    <p-button
+      label="Přidat uživatele"
+      icon="pi pi-plus"
+      (onClick)="onCreate()"
+    />
+  </header>
+
+  <p-table
+    [value]="rows()"
+    [loading]="loading()"
+    dataKey="id"
+    styleClass="kemp-is-table"
+    [tableStyle]="{ 'min-width': '60rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Jméno</th>
+        <th>Uživatelské jméno</th>
+        <th>Role</th>
+        <th>Stav</th>
+        <th>Klíče</th>
+        <th
+          style="width: 10rem"
+          class="kemp-is-users__actions-col"
+        >
+          Akce
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template
+      pTemplate="body"
+      let-user
+    >
+      <tr [class.kemp-is-users__row--disabled]="user.isDisabled">
+        <td>{{ user.name }}</td>
+        <td class="kemp-is-users__username">{{ user.username }}</td>
+        <td>
+          <p-tag
+            [value]="primaryRole(user)"
+            [severity]="roleSeverity(user)"
+          />
+        </td>
+        <td>
+          @if (user.isDisabled) {
+            <p-tag
+              value="Deaktivován"
+              severity="danger"
+              icon="pi pi-ban"
+            />
+          } @else {
+            <p-tag
+              value="Aktivní"
+              severity="success"
+              icon="pi pi-check"
+            />
+          }
+        </td>
+        <td>
+          <p-button
+            [label]="'Klíče'"
+            icon="pi pi-key"
+            severity="secondary"
+            [text]="true"
+            size="small"
+            (onClick)="onPasskeys(user)"
+          />
+        </td>
+        <td class="kemp-is-users__actions-cell">
+          <p-button
+            icon="pi pi-pencil"
+            severity="secondary"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Upravit"
+            (onClick)="onEdit(user)"
+          />
+          <p-button
+            icon="pi pi-ban"
+            severity="danger"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Deaktivovat"
+            [disabled]="user.isDisabled"
+            (onClick)="onDisable(user)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="6"
+          class="kemp-is-users__empty"
+        >
+          Žádní uživatelé.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<kemp-is-user-form-dialog
+  [(visible)]="formVisible"
+  [user]="editingUser()"
+  (saved)="onFormSaved($event)"
+/>
+
+<kemp-is-user-passkeys-drawer
+  [userId]="passkeysUserId()"
+  [visible]="passkeysVisible()"
+  (closed)="onPasskeysClosed()"
+/>

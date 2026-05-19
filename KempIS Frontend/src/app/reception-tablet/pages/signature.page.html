@@ -1,0 +1,29 @@
+<section class="kemp-is-tablet-signature">
+  <header class="kemp-is-tablet-signature__header">
+    <h1 i18n="@@tablet.signature.title">Please sign / Podepište se</h1>
+    <p i18n="@@tablet.signature.subtitle">
+      Sign with your finger or a stylus. / Podepište se prstem nebo perem.
+    </p>
+  </header>
+
+  <kemp-is-signature-pad
+    [(value)]="value"
+    [height]="420"
+  />
+
+  <footer class="kemp-is-tablet-signature__actions">
+    <p-button
+      severity="secondary"
+      [text]="true"
+      label="Cancel / Zrušit"
+      i18n-label="@@tablet.signature.cancel"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Confirm / Potvrdit"
+      i18n-label="@@tablet.signature.confirm"
+      [disabled]="!value()"
+      (onClick)="onConfirm()"
+    />
+  </footer>
+</section>

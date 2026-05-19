@@ -1,0 +1,46 @@
+<div class="kemp-is-edoklady-trigger">
+  @if (isRunning()) {
+    <div class="kemp-is-edoklady-trigger__running">
+      <p-progressSpinner
+        styleClass="kemp-is-edoklady-trigger__spinner"
+        strokeWidth="4"
+        ariaLabel="Probíhá ověření"
+      />
+      <span class="kemp-is-edoklady-trigger__label">{{
+        waitingLabel() || "Spouštím ověření…"
+      }}</span>
+      <p-button
+        [text]="true"
+        size="small"
+        severity="secondary"
+        ariaLabel="Zrušit ověření"
+        (onClick)="cancel()"
+      >
+        Zrušit
+      </p-button>
+    </div>
+  } @else {
+    <p-button
+      size="small"
+      ariaLabel="Načíst doklad z eDokladů"
+      (onClick)="start()"
+    >
+      <i
+        class="pi pi-id-card"
+        aria-hidden="true"
+      ></i>
+      <span>Načíst z eDokladů</span>
+    </p-button>
+  }
+
+  @if (failure()) {
+    <p-message
+      severity="warn"
+      [closable]="true"
+      (onClose)="dismissFailure()"
+      styleClass="kemp-is-edoklady-trigger__message"
+    >
+      {{ failureLabel() }}
+    </p-message>
+  }
+</div>

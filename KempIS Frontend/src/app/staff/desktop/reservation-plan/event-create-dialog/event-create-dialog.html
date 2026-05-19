@@ -1,0 +1,164 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [header]="headerText()"
+  [modal]="true"
+  [dismissableMask]="!submitting()"
+  [closeOnEscape]="!submitting()"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!submitting()"
+  [style]="{ width: '32rem' }"
+  styleClass="kemp-is-event-dialog"
+  appendTo="body"
+>
+  <form
+    class="kemp-is-event-dialog__form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-event-dialog__row">
+      <label for="event-name">Název *</label>
+      <input
+        pInputText
+        id="event-name"
+        type="text"
+        name="event-name"
+        maxlength="255"
+        autocomplete="off"
+        placeholder="Např. Letní festival"
+        [disabled]="viewOnly()"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+      />
+    </div>
+
+    <div class="kemp-is-event-dialog__row">
+      <label for="event-description">Popis</label>
+      <textarea
+        pTextarea
+        id="event-description"
+        name="event-description"
+        rows="3"
+        maxlength="1000"
+        placeholder="Volitelný popis akce"
+        [disabled]="viewOnly()"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+      ></textarea>
+    </div>
+
+    <div class="kemp-is-event-dialog__row-pair">
+      <div class="kemp-is-event-dialog__row">
+        <label for="event-start">Začátek *</label>
+        <p-datePicker
+          inputId="event-start"
+          name="event-start"
+          dateFormat="d. m. yy"
+          appendTo="body"
+          [disabled]="viewOnly()"
+          [maxDate]="endsAt() ?? undefined"
+          [ngModel]="startsAt()"
+          (ngModelChange)="startsAt.set($event)"
+        />
+      </div>
+      <div class="kemp-is-event-dialog__row">
+        <label for="event-end">Konec *</label>
+        <p-datePicker
+          inputId="event-end"
+          name="event-end"
+          dateFormat="d. m. yy"
+          appendTo="body"
+          [disabled]="viewOnly()"
+          [minDate]="startsAt() ?? undefined"
+          [ngModel]="endsAt()"
+          (ngModelChange)="endsAt.set($event)"
+        />
+      </div>
+    </div>
+
+    <div class="kemp-is-event-dialog__row">
+      <label for="event-groups">Skupiny chat *</label>
+      <p-multiSelect
+        inputId="event-groups"
+        name="event-groups"
+        [options]="groupOptions()"
+        optionLabel="label"
+        optionValue="value"
+        display="chip"
+        placeholder="Vyberte skupiny chat"
+        [filter]="true"
+        appendTo="body"
+        [disabled]="viewOnly()"
+        [ngModel]="selectedGroups()"
+        (ngModelChange)="selectedGroups.set($event)"
+        aria-describedby="event-groups-hint"
+      />
+      <span
+        id="event-groups-hint"
+        class="kemp-is-event-dialog__hint"
+        [class.kemp-is-event-dialog__hint--error]="
+          selectedGroups().length === 0
+        "
+      >
+        Akce musí pokrývat alespoň jednu skupinu chat.
+      </span>
+    </div>
+
+    @if (errorMessage(); as err) {
+      <div
+        class="kemp-is-event-dialog__error"
+        role="alert"
+      >
+        <i
+          class="pi pi-exclamation-triangle"
+          aria-hidden="true"
+        ></i>
+        <span>{{ err }}</span>
+      </div>
+    }
+  </form>
+
+  <ng-template #footer>
+    <div class="kemp-is-event-dialog__footer">
+      @if (viewOnly()) {
+        <span class="kemp-is-event-dialog__footer-spacer"></span>
+        <p-button
+          label="Zavřít"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="onCancel()"
+        />
+      } @else {
+        @if (mode() === "edit") {
+          <p-button
+            label="Smazat"
+            severity="danger"
+            [outlined]="true"
+            [disabled]="submitting()"
+            (onClick)="onDelete()"
+          />
+        }
+        <span class="kemp-is-event-dialog__footer-spacer"></span>
+        <p-button
+          label="Zrušit"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="submitting()"
+          (onClick)="onCancel()"
+        />
+        <p-button
+          [label]="mode() === 'edit' ? 'Uložit' : 'Vytvořit'"
+          [disabled]="!canSubmit()"
+          [loading]="submitting()"
+          (onClick)="onSubmit()"
+        />
+      }
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog
+  [closable]="false"
+  [closeOnEscape]="true"
+  appendTo="body"
+/>

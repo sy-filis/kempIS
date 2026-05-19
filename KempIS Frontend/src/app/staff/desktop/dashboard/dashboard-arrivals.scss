@@ -1,0 +1,96 @@
+@use "./dash-shared" as *;
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.kemp-is-dash__ad-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 0;
+}
+
+.kemp-is-dash__ad-col {
+  min-height: 0;
+  overflow: auto;
+
+  &:first-child {
+    border-right: 1px solid var(--p-surface-100, #f4f4f5);
+  }
+}
+
+.kemp-is-dash__ad-colhead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: var(--kemp-page-background, #f7f6f3);
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+
+  > i {
+    font-size: 0.875rem;
+  }
+}
+
+.kemp-is-dash__ad-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  padding: 7px 12px;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  width: 100%;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--p-surface-50, #fafafa);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-400, #34d399);
+    outline-offset: -2px;
+  }
+
+  &--arrived {
+    background: var(--p-primary-50, #ecfdf5);
+
+    &:hover {
+      background: var(--p-primary-100, #d1fae5);
+    }
+  }
+
+  &--done {
+    opacity: 0.6;
+  }
+}
+
+.kemp-is-dash__ad-body {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.kemp-is-dash__ad-name {
+  font-size: 0.78125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kemp-is-dash__ad-unit {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+  flex-shrink: 0;
+}

@@ -1,0 +1,70 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--kemp-page-background, #f7f6f3);
+}
+
+.kemp-is-meals {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.kemp-is-meals__body {
+  flex: 1;
+  min-height: 0;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+}
+
+.kemp-is-meals__empty,
+.kemp-is-meals__loader {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 24px;
+  background: var(--p-surface-0, #fff);
+  border: 1px dashed var(--p-surface-200, #e4e4e7);
+  border-radius: 10px;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-meals__loader-icon {
+  font-size: 1.75rem;
+  color: var(--p-primary-color);
+}
+
+.kemp-is-meals__loader-text {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.kemp-is-meals__empty-icon {
+  font-size: 2rem;
+  color: var(--p-surface-300, #d4d4d8);
+}
+
+.kemp-is-meals__empty-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-meals__empty-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  font-family: var(--kemp-font-mono);
+}

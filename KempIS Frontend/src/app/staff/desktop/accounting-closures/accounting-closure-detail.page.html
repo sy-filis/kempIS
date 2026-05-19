@@ -1,0 +1,227 @@
+<p-toast />
+
+<div class="kemp-is-closure-detail__top">
+  <div class="kemp-is-closure-detail__title-block">
+    <div class="kemp-is-closure-detail__eyebrow">Účetní závěrka</div>
+    @if (detail(); as d) {
+      <div class="kemp-is-closure-detail__title kemp-mono">
+        #{{ d.financialClosingId }}
+      </div>
+    } @else {
+      <div class="kemp-is-closure-detail__title">—</div>
+    }
+  </div>
+  <span class="kemp-is-closure-detail__spacer"></span>
+  @if (detail()) {
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      icon="pi pi-file-pdf"
+      label="Zobrazit PDF"
+      [loading]="viewing()"
+      [disabled]="viewing()"
+      (onClick)="onViewPdf()"
+    />
+    <p-button
+      size="small"
+      icon="pi pi-print"
+      label="Vytisknout"
+      [loading]="printing()"
+      [disabled]="!canPrint() || printing()"
+      (onClick)="onPrint()"
+    />
+  }
+</div>
+
+<div class="kemp-is-closure-detail">
+  @if (loading()) {
+    <p class="kemp-is-closure-detail__status">Načítá se…</p>
+  } @else if (hasError()) {
+    <p-message
+      severity="error"
+      [closable]="false"
+    >
+      Závěrku se nepodařilo načíst.
+    </p-message>
+  } @else if (detail(); as d) {
+    <section class="kemp-is-closure-detail__overview">
+      <dl class="kemp-is-closure-detail__meta">
+        <div class="kemp-is-closure-detail__meta-row">
+          <dt>Uzavřeno</dt>
+          <dd>{{ formatClosedAt(d.closedAtUtc) }}</dd>
+        </div>
+        <div class="kemp-is-closure-detail__meta-row">
+          <dt>Počet účtenek</dt>
+          <dd class="kemp-mono">{{ billCount() }}</dd>
+        </div>
+        <div class="kemp-is-closure-detail__meta-row">
+          <dt>Celková částka</dt>
+          <dd class="kemp-mono">{{ formatCzk(d.paymentTotals.total) }}</dd>
+        </div>
+      </dl>
+
+      @if (defaultPrinter(); as printer) {
+        <div class="kemp-is-closure-detail__printer-hint">
+          Tiskárna:
+          <strong>{{ printer }}</strong>
+          · kopií:
+          <strong>{{ defaultCopies() }}</strong>
+        </div>
+      } @else {
+        <div
+          class="kemp-is-closure-detail__printer-hint kemp-is-closure-detail__printer-hint--missing"
+        >
+          Není nastavena výchozí tiskárna pro účetní závěrku.
+        </div>
+      }
+    </section>
+
+    <section class="kemp-is-closure-detail__section">
+      <h2 class="kemp-is-closure-detail__section-title">Tržby podle platby</h2>
+      <dl class="kemp-is-closure-detail__payments">
+        <div class="kemp-is-closure-detail__payment">
+          <dt>Hotově</dt>
+          <dd class="kemp-mono">{{ formatCzk(d.paymentTotals.cash) }}</dd>
+        </div>
+        <div class="kemp-is-closure-detail__payment">
+          <dt>Kartou</dt>
+          <dd class="kemp-mono">{{ formatCzk(d.paymentTotals.card) }}</dd>
+        </div>
+        <div
+          class="kemp-is-closure-detail__payment kemp-is-closure-detail__payment--total"
+        >
+          <dt>Celkem</dt>
+          <dd class="kemp-mono">{{ formatCzk(d.paymentTotals.total) }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="kemp-is-closure-detail__section">
+      <h2 class="kemp-is-closure-detail__section-title">
+        Rekapitulace DPH podle sazby
+      </h2>
+      @if (d.vatRecap.length === 0) {
+        <p class="kemp-is-closure-detail__empty">
+          Žádné položky s DPH v této závěrce.
+        </p>
+      } @else {
+        <p-table
+          [value]="vatRecap()"
+          styleClass="kemp-is-closure-detail__table"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Sazba</th>
+              <th class="kemp-is-closure-detail__th--num">Základ</th>
+              <th class="kemp-is-closure-detail__th--num">DPH</th>
+              <th class="kemp-is-closure-detail__th--num">Celkem</th>
+            </tr>
+          </ng-template>
+          <ng-template
+            pTemplate="body"
+            let-row
+          >
+            <tr>
+              <td>{{ formatVatRate(row.vatRatePercentage) }}</td>
+              <td class="kemp-mono kemp-is-closure-detail__td--num">
+                {{ formatCzk(row.net) }}
+              </td>
+              <td class="kemp-mono kemp-is-closure-detail__td--num">
+                {{ formatCzk(row.vat) }}
+              </td>
+              <td class="kemp-mono kemp-is-closure-detail__td--num">
+                {{ formatCzk(row.gross) }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </section>
+
+    <section class="kemp-is-closure-detail__section">
+      <h2 class="kemp-is-closure-detail__section-title">
+        Rekapitulace podle typu služby
+      </h2>
+      @if (d.vatRecapByServiceType.length === 0) {
+        <p class="kemp-is-closure-detail__empty">
+          Žádné položky podle typu služby.
+        </p>
+      } @else {
+        <p-table
+          [value]="vatByService()"
+          styleClass="kemp-is-closure-detail__table"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Typ služby</th>
+              <th>Sazba</th>
+              <th class="kemp-is-closure-detail__th--num">Základ</th>
+              <th class="kemp-is-closure-detail__th--num">DPH</th>
+              <th class="kemp-is-closure-detail__th--num">Celkem</th>
+            </tr>
+          </ng-template>
+          <ng-template
+            pTemplate="body"
+            let-row
+          >
+            <tr>
+              <td>{{ row.serviceTypeName }}</td>
+              <td>{{ formatVatRate(row.vatRatePercentage) }}</td>
+              <td class="kemp-mono kemp-is-closure-detail__td--num">
+                {{ formatCzk(row.net) }}
+              </td>
+              <td class="kemp-mono kemp-is-closure-detail__td--num">
+                {{ formatCzk(row.vat) }}
+              </td>
+              <td class="kemp-mono kemp-is-closure-detail__td--num">
+                {{ formatCzk(row.gross) }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </section>
+
+    <section class="kemp-is-closure-detail__section">
+      <h2 class="kemp-is-closure-detail__section-title">Účtenky v závěrce</h2>
+      @if (d.bills.length === 0) {
+        <p class="kemp-is-closure-detail__empty">
+          Žádné účtenky v této závěrce.
+        </p>
+      } @else {
+        <p-table
+          [value]="bills()"
+          styleClass="kemp-is-closure-detail__table"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Číslo</th>
+              <th>Datum</th>
+              <th>Plátce</th>
+              <th>Platba</th>
+              <th class="kemp-is-closure-detail__th--num">Částka</th>
+            </tr>
+          </ng-template>
+          <ng-template
+            pTemplate="body"
+            let-row
+          >
+            <tr
+              class="kemp-is-closure-detail__bill-row"
+              (click)="onOpenBill(row.id)"
+            >
+              <td class="kemp-mono">{{ row.number }}</td>
+              <td>{{ formatIssuedAt(row.issuedAtUtc) }}</td>
+              <td>{{ row.payerName }}</td>
+              <td>{{ paymentTypeLabel(row.paymentType) }}</td>
+              <td class="kemp-mono kemp-is-closure-detail__td--num">
+                {{ formatCzk(row.total) }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </section>
+  }
+</div>

@@ -1,0 +1,20 @@
+<header class="kemp-is-staff-header">
+  <div class="kemp-is-staff-header__row">
+    <span
+      class="kemp-is-staff-header__brand"
+      aria-hidden="true"
+    >
+      <i class="pi pi-sun"></i>
+    </span>
+    <div class="kemp-is-staff-header__titles">
+      <div class="kemp-is-staff-header__title">{{ title() }}</div>
+      @if (subtitle()) {
+        <div class="kemp-is-staff-header__subtitle">{{ subtitle() }}</div>
+      }
+    </div>
+    <div class="kemp-is-staff-header__trailing">
+      <ng-content select="[slot=trailing]" />
+    </div>
+  </div>
+  <ng-content select="[slot=below]" />
+</header>

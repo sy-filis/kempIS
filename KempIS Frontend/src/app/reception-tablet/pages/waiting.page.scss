@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  height: 100dvh;
+}
+
+// Paired but no bill or eDokladys QR to display: full-screen black so the
+// tablet draws no attention while waiting for the receptionist's next push.
+.kemp-is-tablet-waiting {
+  height: 100%;
+  width: 100%;
+  background: #000;
+}

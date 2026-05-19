@@ -1,0 +1,184 @@
+<section class="kemp-is-rmeal">
+  <header class="kemp-is-rmeal__header">
+    <div>
+      <h2 class="kemp-is-rmeal__title">Stravování</h2>
+      <p class="kemp-is-rmeal__subtitle">
+        Stravování probíhá pouze na zvláštní žádost. Porce zadejte ručně,
+        speciální diety přidejte v každém dni samostatným řádkem.
+      </p>
+    </div>
+    <div class="kemp-is-rmeal__header-actions">
+      <div class="kemp-is-rmeal__totals-pill">
+        <span class="kemp-is-rmeal__totals-pill-label">Celkem porcí</span>
+        <span class="kemp-is-rmeal__totals-pill-value">
+          {{ totalPortions() }}
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <div class="kemp-is-rmeal__card">
+    <div class="kemp-is-rmeal__head">
+      <span class="kemp-is-rmeal__head-day">Den / Dieta</span>
+      @for (kind of mealKinds; track kind) {
+        <span class="kemp-is-rmeal__head-meal">
+          <i
+            class="pi"
+            [class]="mealIcons[kind]"
+            aria-hidden="true"
+          ></i>
+          <span>{{ mealLabels[kind] }}</span>
+          <small>{{ prices()[kind] }} Kč</small>
+        </span>
+      }
+      <span class="kemp-is-rmeal__head-total">Mezisoučet</span>
+      <span></span>
+    </div>
+
+    @for (dv of dayViews(); track dv.day.day) {
+      <div class="kemp-is-rmeal__day">
+        <div class="kemp-is-rmeal__day-header">
+          <div class="kemp-is-rmeal__day-cell">
+            <span class="kemp-is-rmeal__day-date">{{ dv.day.date }}</span>
+            @if (dv.badge; as badge) {
+              <span
+                class="kemp-is-rmeal__day-badge"
+                [class.kemp-is-rmeal__day-badge--arrival]="dv.index === 0"
+                [class.kemp-is-rmeal__day-badge--departure]="dv.index !== 0"
+              >
+                {{ badge }}
+              </span>
+            }
+          </div>
+          @for (kind of mealKinds; track kind) {
+            <div class="kemp-is-rmeal__day-total-cell">
+              <span class="kemp-is-rmeal__day-total-count">
+                {{ dv.totals[kind] }}
+              </span>
+              <input
+                type="text"
+                class="kemp-is-rmeal__time-input kemp-mono"
+                placeholder="—:—"
+                [disabled]="dv.totals[kind] === 0"
+                [ngModel]="dv.times[kind] ?? ''"
+                [ngModelOptions]="{ updateOn: 'blur' }"
+                (ngModelChange)="updateMealTime(dv.index, kind, $event)"
+              />
+            </div>
+          }
+          <div class="kemp-is-rmeal__day-grand kemp-mono">
+            @if (dv.grandTotal > 0) {
+              {{ formatNumber(dv.grandTotal) }} Kč
+            } @else {
+              —
+            }
+          </div>
+          <div class="kemp-is-rmeal__day-actions">
+            @if (dv.addableDiets.length > 0) {
+              <p-button
+                [text]="true"
+                severity="secondary"
+                size="small"
+                ariaLabel="Přidat dietu"
+                (onClick)="addDietMenu.toggle($event)"
+              >
+                <i
+                  class="pi pi-plus"
+                  aria-hidden="true"
+                ></i>
+              </p-button>
+              <p-menu
+                #addDietMenu
+                [model]="dv.addDietMenuItems"
+                [popup]="true"
+                appendTo="body"
+              />
+            }
+            <p-button
+              [text]="true"
+              severity="secondary"
+              size="small"
+              ariaLabel="Akce dne"
+              (onClick)="dayMenu.toggle($event)"
+            >
+              <i
+                class="pi pi-ellipsis-v"
+                aria-hidden="true"
+              ></i>
+            </p-button>
+            <p-menu
+              #dayMenu
+              [model]="dv.dayMenuItems"
+              [popup]="true"
+              appendTo="body"
+            />
+          </div>
+        </div>
+
+        @for (diet of dv.diets; track diet.variant) {
+          <div
+            class="kemp-is-rmeal__diet-row"
+            [class.kemp-is-rmeal__diet-row--special]="diet.variant !== 'normal'"
+          >
+            <div class="kemp-is-rmeal__diet-label">
+              <span class="kemp-is-rmeal__diet-name">{{ diet.label }}</span>
+              @if (diet.tag) {
+                <span class="kemp-is-rmeal__diet-tag">{{ diet.tag }}</span>
+              }
+            </div>
+            @for (kind of mealKinds; track kind) {
+              <div class="kemp-is-rmeal__cell">
+                <p-inputnumber
+                  [showButtons]="true"
+                  buttonLayout="horizontal"
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                  [min]="0"
+                  [ngModel]="diet.counts[kind]"
+                  (ngModelChange)="
+                    updateMeal(dv.index, kind, diet.variant, $event)
+                  "
+                  (onBlur)="saveDay(dv.index)"
+                  styleClass="kemp-is-rmeal__stepper"
+                  decrementButtonClass="p-button-secondary p-button-text"
+                  incrementButtonClass="p-button-secondary p-button-text"
+                  [inputStyle]="{ width: '2.5rem' }"
+                />
+              </div>
+            }
+            <div class="kemp-is-rmeal__diet-subtotal kemp-mono">
+              @if (diet.subtotal > 0) {
+                {{ formatNumber(diet.subtotal) }} Kč
+              } @else {
+                —
+              }
+            </div>
+            <div class="kemp-is-rmeal__diet-actions">
+              @if (diet.removable) {
+                <p-button
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  ariaLabel="Odebrat dietu"
+                  (onClick)="removeDietRow(dv.index, diet.variant)"
+                >
+                  <i
+                    class="pi pi-times"
+                    aria-hidden="true"
+                  ></i>
+                </p-button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="kemp-is-rmeal__grand">
+      <div class="kemp-is-rmeal__grand-label">Celkem za pobyt</div>
+      <div class="kemp-is-rmeal__grand-value kemp-mono">
+        {{ formatNumber(grandTotal()) }} Kč
+      </div>
+    </div>
+  </div>
+</section>

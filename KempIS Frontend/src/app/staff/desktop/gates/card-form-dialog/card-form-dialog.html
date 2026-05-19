@@ -1,0 +1,109 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="headerText()"
+  [style]="{ width: '32rem' }"
+>
+  <div class="kemp-is-card-form">
+    <div class="kemp-is-card-form__field">
+      <label
+        for="kemp-is-card-uid"
+        class="kemp-is-card-form__label"
+      >
+        UID
+      </label>
+      <p-inputNumber
+        inputId="kemp-is-card-uid"
+        [ngModel]="uid()"
+        (ngModelChange)="uid.set($event)"
+        [useGrouping]="false"
+        [min]="1"
+        [showButtons]="false"
+        [disabled]="isEdit()"
+        placeholder="Načti čip čtečkou nebo zadej ručně"
+      />
+    </div>
+
+    <div class="kemp-is-card-form__field">
+      <label
+        for="kemp-is-card-deposit"
+        class="kemp-is-card-form__label"
+      >
+        Vratná kauce
+      </label>
+      <p-inputNumber
+        inputId="kemp-is-card-deposit"
+        [ngModel]="deposit()"
+        (ngModelChange)="deposit.set($event)"
+        mode="decimal"
+        [min]="0"
+        [maxFractionDigits]="2"
+        [disabled]="isEdit()"
+        suffix=" Kč"
+      />
+    </div>
+
+    <div class="kemp-is-card-form__field">
+      <label
+        for="kemp-is-card-valid-until"
+        class="kemp-is-card-form__label"
+      >
+        Platnost do
+      </label>
+      <p-datepicker
+        inputId="kemp-is-card-valid-until"
+        [ngModel]="validUntil()"
+        (ngModelChange)="validUntil.set($event)"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+      />
+    </div>
+
+    <div class="kemp-is-card-form__field">
+      <label
+        for="kemp-is-card-note"
+        class="kemp-is-card-form__label"
+      >
+        Poznámka
+      </label>
+      <textarea
+        id="kemp-is-card-note"
+        pTextarea
+        [ngModel]="note()"
+        (ngModelChange)="note.set($event)"
+        rows="3"
+        placeholder="Volitelně"
+      ></textarea>
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+        styleClass="kemp-is-card-form__error"
+      />
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      (onClick)="onCancel()"
+      [disabled]="submitting()"
+    />
+    <p-button
+      [label]="submitLabel()"
+      icon="pi pi-check"
+      (onClick)="onSubmit()"
+      [disabled]="!canSubmit()"
+      [loading]="submitting()"
+    />
+  </ng-template>
+</p-dialog>

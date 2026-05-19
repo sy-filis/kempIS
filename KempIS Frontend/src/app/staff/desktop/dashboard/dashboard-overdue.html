@@ -1,0 +1,43 @@
+<section
+  class="kemp-is-dash__card"
+  data-color="alert"
+>
+  <header class="kemp-is-dash__card-head">
+    <span
+      class="kemp-is-dash__card-accent"
+      aria-hidden="true"
+    ></span>
+    <span class="kemp-is-dash__card-title">Faktury po splatnosti</span>
+    <span class="kemp-is-dash__card-count kemp-mono">
+      {{ invoices().length }}
+    </span>
+    <div class="kemp-is-dash__card-spacer"></div>
+    <span class="kemp-is-dash__card-total kemp-mono">
+      Σ {{ fmtCzk(total()) }} Kč
+    </span>
+  </header>
+  <div class="kemp-is-dash__overdue">
+    @if (invoices().length === 0) {
+      <div class="kemp-is-dash__overdue-empty">Žádné faktury po splatnosti</div>
+    } @else {
+      @for (inv of invoices(); track inv.ref) {
+        <div class="kemp-is-dash__overdue-row">
+          <div class="kemp-is-dash__overdue-name">{{ inv.customer }}</div>
+          <span class="kemp-is-dash__overdue-amount kemp-mono">
+            {{ fmtCzk(inv.amount) }} Kč
+          </span>
+          <p-tag
+            severity="danger"
+            [value]="
+              '+' +
+              inv.daysOverdue +
+              ' ' +
+              (inv.daysOverdue === 1 ? 'den' : 'dní')
+            "
+            [rounded]="true"
+          />
+        </div>
+      }
+    }
+  </div>
+</section>

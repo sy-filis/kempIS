@@ -1,0 +1,146 @@
+<kemp-is-staff-screen-header
+  title="Údržba"
+  [subtitle]="subtitle()"
+>
+  <p-button
+    slot="trailing"
+    [text]="true"
+    [rounded]="true"
+    severity="secondary"
+    icon="pi pi-search"
+    ariaLabel="Hledat"
+  />
+</kemp-is-staff-screen-header>
+
+<div class="kemp-is-maintenance__filters">
+  @for (filter of filters(); track filter.id) {
+    <button
+      type="button"
+      class="kemp-is-maintenance__chip"
+      [class.kemp-is-maintenance__chip--active]="activeFilter() === filter.id"
+      (click)="setFilter(filter.id)"
+    >
+      <span>{{ filter.label }}</span>
+      <span class="kemp-is-maintenance__chip-count">{{ filter.count }}</span>
+    </button>
+  }
+</div>
+
+<div class="kemp-is-maintenance__sections">
+  @if (activeFilter() === "all" || activeFilter() === "open") {
+    <h3 class="kemp-is-maintenance__section-title">Otevřené</h3>
+    <ul class="kemp-is-maintenance__list">
+      @for (request of openRequests(); track request.id) {
+        <li class="kemp-is-maintenance__row">
+          <div class="kemp-is-maintenance__icon">
+            <i class="pi pi-wrench"></i>
+          </div>
+          <div class="kemp-is-maintenance__body">
+            <div class="kemp-is-maintenance__title">{{ request.title }}</div>
+            <div class="kemp-is-maintenance__meta">
+              @if (request.spotName) {
+                <i class="pi pi-map-marker kemp-is-maintenance__meta-icon"></i>
+                <span>{{ request.spotName }}</span>
+                <span class="kemp-is-maintenance__meta-sep">·</span>
+              }
+              <span>{{ request.reported }}</span>
+            </div>
+            @if (request.note) {
+              <p class="kemp-is-maintenance__note">{{ request.note }}</p>
+            }
+            <div class="kemp-is-maintenance__pills">
+              <p-tag
+                severity="info"
+                value="Otevřeno"
+                [rounded]="true"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            class="kemp-is-maintenance__close-btn"
+            [disabled]="isResolving(request.id)"
+            (click)="closeRequest(request.id)"
+          >
+            @if (isResolving(request.id)) {
+              <i
+                class="pi pi-spinner pi-spin kemp-is-maintenance__close-icon"
+              ></i>
+            } @else {
+              <i class="pi pi-check kemp-is-maintenance__close-icon"></i>
+            }
+            Uzavřít
+          </button>
+        </li>
+      } @empty {
+        <li class="kemp-is-maintenance__empty">
+          @if (issues.hasValue()) {
+            Žádné otevřené požadavky.
+          } @else {
+            Načítá se…
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  @if (activeFilter() === "all" || activeFilter() === "closed") {
+    <h3 class="kemp-is-maintenance__section-title">Uzavřené</h3>
+    <ul class="kemp-is-maintenance__list">
+      @for (request of closedRequests(); track request.id) {
+        <li class="kemp-is-maintenance__row kemp-is-maintenance__row--closed">
+          <div
+            class="kemp-is-maintenance__icon kemp-is-maintenance__icon--done"
+          >
+            <i class="pi pi-check"></i>
+          </div>
+          <div class="kemp-is-maintenance__body">
+            <div
+              class="kemp-is-maintenance__title kemp-is-maintenance__title--closed"
+            >
+              {{ request.title }}
+            </div>
+            <div class="kemp-is-maintenance__meta">
+              @if (request.spotName) {
+                <i class="pi pi-map-marker kemp-is-maintenance__meta-icon"></i>
+                <span>{{ request.spotName }}</span>
+                <span class="kemp-is-maintenance__meta-sep">·</span>
+              }
+              <span>{{ request.reported }}</span>
+            </div>
+            <div class="kemp-is-maintenance__pills">
+              <p-tag
+                severity="success"
+                icon="pi pi-check"
+                value="Uzavřeno"
+                [rounded]="true"
+              />
+              @if (request.resolved || request.solverName) {
+                <span class="kemp-is-maintenance__closed-info">
+                  ·
+                  @if (request.solverName) {
+                    {{ request.solverName }}
+                  }
+                  @if (request.solverName && request.resolved) {
+                    ,
+                  }
+                  @if (request.resolved) {
+                    {{ request.resolved }}
+                  }
+                </span>
+              }
+            </div>
+          </div>
+        </li>
+      } @empty {
+        <li class="kemp-is-maintenance__empty">
+          @if (issues.hasValue()) {
+            Žádné uzavřené požadavky.
+          } @else {
+            Načítá se…
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>

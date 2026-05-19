@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.kemp-is-tablet-guest-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--p-content-border-radius, 8px);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.kemp-is-tablet-guest-row.is-done {
+  cursor: default;
+  background: var(--p-emerald-50, #ecfdf5);
+}
+
+.kemp-is-tablet-guest-row__name {
+  font-weight: 600;
+}
+
+.kemp-is-tablet-guest-row__nationality {
+  color: var(--p-text-muted-color);
+}

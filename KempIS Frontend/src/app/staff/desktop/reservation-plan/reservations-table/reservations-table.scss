@@ -1,0 +1,155 @@
+:host {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+:host ::ng-deep .kemp-is-rt {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--p-content-background, #fff);
+  border: 1px solid var(--p-content-border-color, #e4e4e7);
+  border-radius: var(--p-border-radius-lg, 8px);
+  overflow: hidden;
+  box-shadow: var(--p-shadow-sm, 0 1px 2px rgba(18, 18, 23, 0.04));
+}
+
+:host ::ng-deep .kemp-is-rt .p-datatable-table-container {
+  flex: 1;
+  min-height: 0;
+}
+
+:host ::ng-deep .kemp-is-rt .p-datatable-thead > tr > th {
+  background: var(--p-surface-50, #fafafa);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--p-text-muted-color, #71717a);
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--p-content-border-color, #e4e4e7);
+  padding: 0.625rem 0.75rem;
+}
+
+:host ::ng-deep .kemp-is-rt .p-datatable-tbody > tr > td {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+}
+
+:host ::ng-deep .kemp-is-rt .p-datatable-tbody > tr {
+  cursor: pointer;
+}
+
+.kemp-is-rt__caption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  color: var(--p-text-muted-color, #71717a);
+  background: var(--p-surface-50, #fafafa);
+  border-bottom: 1px solid var(--p-content-border-color, #e4e4e7);
+}
+
+.kemp-is-rt__caption-label {
+  font-weight: 500;
+}
+
+.kemp-is-rt__caption-spacer {
+  flex: 1;
+}
+
+:host ::ng-deep .kemp-is-rt__state-filter {
+  min-width: 240px;
+  max-width: 480px;
+}
+
+.kemp-is-rt__col-id {
+  width: 110px;
+}
+
+.kemp-is-rt__col-phone {
+  width: 160px;
+}
+
+.kemp-is-rt__col-date {
+  width: 110px;
+}
+
+.kemp-is-rt__col-num {
+  width: 70px;
+  text-align: right !important;
+}
+
+.kemp-is-rt__col-display-name {
+  width: 240px;
+}
+
+.kemp-is-rt__cell-id {
+  font-size: 0.75rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-rt__cell-guest {
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  white-space: nowrap;
+}
+
+.kemp-is-rt__guest-icon {
+  font-size: 0.625rem;
+  color: #8b5cf6;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.kemp-is-rt__cell-display-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kemp-is-rt__cell-phone {
+  font-size: 0.75rem;
+  color: var(--p-text-color, #3f3f46);
+  white-space: nowrap;
+}
+
+.kemp-is-rt__cell-num {
+  text-align: right;
+}
+
+.kemp-is-rt__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kemp-is-rt__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.kemp-is-rt__empty {
+  text-align: center;
+  padding: 3rem 1rem !important;
+  color: var(--p-text-muted-color, #71717a);
+  font-size: 0.875rem;
+
+  > i {
+    display: block;
+    font-size: 1.75rem;
+    margin: 0 auto 0.5rem;
+    color: var(--p-surface-300, #d4d4d8);
+  }
+}

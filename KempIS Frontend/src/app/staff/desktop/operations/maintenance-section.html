@@ -1,0 +1,127 @@
+<section class="kemp-is-ops-maint">
+  <header class="kemp-is-ops-maint__head">
+    <span
+      class="kemp-is-ops-maint__head-icon"
+      aria-hidden="true"
+    >
+      <i class="pi pi-wrench"></i>
+    </span>
+    <span class="kemp-is-ops-maint__head-title">Hlášení údržby</span>
+    <span class="kemp-is-ops-maint__head-sub">nezávislé na datu</span>
+    <span class="kemp-is-ops-maint__head-spacer"></span>
+
+    <p-selectbutton
+      class="kemp-is-ops-maint__tabs"
+      [options]="tabOptions()"
+      optionLabel="label"
+      optionValue="id"
+      [allowEmpty]="false"
+      [ngModel]="tab()"
+      (ngModelChange)="onTabChange($event)"
+      size="small"
+    >
+      <ng-template
+        #item
+        let-option
+      >
+        <span class="kemp-is-ops-maint__tab-label">
+          {{ option.label }}
+          <span class="kemp-is-ops-maint__tab-count kemp-mono">
+            {{ option.count }}
+          </span>
+        </span>
+      </ng-template>
+    </p-selectbutton>
+
+    <p-button
+      size="small"
+      label="Nahlásit závadu"
+      icon="pi pi-plus"
+      (onClick)="onReport()"
+    />
+  </header>
+
+  <div
+    class="kemp-is-ops-maint__col-head"
+    role="row"
+  >
+    <span>Stav</span>
+    <span>Závada</span>
+    <span>Popis</span>
+    <span>Místo</span>
+    <span>Vytvořeno</span>
+  </div>
+
+  <div class="kemp-is-ops-maint__rows">
+    @for (r of visibleRows(); track r.id) {
+      <button
+        type="button"
+        class="kemp-is-ops-maint__row"
+        (click)="onRowClick(r.id)"
+      >
+        <div class="kemp-is-ops-maint__state">
+          <span
+            class="kemp-is-ops-maint__state-pill"
+            [style.background]="r.stateConfig.bg"
+            [style.color]="r.stateConfig.fg"
+          >
+            <span
+              class="kemp-is-ops-maint__state-dot"
+              [style.background]="r.stateConfig.dot"
+              aria-hidden="true"
+            ></span>
+            {{ r.stateConfig.label }}
+          </span>
+        </div>
+
+        <div class="kemp-is-ops-maint__title-cell">
+          <span class="kemp-is-ops-maint__short-id kemp-mono">
+            {{ r.shortId }}
+          </span>
+          <span class="kemp-is-ops-maint__title">{{ r.title }}</span>
+        </div>
+
+        <span class="kemp-is-ops-maint__desc">
+          @if (r.description) {
+            {{ r.description }}
+          } @else {
+            <span class="kemp-is-ops-maint__desc-empty">—</span>
+          }
+        </span>
+
+        <div class="kemp-is-ops-maint__place">
+          @if (r.placeName) {
+            <span class="kemp-is-ops-maint__place-chip">
+              <i
+                class="pi pi-map-marker"
+                aria-hidden="true"
+              ></i>
+              <span class="kemp-mono">{{ r.placeName }}</span>
+            </span>
+          } @else {
+            <span class="kemp-is-ops-maint__place-empty">—</span>
+          }
+        </div>
+
+        <span class="kemp-is-ops-maint__created kemp-mono">
+          <i
+            class="pi pi-clock"
+            aria-hidden="true"
+          ></i>
+          {{ r.created }}
+        </span>
+      </button>
+    } @empty {
+      <div class="kemp-is-ops-maint__empty">Žádná hlášení.</div>
+    }
+  </div>
+</section>
+
+<kemp-is-ops-maintenance-issue-dialog
+  [(visible)]="dialogVisible"
+  [issue]="editingIssue()"
+  (saved)="onSaved()"
+  (deleted)="onDeleted()"
+/>
+
+<p-toast />

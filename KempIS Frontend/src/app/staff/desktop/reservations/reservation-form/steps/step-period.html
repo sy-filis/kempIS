@@ -1,0 +1,163 @@
+<section class="kemp-is-rsp__section">
+  <h3 class="kemp-is-rsp__heading">Termín</h3>
+  <div class="kemp-is-rsp__grid kemp-is-rsp__grid--period">
+    <label
+      for="rsp-from"
+      class="kemp-is-rsp__field"
+    >
+      <span class="kemp-is-rsp__label">
+        Příjezd <span class="kemp-is-rsp__required">*</span>
+      </span>
+      <p-datePicker
+        inputId="rsp-from"
+        [ngModel]="from()"
+        (ngModelChange)="from.set($event)"
+        [required]="true"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+        placeholder="Vyberte datum"
+      />
+    </label>
+    <label
+      for="rsp-nights"
+      class="kemp-is-rsp__field"
+    >
+      <span class="kemp-is-rsp__label">Nocí</span>
+      <p-inputNumber
+        inputId="rsp-nights"
+        [ngModel]="nights()"
+        (ngModelChange)="onNightsChange($event)"
+        [min]="0"
+        [disabled]="!from()"
+        [inputStyle]="{ width: '100%' }"
+        placeholder="–"
+      />
+    </label>
+    <label
+      for="rsp-to"
+      class="kemp-is-rsp__field"
+    >
+      <span class="kemp-is-rsp__label">
+        Odjezd <span class="kemp-is-rsp__required">*</span>
+      </span>
+      <p-datePicker
+        inputId="rsp-to"
+        [ngModel]="to()"
+        (ngModelChange)="to.set($event)"
+        [required]="true"
+        [minDate]="from() ?? undefined"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+        placeholder="Vyberte datum"
+      />
+    </label>
+  </div>
+</section>
+
+<section class="kemp-is-rsp__section">
+  <h3 class="kemp-is-rsp__heading">Kontakt rezervujícího</h3>
+  <div class="kemp-is-rsp__grid kemp-is-rsp__grid--2">
+    <label class="kemp-is-rsp__field">
+      <span class="kemp-is-rsp__label">
+        Jméno <span class="kemp-is-rsp__required">*</span>
+      </span>
+      <input
+        pInputText
+        type="text"
+        required
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        placeholder="např. Jan"
+      />
+    </label>
+    <label class="kemp-is-rsp__field">
+      <span class="kemp-is-rsp__label">
+        Příjmení <span class="kemp-is-rsp__required">*</span>
+      </span>
+      <input
+        pInputText
+        type="text"
+        required
+        [ngModel]="surname()"
+        (ngModelChange)="surname.set($event)"
+        placeholder="např. Novák"
+      />
+    </label>
+    <label class="kemp-is-rsp__field">
+      <span class="kemp-is-rsp__label">
+        Telefon <span class="kemp-is-rsp__required">*</span>
+      </span>
+      <input
+        pInputText
+        type="tel"
+        required
+        [ngModel]="phone()"
+        (ngModelChange)="phone.set($event)"
+        placeholder="+420 …"
+      />
+    </label>
+    <label class="kemp-is-rsp__field">
+      <span class="kemp-is-rsp__label">
+        E-mail <span class="kemp-is-rsp__required">*</span>
+      </span>
+      <input
+        pInputText
+        type="email"
+        required
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+        placeholder="jmeno@example.cz"
+      />
+    </label>
+  </div>
+</section>
+
+<section class="kemp-is-rsp__section">
+  <h3 class="kemp-is-rsp__heading">Název rezervace</h3>
+  <input
+    pInputText
+    type="text"
+    class="kemp-is-rsp__display-name"
+    [ngModel]="displayName()"
+    (ngModelChange)="displayName.set($event)"
+    placeholder="např. Novákovi – 3 chaty"
+    maxlength="255"
+  />
+</section>
+
+<section class="kemp-is-rsp__section">
+  <h3 class="kemp-is-rsp__heading">Poznámka</h3>
+  <textarea
+    pTextarea
+    class="kemp-is-rsp__note"
+    rows="3"
+    [ngModel]="note()"
+    (ngModelChange)="note.set($event)"
+    placeholder="volitelná poznámka"
+    maxlength="500"
+  ></textarea>
+</section>
+
+@if (groupReservationId()) {
+  <section class="kemp-is-rsp__section kemp-is-rsp__section--info">
+    <p-chip
+      icon="pi pi-users"
+      [label]="
+        'Součást skupinové rezervace' +
+        (groupOrganizerName() ? ' – ' + groupOrganizerName() : '')
+      "
+    />
+  </section>
+}
+
+@if (showGuests()) {
+  <kemp-is-reservation-step-period-guests-stub
+    [reservationId]="reservationId()"
+    [guests]="guests()"
+    [reservationFrom]="from()"
+    [reservationTo]="to()"
+    (mutated)="guestsMutated.emit()"
+  />
+}

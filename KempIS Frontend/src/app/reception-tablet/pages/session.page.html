@@ -1,0 +1,76 @@
+@if (sessionView(); as v) {
+  <section class="kemp-is-tablet-session">
+    <p-card>
+      <ng-template pTemplate="header">
+        <header class="kemp-is-tablet-session__header">
+          <h1 i18n="@@tablet.session.title">Účet k podpisu</h1>
+          <span class="kemp-is-tablet-session__number"
+            >#{{ v.bill.number }}</span
+          >
+        </header>
+      </ng-template>
+
+      <dl class="kemp-is-tablet-session__meta">
+        <div>
+          <dt i18n="@@tablet.session.payer">Plátce</dt>
+          <dd>{{ v.bill.payerDisplayName }}</dd>
+        </div>
+        <div>
+          <dt i18n="@@tablet.session.period">Termín</dt>
+          <dd>{{ v.bill.checkInAt }} → {{ v.bill.checkOutAt }}</dd>
+        </div>
+        <div>
+          <dt i18n="@@tablet.session.total">Celkem</dt>
+          <dd>
+            {{ v.bill.total | number: "1.0-0" : "cs-CZ" }}
+            {{ v.bill.currency }}
+          </dd>
+        </div>
+      </dl>
+
+      <p-table [value]="v.lines">
+        <ng-template pTemplate="header">
+          <tr>
+            <th i18n="@@tablet.session.line.label">Položka</th>
+            <th i18n="@@tablet.session.line.qty">Množství</th>
+            <th i18n="@@tablet.session.line.unit">Jedn. cena</th>
+            <th i18n="@@tablet.session.line.total">Celkem</th>
+          </tr>
+        </ng-template>
+        <ng-template
+          pTemplate="body"
+          let-line
+        >
+          <tr>
+            <td>{{ line.label }}</td>
+            <td>{{ line.quantity }}</td>
+            <td>{{ line.unitPrice | number: "1.0-2" : "cs-CZ" }}</td>
+            <td>{{ line.total | number: "1.0-2" : "cs-CZ" }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <section
+      class="kemp-is-tablet-session__guests"
+      aria-labelledby="kemp-is-tablet-guests-h"
+    >
+      <h2
+        id="kemp-is-tablet-guests-h"
+        i18n="@@tablet.session.guests"
+      >
+        Hosté
+      </h2>
+      <ul>
+        @for (g of v.guests; track g.clientGuestId) {
+          <li>
+            <kemp-is-tablet-guest-row
+              [guest]="g"
+              (guestSelected)="onSelectGuest($event)"
+            />
+          </li>
+        }
+      </ul>
+    </section>
+  </section>
+}

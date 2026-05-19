@@ -1,0 +1,739 @@
+<div class="kemp-is-flow">
+  <header class="kemp-is-flow__head">
+    <div class="kemp-is-flow__brand">
+      <span
+        class="kemp-is-flow__brand-mark"
+        aria-hidden="true"
+      >
+        <i class="pi pi-sun"></i>
+      </span>
+      <span
+        class="kemp-is-flow__brand-name"
+        i18n="@@new-reservation.brand"
+        >KempIS</span
+      >
+      <span class="kemp-is-flow__brand-sep">·</span>
+      <span
+        class="kemp-is-flow__brand-sub"
+        i18n="@@new-reservation.brand-sub"
+        >Rezervace</span
+      >
+    </div>
+  </header>
+
+  <p-stepper
+    [(value)]="currentStep"
+    [linear]="true"
+    class="kemp-is-flow__stepper"
+  >
+    <p-step-list>
+      <p-step
+        [value]="1"
+        i18n="@@new-reservation.step.dates"
+        >Termín</p-step
+      >
+      <p-step
+        [value]="2"
+        i18n="@@new-reservation.step.cottages"
+        >Ubytování</p-step
+      >
+      <p-step
+        [value]="3"
+        i18n="@@new-reservation.step.details"
+        >Vaše údaje</p-step
+      >
+      <p-step
+        [value]="4"
+        i18n="@@new-reservation.step.confirmation"
+        >Potvrzení</p-step
+      >
+    </p-step-list>
+
+    <p-step-panels>
+      <!-- Step 1 - Period -->
+      <p-step-panel [value]="1">
+        <ng-template
+          #content
+          let-activateCallback="activateCallback"
+        >
+          <section class="kemp-is-screen">
+            <header class="kemp-is-screen__head">
+              <h2
+                class="kemp-is-screen__title"
+                i18n="@@new-reservation.dates.heading"
+              >
+                Kdy si přejete přijet?
+              </h2>
+              <p
+                class="kemp-is-screen__lead"
+                i18n="@@new-reservation.dates.lead"
+              >
+                Vyberte data příjezdu a odjezdu. Volné chatky se načtou v dalším
+                kroku.
+              </p>
+            </header>
+
+            <div class="kemp-is-dates">
+              <div class="kemp-is-dates__picker">
+                <p-datepicker
+                  [(ngModel)]="rangeDates"
+                  [ngModelOptions]="{ standalone: true }"
+                  selectionMode="range"
+                  [inline]="true"
+                  [showOtherMonths]="true"
+                  [numberOfMonths]="2"
+                  [minDate]="today"
+                  [readonlyInput]="true"
+                />
+              </div>
+              <aside class="kemp-is-dates__summary">
+                @if (nights() > 0) {
+                  <div class="kemp-is-dates__range">
+                    <div>
+                      <small
+                        class="kemp-is-eyebrow"
+                        i18n="@@new-reservation.dates.from"
+                        >Příjezd</small
+                      >
+                      <strong>{{ formatDate(dateModel().from) }}</strong>
+                    </div>
+                    <div>
+                      <small
+                        class="kemp-is-eyebrow"
+                        i18n="@@new-reservation.dates.to"
+                        >Odjezd</small
+                      >
+                      <strong>{{ formatDate(dateModel().to) }}</strong>
+                    </div>
+                  </div>
+                  <div class="kemp-is-nights-pill">
+                    <i
+                      class="pi pi-moon"
+                      aria-hidden="true"
+                    ></i>
+                    <span
+                      i18n="@@new-reservation.dates.nights"
+                      >{nights(), plural,
+                        =1 {1 noc}
+                        few {{{ nights() }} noci}
+                        other {{{ nights() }} nocí}
+                      }</span
+                    >
+                  </div>
+                } @else {
+                  <p
+                    class="kemp-is-text-muted"
+                    i18n="@@new-reservation.dates.empty"
+                  >
+                    Vyberte v kalendáři rozsah pobytu.
+                  </p>
+                }
+              </aside>
+            </div>
+          </section>
+        </ng-template>
+      </p-step-panel>
+
+      <!-- Step 2 - Cottages -->
+      <p-step-panel [value]="2">
+        <ng-template
+          #content
+          let-activateCallback="activateCallback"
+        >
+          <section class="kemp-is-screen">
+            <header class="kemp-is-screen__head kemp-is-screen__head--row">
+              <div>
+                <h2
+                  class="kemp-is-screen__title"
+                  i18n="@@new-reservation.cottages.heading"
+                >
+                  Vyberte ubytování
+                </h2>
+                @if (dateRange(); as dr) {
+                  <p class="kemp-is-screen__lead">
+                    <i
+                      class="pi pi-calendar"
+                      aria-hidden="true"
+                    ></i>
+                    {{ formatDateShort(dr.from) }} →
+                    {{ formatDateShort(dr.to) }} ·
+                    <span i18n="@@new-reservation.dates.nights">
+                      {nights(), plural,
+                        =1 {1 noc}
+                        few {{{ nights() }} noci}
+                        other {{{ nights() }} nocí}
+                      }
+                    </span>
+                  </p>
+                }
+              </div>
+              <p-button
+                severity="secondary"
+                [text]="true"
+                size="small"
+                icon="pi pi-pencil"
+                (onClick)="activateCallback(1)"
+                [label]="editDatesLabel"
+              />
+            </header>
+
+            @if (availability.isLoading()) {
+              <p
+                class="kemp-is-text-muted"
+                i18n="@@new-reservation.cottages.loading"
+              >
+                Načítám dostupnost…
+              </p>
+            } @else if (availability.error()) {
+              <p-message
+                severity="error"
+                [closable]="false"
+              >
+                <span i18n="@@new-reservation.cottages.error">
+                  Dostupnost se nepodařilo načíst.
+                </span>
+              </p-message>
+            } @else if (availability.value(); as av) {
+              <div class="kemp-is-cottages">
+                @for (
+                  row of av.spotGroups;
+                  track row.spotGroupId;
+                  let i = $index
+                ) {
+                  @let qty = quantityFor(row.spotGroupId);
+                  @let selected = qty > 0;
+                  @let soldOut = row.available === 0;
+                  <article
+                    class="kemp-is-cottage"
+                    [class.kemp-is-cottage--selected]="selected"
+                    [class.kemp-is-cottage--sold-out]="soldOut"
+                  >
+                    <div
+                      class="kemp-is-cottage__thumb"
+                      [style.--swatch]="swatchFor(i)"
+                      [style.background-image]="
+                        row.imageUrl ? 'url(' + row.imageUrl + ')' : null
+                      "
+                      [class.kemp-is-cottage__thumb--placeholder]="
+                        !row.imageUrl
+                      "
+                      role="img"
+                      [attr.aria-label]="row.name"
+                    >
+                      @if (!row.imageUrl) {
+                        <span class="kemp-mono">
+                          {{ row.name.slice(0, 3).toUpperCase() }}
+                        </span>
+                      }
+                    </div>
+
+                    <div class="kemp-is-cottage__main">
+                      <div class="kemp-is-cottage__title-row">
+                        <h3 class="kemp-is-cottage__name">{{ row.name }}</h3>
+                        @if (soldOut) {
+                          <p-tag
+                            severity="danger"
+                            [rounded]="true"
+                            icon="pi pi-circle-fill"
+                          >
+                            <span i18n="@@new-reservation.cottages.sold-out"
+                              >Vyprodáno</span
+                            >
+                          </p-tag>
+                        } @else if (row.available <= 3) {
+                          <p-tag
+                            severity="warn"
+                            [rounded]="true"
+                            icon="pi pi-circle-fill"
+                          >
+                            <span i18n="@@new-reservation.cottages.left"
+                              >Zbývá {{ row.available }} z
+                              {{ row.totalSpots }}</span
+                            >
+                          </p-tag>
+                        } @else {
+                          <p-tag
+                            severity="success"
+                            [rounded]="true"
+                            icon="pi pi-circle-fill"
+                          >
+                            <span i18n="@@new-reservation.cottages.left"
+                              >Zbývá {{ row.available }} z
+                              {{ row.totalSpots }}</span
+                            >
+                          </p-tag>
+                        }
+                      </div>
+                      <p
+                        class="kemp-is-text-muted kemp-is-cottage__capacity"
+                        i18n="@@new-reservation.cottages.sleeps"
+                      >
+                        Pro
+                        {row.capacity, plural,
+                          =1 {1 osobu}
+                          few {{{ row.capacity }} osoby}
+                          other {{{ row.capacity }} osob}
+                        }
+                      </p>
+                      @if (row.detailsUrl; as url) {
+                        <a
+                          class="kemp-is-cottage__details"
+                          [href]="url"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <i
+                            class="pi pi-external-link"
+                            aria-hidden="true"
+                          ></i>
+                          <span i18n="@@new-reservation.cottages.details"
+                            >Více informací</span
+                          >
+                        </a>
+                      }
+                      @for (notice of row.events; track notice.eventId) {
+                        <p
+                          class="kemp-is-cottage__event"
+                          i18n="@@new-reservation.cottages.event"
+                          [pTooltip]="
+                            formatEventRange(
+                              notice.startsAtUtc,
+                              notice.endsAtUtc
+                            )
+                          "
+                          tooltipPosition="top"
+                          [showDelay]="200"
+                        >
+                          <i
+                            class="pi pi-bell"
+                            aria-hidden="true"
+                          ></i>
+                          Probíhající akce:
+                          <strong>{{ notice.name }}</strong>
+                        </p>
+                      }
+                    </div>
+
+                    <div class="kemp-is-cottage__qty">
+                      <p-inputnumber
+                        [ngModel]="qty"
+                        (ngModelChange)="setQuantity(row.spotGroupId, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                        [showButtons]="true"
+                        buttonLayout="horizontal"
+                        spinnerMode="horizontal"
+                        decrementButtonClass="p-button-secondary"
+                        incrementButtonClass="p-button-secondary"
+                        decrementButtonIcon="pi pi-minus"
+                        incrementButtonIcon="pi pi-plus"
+                        [min]="0"
+                        [max]="row.available"
+                        inputStyleClass="kemp-is-cottage__qty-input"
+                        [disabled]="soldOut"
+                      />
+                    </div>
+                  </article>
+                }
+              </div>
+
+              @let spotsField = spotsForm.requestedSpots();
+              @if (
+                spotsField.touched() &&
+                spotsField.errors().length &&
+                totalCottages() === 0
+              ) {
+                <p-message
+                  severity="warn"
+                  [closable]="false"
+                >
+                  <span>{{ spotsField.errors()[0]?.message }}</span>
+                </p-message>
+              }
+
+              <p
+                class="kemp-is-text-muted kemp-is-screen__footnote"
+                i18n="@@new-reservation.cottages.footnote"
+              >
+                Vyberte počet kusů. Cenu vám potvrdíme v rezervačním e-mailu.
+              </p>
+            }
+          </section>
+        </ng-template>
+      </p-step-panel>
+
+      <!-- Step 3 - Personal details -->
+      <p-step-panel [value]="3">
+        <ng-template
+          #content
+          let-activateCallback="activateCallback"
+        >
+          <section class="kemp-is-screen">
+            <header class="kemp-is-screen__head">
+              <h2
+                class="kemp-is-screen__title"
+                i18n="@@new-reservation.details.heading"
+              >
+                Vaše údaje
+              </h2>
+              <p
+                class="kemp-is-screen__lead"
+                i18n="@@new-reservation.details.lead"
+              >
+                Použijeme je pro potvrzení rezervace. Žádné platby teď — platí
+                se na místě.
+              </p>
+            </header>
+
+            @if (submitError(); as err) {
+              <p-message
+                severity="error"
+                [closable]="false"
+              >
+                <span>{{ err.detail }}</span>
+              </p-message>
+            }
+
+            <div class="kemp-is-details-grid">
+              <p-floatlabel variant="in">
+                <input
+                  pInputText
+                  id="kemp-name"
+                  [formField]="contactForm.name"
+                />
+                <label
+                  for="kemp-name"
+                  i18n="@@new-reservation.contact.name"
+                  >Jméno</label
+                >
+              </p-floatlabel>
+              <p-floatlabel variant="in">
+                <input
+                  pInputText
+                  id="kemp-surname"
+                  [formField]="contactForm.surname"
+                />
+                <label
+                  for="kemp-surname"
+                  i18n="@@new-reservation.contact.surname"
+                  >Příjmení</label
+                >
+              </p-floatlabel>
+              <p-floatlabel variant="in">
+                <input
+                  pInputText
+                  id="kemp-email"
+                  type="email"
+                  [formField]="contactForm.email"
+                />
+                <label
+                  for="kemp-email"
+                  i18n="@@new-reservation.contact.email"
+                  >E-mail</label
+                >
+              </p-floatlabel>
+              <p-floatlabel variant="in">
+                <input
+                  pInputText
+                  id="kemp-phone"
+                  type="tel"
+                  [formField]="contactForm.phone"
+                />
+                <label
+                  for="kemp-phone"
+                  i18n="@@new-reservation.contact.phone"
+                  >Telefon</label
+                >
+              </p-floatlabel>
+              <p-floatlabel
+                variant="in"
+                class="kemp-is-details-grid__full"
+              >
+                <textarea
+                  pTextarea
+                  id="kemp-note"
+                  rows="3"
+                  [ngModel]="contactModel().note"
+                  (ngModelChange)="setNote($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                ></textarea>
+                <label
+                  for="kemp-note"
+                  i18n="@@new-reservation.contact.note"
+                  >Poznámka (volitelné)</label
+                >
+              </p-floatlabel>
+            </div>
+
+            @let nameErr =
+              contactForm.name().touched() && contactForm.name().errors()[0];
+            @let surnameErr =
+              contactForm.surname().touched() &&
+              contactForm.surname().errors()[0];
+            @let emailErr =
+              contactForm.email().touched() && contactForm.email().errors()[0];
+            @let phoneErr =
+              contactForm.phone().touched() && contactForm.phone().errors()[0];
+            @if (nameErr || surnameErr || emailErr || phoneErr) {
+              <ul class="kemp-is-error-list">
+                @if (nameErr) {
+                  <li>{{ nameErr.message }}</li>
+                }
+                @if (surnameErr) {
+                  <li>{{ surnameErr.message }}</li>
+                }
+                @if (emailErr) {
+                  <li>{{ emailErr.message }}</li>
+                }
+                @if (phoneErr) {
+                  <li>{{ phoneErr.message }}</li>
+                }
+              </ul>
+            }
+
+            <div class="kemp-is-privacy">
+              <i
+                class="pi pi-shield"
+                aria-hidden="true"
+              ></i>
+              <span i18n="@@new-reservation.details.privacy">
+                Vaše údaje použijeme jen pro správu rezervace. Potvrzovací
+                e-mail vám zašleme během několika minut.
+              </span>
+            </div>
+
+            <h3
+              class="kemp-is-section-title"
+              i18n="@@new-reservation.details.recap"
+            >
+              Souhrn rezervace
+            </h3>
+            <div class="kemp-is-recap">
+              <div class="kemp-is-recap__row">
+                <span class="kemp-is-recap__strong">
+                  {{ formatDateShort(dateModel().from) }} →
+                  {{ formatDateShort(dateModel().to) }}
+                </span>
+                <span
+                  class="kemp-is-text-muted"
+                  i18n="@@new-reservation.dates.nights"
+                >
+                  {nights(), plural,
+                    =1 {1 noc}
+                    few {{{ nights() }} noci}
+                    other {{{ nights() }} nocí}
+                  }
+                </span>
+              </div>
+              @for (pick of selectedPicks(); track pick.spotGroupId) {
+                <div class="kemp-is-recap__line">
+                  <span>
+                    <span class="kemp-mono kemp-is-text-muted"
+                      >{{ pick.quantity }}×</span
+                    >
+                    {{ pick.name }}
+                  </span>
+                </div>
+              }
+              <div class="kemp-is-recap__total">
+                <span
+                  class="kemp-is-recap__strong"
+                  i18n="@@new-reservation.recap.pay"
+                  >Platba na místě</span
+                >
+                <span
+                  class="kemp-is-text-muted"
+                  i18n="@@new-reservation.recap.pricing"
+                  >Ceny potvrdíme e-mailem</span
+                >
+              </div>
+            </div>
+          </section>
+        </ng-template>
+      </p-step-panel>
+
+      <!-- Step 4 - Confirmation -->
+      <p-step-panel [value]="4">
+        <ng-template #content>
+          <section class="kemp-is-screen kemp-is-screen--confirm">
+            <div
+              class="kemp-is-confirm__icon"
+              aria-hidden="true"
+            >
+              <i class="pi pi-check"></i>
+            </div>
+            <h2
+              class="kemp-is-screen__title kemp-is-confirm__title"
+              i18n="@@new-reservation.confirm.heading"
+            >
+              Žádost o rezervaci přijata
+            </h2>
+            <p
+              class="kemp-is-text-muted kemp-is-confirm__lead"
+              i18n="@@new-reservation.confirm.lead"
+            >
+              Potvrzení jsme zaslali na
+              <strong>{{ contactModel().email }}</strong
+              >.
+            </p>
+
+            <div class="kemp-is-confirm__card">
+              <div class="kemp-is-confirm__ref">
+                <small
+                  class="kemp-is-eyebrow"
+                  i18n="@@new-reservation.confirm.ref"
+                >
+                  Číslo rezervace
+                </small>
+                <strong class="kemp-mono">{{ bookingReference() }}</strong>
+              </div>
+
+              <div class="kemp-is-confirm__dates">
+                <div>
+                  <small
+                    class="kemp-is-eyebrow"
+                    i18n="@@new-reservation.dates.from"
+                    >Příjezd</small
+                  >
+                  <strong>{{ formatDate(dateModel().from) }}</strong>
+                  <small
+                    class="kemp-is-text-muted"
+                    i18n="@@new-reservation.confirm.from-time"
+                    >od 14:00</small
+                  >
+                </div>
+                <div>
+                  <small
+                    class="kemp-is-eyebrow"
+                    i18n="@@new-reservation.dates.to"
+                    >Odjezd</small
+                  >
+                  <strong>{{ formatDate(dateModel().to) }}</strong>
+                  <small
+                    class="kemp-is-text-muted"
+                    i18n="@@new-reservation.confirm.to-time"
+                    >do 10:00</small
+                  >
+                </div>
+              </div>
+
+              <div class="kemp-is-confirm__divider"></div>
+
+              @for (pick of selectedPicks(); track pick.spotGroupId) {
+                <div class="kemp-is-recap__line">
+                  <span>
+                    <span class="kemp-mono kemp-is-text-muted"
+                      >{{ pick.quantity }}×</span
+                    >
+                    {{ pick.name }}
+                  </span>
+                </div>
+              }
+
+              <div class="kemp-is-recap__total">
+                <span
+                  class="kemp-is-recap__strong"
+                  i18n="@@new-reservation.recap.pay"
+                  >Platba na místě</span
+                >
+                <span
+                  class="kemp-is-text-muted"
+                  i18n="@@new-reservation.recap.pricing"
+                  >Ceny potvrdíme později.</span
+                >
+              </div>
+            </div>
+
+            <p-message
+              severity="success"
+              [closable]="false"
+            >
+              <span i18n="@@new-reservation.confirm.note">
+                Toto je žádost o rezervaci. Brzy ji potvrdíme e-mailem.
+              </span>
+            </p-message>
+
+            <p
+              class="kemp-is-text-muted kemp-is-confirm__contact"
+              i18n="@@new-reservation.confirm.contact"
+            >
+              Potřebujete něco změnit? Odpovězte na potvrzovací e-mail nebo
+              zavolejte na recepci {{ camp.phoneDisplay }}.
+            </p>
+          </section>
+        </ng-template>
+      </p-step-panel>
+    </p-step-panels>
+  </p-stepper>
+
+  @if (currentStep() < 4) {
+    <aside
+      class="kemp-is-summary-bar"
+      role="complementary"
+    >
+      <div class="kemp-is-summary-bar__detail">
+        @if (dateRange(); as dr) {
+          <small class="kemp-is-eyebrow">
+            {{ formatDateShort(dr.from) }} → {{ formatDateShort(dr.to) }}
+          </small>
+        } @else {
+          <small
+            class="kemp-is-eyebrow"
+            i18n="@@new-reservation.summary.no-dates"
+            >Termín nezvolen</small
+          >
+        }
+        <div class="kemp-is-summary-bar__line">
+          @if (nights() > 0) {
+            <strong i18n="@@new-reservation.dates.nights">
+              {nights(), plural,
+                =1 {1 noc}
+                few {{{ nights() }} noci}
+                other {{{ nights() }} nocí}
+              }
+            </strong>
+          } @else {
+            <strong
+              class="kemp-is-text-muted"
+              i18n="@@new-reservation.summary.pick-dates"
+              >Vyberte termín</strong
+            >
+          }
+          @if (totalCottages() > 0) {
+            <span
+              class="kemp-is-text-muted"
+              i18n="@@new-reservation.summary.cottages"
+            >
+              ·
+              {totalCottages(), plural,
+                =1 {1 ubytování}
+                few {{{ totalCottages() }} ubytování}
+                other {{{ totalCottages() }} ubytování}
+              }
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="kemp-is-summary-bar__actions">
+        @if (currentStep() > 1) {
+          <p-button
+            severity="secondary"
+            [text]="true"
+            icon="pi pi-arrow-left"
+            (onClick)="onBack()"
+            [label]="backLabel"
+          />
+        }
+        <p-button
+          size="large"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          (onClick)="onContinue()"
+          [disabled]="!canContinue() || submitting()"
+          [loading]="submitting()"
+          [label]="continueLabel()"
+        />
+      </div>
+    </aside>
+  }
+</div>

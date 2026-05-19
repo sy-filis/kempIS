@@ -1,0 +1,31 @@
+<div class="kemp-is-dash__metrics">
+  @for (m of metrics(); track m.id) {
+    <div
+      class="kemp-is-dash__metric"
+      [attr.data-color]="m.color"
+    >
+      <div
+        class="kemp-is-dash__metric-stripe"
+        aria-hidden="true"
+      ></div>
+      <div class="kemp-is-dash__metric-head">
+        <i
+          class="pi kemp-is-dash__metric-icon"
+          [class]="m.icon"
+          aria-hidden="true"
+        ></i>
+        <span class="kemp-is-dash__metric-label">{{ m.label }}</span>
+      </div>
+      <div class="kemp-is-dash__metric-value-row">
+        <span class="kemp-is-dash__metric-value kemp-mono">
+          {{ m.value }}
+        </span>
+        @if (m.outOf) {
+          <span class="kemp-is-dash__metric-out-of kemp-mono">
+            / {{ m.outOf }}
+          </span>
+        }
+      </div>
+    </div>
+  }
+</div>

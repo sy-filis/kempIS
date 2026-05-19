@@ -1,0 +1,722 @@
+<div class="kemp-is-if__header">
+  <div class="kemp-is-if__title-block">
+    <div class="kemp-is-if__eyebrow">Faktury</div>
+    <div class="kemp-is-if__title">{{ headerTitle() }}</div>
+  </div>
+  <span class="kemp-is-if__spacer"></span>
+  <p-button
+    severity="secondary"
+    [outlined]="true"
+    size="small"
+    (onClick)="onCancel()"
+  >
+    <i
+      class="pi pi-times"
+      aria-hidden="true"
+    ></i>
+    <span>{{ canEdit() ? "Zrušit" : "Zavřít" }}</span>
+  </p-button>
+  @if (canEdit()) {
+    <p-button
+      size="small"
+      [disabled]="!canSubmit()"
+      [loading]="submitting()"
+      (onClick)="onSubmit()"
+    >
+      <i
+        class="pi pi-check"
+        aria-hidden="true"
+      ></i>
+      <span>{{
+        mode() === "create" ? "Vytvořit fakturu" : "Uložit změny"
+      }}</span>
+    </p-button>
+  }
+</div>
+
+<div class="kemp-is-if__body">
+  @if (mode() === "edit") {
+    @if (invoice.isLoading() && !invoice.hasValue()) {
+      <div class="kemp-is-if__center">
+        <i
+          class="pi pi-spinner pi-spin kemp-is-if__spinner"
+          aria-hidden="true"
+        ></i>
+      </div>
+    } @else if (invoice.error() && !invoice.hasValue()) {
+      <div class="kemp-is-if__alert">
+        <p-message
+          severity="error"
+          text="Fakturu se nepodařilo načíst."
+        />
+      </div>
+    } @else if (invoice.hasValue()) {
+      <kemp-is-invoice-status-header
+        [invoice]="invoice.value()"
+        (transitioned)="onInvoiceTransitioned()"
+      />
+    }
+  }
+  @if (mode() === "create" && !reservationId()) {
+    <div class="kemp-is-if__alert">
+      <p-message
+        severity="error"
+        text="Faktura musí být svázána s rezervací. Otevřete tuto stránku z detailu rezervace."
+      />
+    </div>
+  } @else if (mode() === "create" && detail.isLoading() && !detail.hasValue()) {
+    <div class="kemp-is-if__center">
+      <i
+        class="pi pi-spinner pi-spin kemp-is-if__spinner"
+        aria-hidden="true"
+      ></i>
+    </div>
+  } @else if (mode() === "create" && detail.error() && !detail.hasValue()) {
+    <div class="kemp-is-if__alert">
+      <p-message
+        severity="error"
+        text="Rezervaci se nepodařilo načíst."
+      />
+    </div>
+  } @else if (
+    (mode() === "create" && detail.hasValue()) ||
+    (mode() === "edit" && invoice.hasValue())
+  ) {
+    @if (detail.hasValue()) {
+      @let res = detail.value();
+
+      <button
+        type="button"
+        class="kemp-is-if__section kemp-is-if__section--info kemp-is-if__section--link"
+        (click)="onReservationClick(res.id)"
+      >
+        <h2 class="kemp-is-if__heading">Rezervace</h2>
+        <div class="kemp-is-if__res">
+          <div>
+            <span class="kemp-is-if__res-label">Číslo</span>
+            <span class="kemp-is-if__res-value kemp-mono">{{
+              res.number
+            }}</span>
+          </div>
+          <div>
+            <span class="kemp-is-if__res-label">Termín</span>
+            <span class="kemp-is-if__res-value">
+              {{ formatDateRange(res.from, res.to) }}
+            </span>
+          </div>
+          <div>
+            <span class="kemp-is-if__res-label">Zákazník</span>
+            <span class="kemp-is-if__res-value">
+              {{ res.reservationMakerName }} {{ res.reservationMakerSurname }}
+            </span>
+          </div>
+          <i
+            class="pi pi-external-link kemp-is-if__res-arrow"
+            aria-hidden="true"
+          ></i>
+        </div>
+      </button>
+    }
+
+    <fieldset
+      class="kemp-is-if__fieldset"
+      [disabled]="!canEdit()"
+    >
+      <section class="kemp-is-if__section">
+        <div class="kemp-is-if__items-head">
+          <h2 class="kemp-is-if__heading">Plátce</h2>
+          @if (canEdit()) {
+            <span class="kemp-is-if__spacer"></span>
+            <p-selectButton
+              [options]="payerTypeOptions"
+              optionLabel="label"
+              optionValue="value"
+              [allowEmpty]="false"
+              [ngModel]="payerType()"
+              (ngModelChange)="payerType.set($event)"
+            />
+          }
+        </div>
+        @if (payerType() === "physical") {
+          <div class="kemp-is-if__grid kemp-is-if__grid--2">
+            <div class="kemp-is-if__field">
+              <label
+                for="payer-name"
+                class="kemp-is-if__label"
+              >
+                Jméno <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="payer-name"
+                type="text"
+                [ngModel]="payerName()"
+                (ngModelChange)="payerName.set($event)"
+                placeholder="např. Jan"
+              />
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="payer-surname"
+                class="kemp-is-if__label"
+              >
+                Příjmení <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="payer-surname"
+                type="text"
+                [ngModel]="payerSurname()"
+                (ngModelChange)="payerSurname.set($event)"
+                placeholder="např. Novák"
+              />
+            </div>
+          </div>
+          <div class="kemp-is-if__grid kemp-is-if__grid--address">
+            <div class="kemp-is-if__field">
+              <label
+                for="payer-street"
+                class="kemp-is-if__label"
+              >
+                Ulice <span class="kemp-is-if__required">*</span>
+              </label>
+              <p-autocomplete
+                inputId="payer-street"
+                styleClass="kemp-is-if__address-whisperer"
+                [ngModel]="payerStreet()"
+                (ngModelChange)="payerStreet.set($any($event))"
+                [suggestions]="addressSuggestions()"
+                (completeMethod)="onAddressQuery($event)"
+                (onSelect)="onPayerAddressPick($event)"
+                field="street"
+                [delay]="300"
+                [minLength]="8"
+                [forceSelection]="false"
+                appendTo="body"
+                placeholder="Začněte psát ulici…"
+              >
+                <ng-template
+                  let-s
+                  #item
+                >
+                  <div class="kemp-is-if__address-suggestion">
+                    <div class="kemp-is-if__address-suggestion-line">
+                      <strong>{{ s.street }}</strong>
+                      @if (s.houseNumber) {
+                        <span>&nbsp;{{ s.houseNumber }}</span>
+                      }
+                    </div>
+                    <small class="kemp-is-if__address-suggestion-meta">
+                      @if (s.zipCode) {
+                        <span class="kemp-mono">{{ s.zipCode }}</span>
+                      }
+                      {{ s.city }} · {{ s.countryCode }}
+                    </small>
+                  </div>
+                </ng-template>
+              </p-autocomplete>
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="payer-house"
+                class="kemp-is-if__label"
+              >
+                Č.p. <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="payer-house"
+                type="text"
+                [ngModel]="payerHouseNumber()"
+                (ngModelChange)="payerHouseNumber.set($event)"
+              />
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="payer-zip"
+                class="kemp-is-if__label"
+              >
+                PSČ <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="payer-zip"
+                type="text"
+                [ngModel]="payerZipCode()"
+                (ngModelChange)="payerZipCode.set($event)"
+              />
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="payer-city"
+                class="kemp-is-if__label"
+              >
+                Město <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="payer-city"
+                type="text"
+                [ngModel]="payerCity()"
+                (ngModelChange)="payerCity.set($event)"
+              />
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="payer-country"
+                class="kemp-is-if__label"
+              >
+                Země <span class="kemp-is-if__required">*</span>
+              </label>
+              <p-select
+                inputId="payer-country"
+                [options]="countryOptions()"
+                optionLabel="label"
+                optionValue="id"
+                placeholder="Vyberte zemi"
+                [filter]="true"
+                filterBy="label"
+                appendTo="body"
+                [disabled]="!canEdit()"
+                [ngModel]="payerCountryId()"
+                (ngModelChange)="payerCountryId.set($event)"
+              />
+            </div>
+          </div>
+        } @else {
+          <div class="kemp-is-if__grid kemp-is-if__grid--ares">
+            <div class="kemp-is-if__field">
+              <label
+                for="le-cin"
+                class="kemp-is-if__label"
+              >
+                IČO <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="le-cin"
+                type="text"
+                [ngModel]="leCin()"
+                (ngModelChange)="leCin.set($event)"
+                placeholder="8 číslic"
+              />
+            </div>
+            <div class="kemp-is-if__field kemp-is-if__field--ares-action">
+              <p-button
+                severity="secondary"
+                [outlined]="true"
+                size="small"
+                [loading]="aresLoading()"
+                (onClick)="onAresLookup()"
+              >
+                <i
+                  class="pi pi-search"
+                  aria-hidden="true"
+                ></i>
+                <span>Načíst z ARES</span>
+              </p-button>
+              @if (aresError(); as err) {
+                <span class="kemp-is-if__ares-error">{{ err }}</span>
+              }
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="le-tin"
+                class="kemp-is-if__label"
+              >
+                DIČ
+              </label>
+              <input
+                pInputText
+                id="le-tin"
+                type="text"
+                [ngModel]="leTin()"
+                (ngModelChange)="leTin.set($event)"
+                placeholder="CZ12345678"
+              />
+            </div>
+          </div>
+          <div class="kemp-is-if__grid kemp-is-if__grid--1">
+            <div class="kemp-is-if__field">
+              <label
+                for="le-name"
+                class="kemp-is-if__label"
+              >
+                Název <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="le-name"
+                type="text"
+                [ngModel]="leName()"
+                (ngModelChange)="leName.set($event)"
+              />
+            </div>
+          </div>
+          <div class="kemp-is-if__grid kemp-is-if__grid--address">
+            <div class="kemp-is-if__field">
+              <label
+                for="le-street"
+                class="kemp-is-if__label"
+              >
+                Ulice <span class="kemp-is-if__required">*</span>
+              </label>
+              <p-autocomplete
+                inputId="le-street"
+                styleClass="kemp-is-if__address-whisperer"
+                [ngModel]="leStreet()"
+                (ngModelChange)="leStreet.set($any($event))"
+                [suggestions]="addressSuggestions()"
+                (completeMethod)="onAddressQuery($event)"
+                (onSelect)="onLeAddressPick($event)"
+                field="street"
+                [delay]="300"
+                [minLength]="8"
+                [forceSelection]="false"
+                appendTo="body"
+                placeholder="Začněte psát ulici…"
+              >
+                <ng-template
+                  let-s
+                  #item
+                >
+                  <div class="kemp-is-if__address-suggestion">
+                    <div class="kemp-is-if__address-suggestion-line">
+                      <strong>{{ s.street }}</strong>
+                      @if (s.houseNumber) {
+                        <span>&nbsp;{{ s.houseNumber }}</span>
+                      }
+                    </div>
+                    <small class="kemp-is-if__address-suggestion-meta">
+                      @if (s.zipCode) {
+                        <span class="kemp-mono">{{ s.zipCode }}</span>
+                      }
+                      {{ s.city }} · {{ s.countryCode }}
+                    </small>
+                  </div>
+                </ng-template>
+              </p-autocomplete>
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="le-house"
+                class="kemp-is-if__label"
+              >
+                Č.p. <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="le-house"
+                type="text"
+                [ngModel]="leHouseNumber()"
+                (ngModelChange)="leHouseNumber.set($event)"
+              />
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="le-zip"
+                class="kemp-is-if__label"
+              >
+                PSČ <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="le-zip"
+                type="text"
+                [ngModel]="leZipCode()"
+                (ngModelChange)="leZipCode.set($event)"
+              />
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="le-city"
+                class="kemp-is-if__label"
+              >
+                Město <span class="kemp-is-if__required">*</span>
+              </label>
+              <input
+                pInputText
+                id="le-city"
+                type="text"
+                [ngModel]="leCity()"
+                (ngModelChange)="leCity.set($event)"
+              />
+            </div>
+            <div class="kemp-is-if__field">
+              <label
+                for="le-country"
+                class="kemp-is-if__label"
+              >
+                Země <span class="kemp-is-if__required">*</span>
+              </label>
+              <p-select
+                inputId="le-country"
+                [options]="countryOptions()"
+                optionLabel="label"
+                optionValue="id"
+                placeholder="Vyberte zemi"
+                [filter]="true"
+                filterBy="label"
+                appendTo="body"
+                [disabled]="!canEdit()"
+                [ngModel]="leCountryId()"
+                (ngModelChange)="leCountryId.set($event)"
+              />
+            </div>
+          </div>
+        }
+      </section>
+
+      <section class="kemp-is-if__section">
+        <h2 class="kemp-is-if__heading">Kontaktní údaje</h2>
+        <div class="kemp-is-if__grid kemp-is-if__grid--2">
+          <div class="kemp-is-if__field">
+            <label
+              for="invoice-email"
+              class="kemp-is-if__label"
+            >
+              E-mail <span class="kemp-is-if__required">*</span>
+            </label>
+            <input
+              pInputText
+              id="invoice-email"
+              type="email"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              placeholder="např. jan.novak@example.cz"
+            />
+          </div>
+          <div class="kemp-is-if__field">
+            <label
+              for="invoice-phone"
+              class="kemp-is-if__label"
+            >
+              Telefon <span class="kemp-is-if__required">*</span>
+            </label>
+            <input
+              pInputText
+              id="invoice-phone"
+              type="tel"
+              [ngModel]="phoneNumber()"
+              (ngModelChange)="phoneNumber.set($event)"
+              placeholder="např. +420 777 123 456"
+            />
+          </div>
+        </div>
+      </section>
+
+      @if (mode() === "create" && detail.hasValue()) {
+        <section class="kemp-is-if__section">
+          <div class="kemp-is-if__items-head">
+            <h2 class="kemp-is-if__heading">Položky z rezervace</h2>
+            <span class="kemp-is-if__items-hint">
+              Odvozeno z rezervace (chaty, vozidla, ostatní služby).
+            </span>
+          </div>
+          <div class="kemp-is-if__services">
+            @for (svc of derivedServices(); track svc.serviceId) {
+              @let added = usedServiceIds().has(svc.serviceId);
+              <button
+                type="button"
+                class="kemp-is-if__service"
+                [class.kemp-is-if__service--added]="added"
+                [disabled]="added"
+                (click)="addDerivedService(svc)"
+              >
+                <div class="kemp-is-if__service-text">
+                  <span class="kemp-is-if__service-name">{{ svc.name }}</span>
+                  <span class="kemp-is-if__service-group">{{
+                    svc.groupLabel
+                  }}</span>
+                </div>
+                <span class="kemp-is-if__service-price kemp-mono">
+                  {{ formatCzk(svc.basePrice) }}
+                </span>
+                <span class="kemp-is-if__service-badge kemp-mono">
+                  × {{ svc.quantity }}
+                </span>
+                @if (added) {
+                  <span class="kemp-is-if__service-status">
+                    <i
+                      class="pi pi-check"
+                      aria-hidden="true"
+                    ></i>
+                    Přidáno
+                  </span>
+                } @else {
+                  <i
+                    class="pi pi-plus kemp-is-if__service-add"
+                    aria-hidden="true"
+                  ></i>
+                }
+              </button>
+            } @empty {
+              <div class="kemp-is-if__items-empty">
+                Rezervace nemá žádné odvoditelné služby.
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <div class="kemp-is-if__columns">
+        <section class="kemp-is-if__section kemp-is-if__section--items">
+          <div class="kemp-is-if__items-head">
+            <h2 class="kemp-is-if__heading">Položky faktury</h2>
+            @if (canEdit()) {
+              <span class="kemp-is-if__items-hint">
+                Další službu z katalogu vyberte vpravo.
+              </span>
+              <span class="kemp-is-if__spacer"></span>
+              <p-select
+                styleClass="kemp-is-if__service-picker"
+                [options]="addableServices()"
+                optionLabel="name"
+                optionValue="id"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="false"
+                appendTo="body"
+                placeholder="+ Přidat jinou službu"
+                [ngModel]="servicePickerValue()"
+                (onChange)="onServicePicked($event.value)"
+              >
+                <ng-template
+                  let-svc
+                  #item
+                >
+                  <div class="kemp-is-if__picker-option">
+                    <span class="kemp-is-if__picker-name">{{ svc.name }}</span>
+                    <span class="kemp-is-if__picker-meta">
+                      <span class="kemp-is-if__picker-group">{{
+                        svc.groupLabel
+                      }}</span>
+                      <span class="kemp-is-if__picker-price kemp-mono">
+                        {{ formatCzk(svc.basePrice) }}
+                      </span>
+                    </span>
+                  </div>
+                </ng-template>
+              </p-select>
+            }
+          </div>
+          <div class="kemp-is-if__items">
+            <div class="kemp-is-if__items-row kemp-is-if__items-row--head">
+              <span>Název</span>
+              <span class="kemp-is-if__items-num">Počet</span>
+              <span class="kemp-is-if__items-num">Cena/ks (s DPH)</span>
+              <span class="kemp-is-if__items-num">DPH %</span>
+              <span class="kemp-is-if__items-num">Celkem (s DPH)</span>
+              <span></span>
+            </div>
+            @for (row of rows(); track row.id) {
+              <div class="kemp-is-if__items-row">
+                <span class="kemp-is-if__items-name">{{ row.name }}</span>
+                <p-inputnumber
+                  styleClass="kemp-is-if__items-num-input"
+                  [ngModel]="row.quantity"
+                  (ngModelChange)="onRowQuantityChange(row.id, $event)"
+                  [min]="0"
+                  [maxFractionDigits]="2"
+                  [inputStyle]="{ width: '5rem', textAlign: 'right' }"
+                />
+                <p-inputnumber
+                  styleClass="kemp-is-if__items-num-input"
+                  [ngModel]="row.unitPriceGross"
+                  (ngModelChange)="onRowUnitPriceChange(row.id, $event)"
+                  mode="currency"
+                  currency="CZK"
+                  locale="cs-CZ"
+                  [min]="0"
+                  [maxFractionDigits]="0"
+                  [inputStyle]="{ width: '6.5rem', textAlign: 'right' }"
+                />
+                <span class="kemp-is-if__items-num kemp-mono">
+                  {{ row.vatRatePercentage }} %
+                </span>
+                <span class="kemp-is-if__items-total kemp-mono">
+                  {{ formatCzk(rowTotalGross(row)) }}
+                </span>
+                @if (canEdit()) {
+                  <p-button
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    ariaLabel="Odebrat položku"
+                    (onClick)="removeRow(row.id)"
+                  >
+                    <i
+                      class="pi pi-times"
+                      aria-hidden="true"
+                    ></i>
+                  </p-button>
+                } @else {
+                  <span></span>
+                }
+              </div>
+            } @empty {
+              <div class="kemp-is-if__items-empty">
+                Zatím nejsou žádné položky.
+              </div>
+            }
+          </div>
+          <div class="kemp-is-if__totals">
+            <div class="kemp-is-if__totals-row">
+              <span>Bez DPH</span>
+              <span class="kemp-mono">{{ formatCzk(itemsNetTotal()) }}</span>
+            </div>
+            <div class="kemp-is-if__totals-row">
+              <span>DPH</span>
+              <span class="kemp-mono">{{ formatCzk(itemsVatTotal()) }}</span>
+            </div>
+            <div class="kemp-is-if__totals-row kemp-is-if__totals-row--grand">
+              <span>Celkem</span>
+              <span class="kemp-mono">{{ formatCzk(grandTotal()) }}</span>
+            </div>
+          </div>
+        </section>
+
+        @if (vatRecap().length > 0) {
+          <section class="kemp-is-if__section kemp-is-if__section--vat-recap">
+            <h2 class="kemp-is-if__heading">Rekapitulace DPH</h2>
+            <div class="kemp-is-if__vat-recap">
+              <div
+                class="kemp-is-if__vat-recap-row kemp-is-if__vat-recap-row--head"
+              >
+                <span>Sazba</span>
+                <span class="kemp-is-if__items-num">Základ</span>
+                <span class="kemp-is-if__items-num">DPH</span>
+                <span class="kemp-is-if__items-num">S DPH</span>
+              </div>
+              @for (b of vatRecap(); track b.rate) {
+                <div class="kemp-is-if__vat-recap-row">
+                  <span>{{ b.rate }} %</span>
+                  <span class="kemp-is-if__items-num kemp-mono">
+                    {{ formatCzk(b.netBase) }}
+                  </span>
+                  <span class="kemp-is-if__items-num kemp-mono">
+                    {{ formatCzk(b.vatAmount) }}
+                  </span>
+                  <span class="kemp-is-if__items-num kemp-mono">
+                    {{ formatCzk(b.grossTotal) }}
+                  </span>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    </fieldset>
+
+    @if (submitError(); as err) {
+      <div class="kemp-is-if__alert">
+        <p-message
+          severity="error"
+          [text]="err"
+        />
+      </div>
+    }
+  }
+</div>
+
+<p-toast />

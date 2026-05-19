@@ -1,0 +1,149 @@
+<p-panel header="Tisk">
+  <div class="kemp-is-printer-settings__url-row">
+    <label
+      class="kemp-is-printer-settings__label"
+      for="printer-server-url"
+    >
+      Adresa tiskového serveru
+    </label>
+    <div class="kemp-is-printer-settings__url-controls">
+      <input
+        pInputText
+        id="printer-server-url"
+        type="url"
+        class="kemp-is-printer-settings__url"
+        [ngModel]="urlDraft()"
+        (ngModelChange)="urlDraft.set($event)"
+        (blur)="commitUrl()"
+        (keydown.enter)="commitUrl()"
+        placeholder="http://127.0.0.1:9000"
+      />
+      @switch (status().kind) {
+        @case ("empty") {
+          <span
+            class="kemp-is-printer-settings__status kemp-is-printer-settings__status--muted"
+          >
+            <i
+              class="pi pi-circle"
+              aria-hidden="true"
+            ></i>
+            Zadejte adresu
+          </span>
+        }
+        @case ("loading") {
+          <span class="kemp-is-printer-settings__status">
+            <i
+              class="pi pi-spin pi-spinner"
+              aria-hidden="true"
+            ></i>
+            Načítání…
+          </span>
+        }
+        @case ("error") {
+          <span
+            class="kemp-is-printer-settings__status kemp-is-printer-settings__status--error"
+          >
+            <i
+              class="pi pi-times-circle"
+              aria-hidden="true"
+            ></i>
+            Server nedostupný
+          </span>
+        }
+        @case ("connected") {
+          <span
+            class="kemp-is-printer-settings__status kemp-is-printer-settings__status--ok"
+          >
+            <i
+              class="pi pi-check-circle"
+              aria-hidden="true"
+            ></i>
+            Připojeno ({{ printerCount() }})
+          </span>
+        }
+      }
+    </div>
+  </div>
+
+  @if (error(); as msg) {
+    <p-message
+      severity="warn"
+      [closable]="true"
+      (onClose)="dismissError()"
+      styleClass="kemp-is-printer-settings__error"
+    >
+      {{ msg }}
+    </p-message>
+  }
+
+  <p-divider />
+
+  <h2 class="kemp-is-printer-settings__section-title">Výchozí tiskárny</h2>
+
+  @for (task of tasks; track task) {
+    <div class="kemp-is-printer-settings__task">
+      <label
+        class="kemp-is-printer-settings__label"
+        [for]="'printer-default-' + task"
+      >
+        {{ taskLabels[task] }}
+      </label>
+      <div class="kemp-is-printer-settings__task-controls">
+        <p-select
+          [inputId]="'printer-default-' + task"
+          [options]="printerOptions()"
+          [ngModel]="defaults()[task]"
+          (ngModelChange)="onDefaultChange(task, $event)"
+          [disabled]="printers().length === 0"
+          [showClear]="true"
+          appendTo="body"
+          placeholder="Vyberte tiskárnu"
+          styleClass="kemp-is-printer-settings__select"
+        />
+        <div class="kemp-is-printer-settings__copies">
+          <label
+            class="kemp-is-printer-settings__copies-label"
+            [for]="'printer-copies-' + task"
+          >
+            Výchozí počet kopií
+          </label>
+          <p-inputnumber
+            [inputId]="'printer-copies-' + task"
+            [ngModel]="copiesDefaults()[task]"
+            (ngModelChange)="onCopiesChange(task, $event)"
+            [min]="copiesMin"
+            [max]="copiesMax"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            spinnerMode="horizontal"
+            inputStyleClass="kemp-is-printer-settings__copies-input"
+          />
+        </div>
+      </div>
+      @let saved = defaults()[task];
+      @if (saved && !printers().includes(saved)) {
+        <p-message
+          severity="warn"
+          styleClass="kemp-is-printer-settings__stale"
+        >
+          Tiskárna „{{ saved }}“ již není dostupná. Zvolte jinou.
+        </p-message>
+      }
+    </div>
+  }
+
+  <div class="kemp-is-printer-settings__actions">
+    <p-button
+      size="small"
+      severity="secondary"
+      [disabled]="loading() || serverUrl() === ''"
+      (onClick)="refresh()"
+    >
+      <i
+        class="pi pi-refresh"
+        aria-hidden="true"
+      ></i>
+      <span>Obnovit seznam tiskáren</span>
+    </p-button>
+  </div>
+</p-panel>

@@ -1,0 +1,38 @@
+.kemp-is-edoklady-settings {
+  &__list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.5rem 1rem;
+    margin: 0 0 1rem;
+
+    dt {
+      font-weight: 600;
+      color: var(--p-text-muted-color, #6b7280);
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+
+  &__qr {
+    width: 100%;
+    font-family: var(--kemp-font-mono, monospace);
+    font-size: 0.85em;
+  }
+
+  &__empty {
+    margin: 0 0 1rem;
+    color: var(--p-text-muted-color, #6b7280);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__error {
+    margin-top: 0.75rem;
+  }
+}

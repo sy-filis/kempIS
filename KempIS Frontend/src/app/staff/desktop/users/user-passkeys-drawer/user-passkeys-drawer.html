@@ -1,0 +1,90 @@
+<p-confirmDialog appendTo="body" />
+
+<p-drawer
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  position="right"
+  appendTo="body"
+  [style]="{ width: '28rem' }"
+  [showCloseIcon]="!busy()"
+  [dismissible]="!busy()"
+>
+  <ng-template pTemplate="header">
+    <div class="kemp-is-passkeys__header">
+      <div>
+        <div class="kemp-is-passkeys__eyebrow">Klíče</div>
+        <div class="kemp-is-passkeys__user">{{ userName() }}</div>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="kemp-is-passkeys">
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+        styleClass="kemp-is-passkeys__alert"
+      />
+    }
+
+    @if (loading()) {
+      <div class="kemp-is-passkeys__empty">Načítání…</div>
+    } @else if (hasNone()) {
+      <div class="kemp-is-passkeys__empty">
+        Tento uživatel zatím nemá žádný klíč.
+      </div>
+    } @else {
+      <ul class="kemp-is-passkeys__list">
+        @for (k of passkeys(); track k.id) {
+          <li class="kemp-is-passkeys__item">
+            <div class="kemp-is-passkeys__item-text">
+              <div class="kemp-is-passkeys__item-name">
+                {{ k.displayName ?? "Bez názvu" }}
+              </div>
+              <div class="kemp-is-passkeys__item-meta">
+                Registrováno {{ formatDate(k.createdAtUtc) }}
+              </div>
+            </div>
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              [text]="true"
+              [rounded]="true"
+              size="small"
+              ariaLabel="Odebrat"
+              [disabled]="busy()"
+              (onClick)="onRevoke(k)"
+            />
+          </li>
+        }
+      </ul>
+    }
+
+    <div class="kemp-is-passkeys__footer">
+      <label
+        class="kemp-is-passkeys__field"
+        for="kemp-is-passkey-name"
+      >
+        <span class="kemp-is-passkeys__field-label">Název klíče</span>
+        <input
+          id="kemp-is-passkey-name"
+          pInputText
+          type="text"
+          autocomplete="off"
+          placeholder="např. Pracovní notebook"
+          [maxlength]="maxNameLength"
+          [disabled]="busy() || loading()"
+          [ngModel]="newPasskeyName()"
+          (ngModelChange)="newPasskeyName.set($event)"
+        />
+      </label>
+      <p-button
+        label="Přidat klíč"
+        icon="pi pi-plus"
+        [loading]="busy()"
+        [disabled]="loading()"
+        (onClick)="onRegister()"
+      />
+    </div>
+  </div>
+</p-drawer>

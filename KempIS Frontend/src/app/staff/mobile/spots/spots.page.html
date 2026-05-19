@@ -1,0 +1,107 @@
+<kemp-is-staff-screen-header
+  title="Místa"
+  [subtitle]="subtitle()"
+>
+  <p-button
+    slot="trailing"
+    [text]="true"
+    [rounded]="true"
+    severity="secondary"
+    icon="pi pi-refresh"
+    ariaLabel="Obnovit"
+    (onClick)="onRefresh()"
+  />
+</kemp-is-staff-screen-header>
+
+<div class="kemp-is-spots__summary">
+  @for (state of states; track state.id) {
+    <div class="kemp-is-spots__summary-card">
+      <div class="kemp-is-spots__summary-head">
+        <span
+          class="kemp-is-spots__dot"
+          [style.background]="state.dot"
+        ></span>
+        <span class="kemp-is-spots__summary-label">{{ state.label }}</span>
+      </div>
+      <div class="kemp-is-spots__summary-count">{{ counts()[state.id] }}</div>
+    </div>
+  }
+</div>
+
+<div class="kemp-is-spots__legend">
+  <i class="pi pi-info-circle kemp-is-spots__legend-icon"></i>
+  <span class="kemp-is-spots__legend-text">
+    <b>Příjezd</b> a <b>Odjezd</b> jen pro dnešek. Delší pobyt =
+    <b>Obsazeno</b>.
+  </span>
+  <span class="kemp-is-spots__legend-clean">
+    <span
+      class="kemp-is-spots__clean-badge"
+      aria-hidden="true"
+    >
+      <i class="pi pi-sparkles"></i>
+    </span>
+    <b>= k úklidu</b>
+  </span>
+</div>
+
+@for (group of groups(); track group.type) {
+  <section class="kemp-is-spots__group">
+    <header class="kemp-is-spots__group-head">
+      <h3 class="kemp-is-spots__group-title">{{ group.type }}</h3>
+      <span class="kemp-is-spots__group-count kemp-mono">{{
+        group.items.length
+      }}</span>
+    </header>
+    <div class="kemp-is-spots__grid">
+      @for (spot of group.items; track spot.id) {
+        @let info = stateInfo(spot.s);
+        <div
+          class="kemp-is-spots__tile"
+          [style.background]="info.bg"
+          [class.kemp-is-spots__tile--free]="spot.s === 'free'"
+        >
+          <div class="kemp-is-spots__tile-head">
+            <span
+              class="kemp-is-spots__dot kemp-is-spots__dot--md"
+              [style.background]="info.dot"
+            ></span>
+            <div class="kemp-is-spots__tile-icons">
+              @if (needsClean(spot)) {
+                <span
+                  class="kemp-is-spots__clean-badge"
+                  title="K úklidu"
+                  aria-label="K úklidu"
+                >
+                  <i class="pi pi-sparkles"></i>
+                </span>
+              }
+              @if (spot.s === "occupied" && !needsClean(spot)) {
+                <i
+                  class="pi pi-user kemp-is-spots__tile-icon"
+                  [style.color]="info.fg"
+                ></i>
+              }
+            </div>
+          </div>
+          <div
+            class="kemp-is-spots__tile-id kemp-mono"
+            [style.color]="
+              spot.s === 'free' ? 'var(--p-text-color-emphasis)' : info.fg
+            "
+          >
+            {{ spot.id }}
+          </div>
+          @if (spot.until) {
+            <div
+              class="kemp-is-spots__tile-until kemp-mono"
+              [style.color]="info.fg"
+            >
+              → {{ spot.until }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+}

@@ -1,0 +1,437 @@
+<div class="kemp-is-bill__split kemp-is-bill__split--3fr2">
+  <div class="kemp-is-bill__col kemp-is-bill__pay-stack">
+    <div class="kemp-is-bc">
+      <div class="kemp-is-bc__head">
+        <h3 class="kemp-is-bc__title">Způsob platby</h3>
+      </div>
+      <div class="kemp-is-bc__body">
+        <div class="kemp-is-bill__pay-tiles">
+          @for (m of methods; track m.type) {
+            <button
+              type="button"
+              class="kemp-is-bill__pay-tile"
+              [class.kemp-is-bill__pay-tile--on]="paymentType() === m.type"
+              (click)="paymentType.set(m.type)"
+            >
+              @if (paymentType() === m.type) {
+                <span class="kemp-is-bill__pay-tile-check">
+                  <i
+                    class="pi pi-check"
+                    aria-hidden="true"
+                  ></i>
+                </span>
+              }
+              <span class="kemp-is-bill__pay-tile-icon">
+                <i
+                  class="pi"
+                  [class]="m.icon"
+                  aria-hidden="true"
+                ></i>
+              </span>
+              <span>
+                <span class="kemp-is-bill__pay-tile-title">{{ m.label }}</span>
+                <span class="kemp-is-bill__pay-tile-sub">{{ m.hint }}</span>
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="kemp-is-bc">
+      <div class="kemp-is-bc__head">
+        <h3 class="kemp-is-bc__title">Plátce</h3>
+      </div>
+      <div class="kemp-is-bc__body">
+        <div class="kemp-is-bill__field">
+          <div class="kemp-is-bill__field-label">Plátce ze seznamu hostů</div>
+          <p-select
+            [options]="payerOptions()"
+            optionLabel="label"
+            optionValue="id"
+            [ngModel]="payerSourceId()"
+            (ngModelChange)="selectPayer($event)"
+            appendTo="body"
+            placeholder="Vyberte hosta nebo vlastní zadání"
+          />
+        </div>
+
+        <div class="kemp-is-bill__pay-name-grid">
+          <div>
+            <div class="kemp-is-bill__field-label">Jméno *</div>
+            <input
+              pInputText
+              placeholder="Jméno"
+              [ngModel]="payer().name"
+              (ngModelChange)="updatePayer('name', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Příjmení *</div>
+            <input
+              pInputText
+              placeholder="Příjmení"
+              [ngModel]="payer().surname"
+              (ngModelChange)="updatePayer('surname', $event)"
+            />
+          </div>
+        </div>
+
+        <div class="kemp-is-bill__pay-address-line">
+          <div>
+            <div class="kemp-is-bill__field-label">Ulice *</div>
+            <p-autocomplete
+              styleClass="kemp-is-bill__address-whisperer"
+              [ngModel]="payer().street"
+              (ngModelChange)="onPayerStreetType($event)"
+              [suggestions]="addressSuggestions()"
+              (completeMethod)="onPayerAddressQuery($event)"
+              (onSelect)="onPayerAddressPick($event)"
+              field="street"
+              [delay]="300"
+              [minLength]="minAddressChars"
+              [forceSelection]="false"
+              appendTo="body"
+              placeholder="Začněte psát ulici…"
+            >
+              <ng-template
+                let-s
+                #item
+              >
+                <div class="kemp-is-bill__address-suggestion">
+                  <div>
+                    <strong>{{ s.street }}</strong>
+                    @if (s.houseNumber) {
+                      <span>&nbsp;{{ s.houseNumber }}</span>
+                    }
+                  </div>
+                  <small class="kemp-is-bill__address-suggestion-meta">
+                    @if (s.zipCode) {
+                      <span class="kemp-mono">{{ s.zipCode }}</span>
+                    }
+                    {{ s.city }} · {{ s.countryCode }}
+                  </small>
+                </div>
+              </ng-template>
+            </p-autocomplete>
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Č. p. *</div>
+            <input
+              pInputText
+              placeholder="Č. p."
+              [ngModel]="payer().houseNumber"
+              (ngModelChange)="updatePayer('houseNumber', $event)"
+            />
+          </div>
+        </div>
+        <div class="kemp-is-bill__pay-address-city">
+          <div>
+            <div class="kemp-is-bill__field-label">PSČ *</div>
+            <input
+              pInputText
+              class="kemp-mono"
+              placeholder="000 00"
+              [ngModel]="payer().zipCode"
+              (ngModelChange)="updatePayer('zipCode', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Město *</div>
+            <input
+              pInputText
+              placeholder="Město"
+              [ngModel]="payer().city"
+              (ngModelChange)="updatePayer('city', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Země *</div>
+            <p-select
+              [options]="nationalityOptions()"
+              optionLabel="name"
+              optionValue="alpha2"
+              [filter]="true"
+              filterBy="name"
+              [ngModel]="payer().countryCode"
+              (ngModelChange)="updatePayer('countryCode', $event)"
+              appendTo="body"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kemp-is-bc">
+      <div class="kemp-is-bc__head">
+        <h3 class="kemp-is-bc__title">Právnická osoba</h3>
+        <label
+          class="kemp-is-bill__le-toggle"
+          for="bill-le-toggle"
+        >
+          <p-checkbox
+            inputId="bill-le-toggle"
+            [binary]="true"
+            [ngModel]="legalEntityEnabled()"
+            (ngModelChange)="toggleLegalEntity($event)"
+          />
+          <span>Účet vystavit na firmu</span>
+        </label>
+      </div>
+      @if (legalEntityEnabled() && legalEntity(); as le) {
+        <div class="kemp-is-bc__body">
+          <div class="kemp-is-bill__le-ares-grid">
+            <div>
+              <div class="kemp-is-bill__field-label">IČO *</div>
+              <div class="kemp-is-bill__le-ares-cin-wrap">
+                <input
+                  pInputText
+                  placeholder="8 číslic"
+                  [ngModel]="le.cin"
+                  (ngModelChange)="updateLegalEntity('cin', $event)"
+                  (keydown.enter)="onAresLookup()"
+                />
+                <p-button
+                  [loading]="aresLoading()"
+                  (onClick)="onAresLookup()"
+                  ariaLabel="Načíst z ARES"
+                >
+                  <i
+                    class="pi pi-search"
+                    aria-hidden="true"
+                  ></i>
+                  <span>Načíst z ARES</span>
+                </p-button>
+              </div>
+            </div>
+            <div>
+              <div class="kemp-is-bill__field-label">DIČ</div>
+              <input
+                pInputText
+                placeholder="CZ12345678"
+                [ngModel]="le.tin"
+                (ngModelChange)="updateLegalEntity('tin', $event)"
+              />
+            </div>
+            @if (aresError(); as err) {
+              <span class="kemp-is-bill__le-ares-error">{{ err }}</span>
+            }
+          </div>
+
+          <div class="kemp-is-bill__field">
+            <div class="kemp-is-bill__field-label">Název *</div>
+            <input
+              pInputText
+              [ngModel]="le.name"
+              (ngModelChange)="updateLegalEntity('name', $event)"
+            />
+          </div>
+
+          <div class="kemp-is-bill__pay-address-line">
+            <div>
+              <div class="kemp-is-bill__field-label">Ulice *</div>
+              <p-autocomplete
+                styleClass="kemp-is-bill__address-whisperer"
+                [ngModel]="le.street"
+                (ngModelChange)="onLegalStreetType($event)"
+                [suggestions]="addressSuggestions()"
+                (completeMethod)="onLegalAddressQuery($event)"
+                (onSelect)="onLegalAddressPick($event)"
+                field="street"
+                [delay]="300"
+                [minLength]="minAddressChars"
+                [forceSelection]="false"
+                appendTo="body"
+                placeholder="Začněte psát ulici…"
+              >
+                <ng-template
+                  let-s
+                  #item
+                >
+                  <div class="kemp-is-bill__address-suggestion">
+                    <div>
+                      <strong>{{ s.street }}</strong>
+                      @if (s.houseNumber) {
+                        <span>&nbsp;{{ s.houseNumber }}</span>
+                      }
+                    </div>
+                    <small class="kemp-is-bill__address-suggestion-meta">
+                      @if (s.zipCode) {
+                        <span class="kemp-mono">{{ s.zipCode }}</span>
+                      }
+                      {{ s.city }} · {{ s.countryCode }}
+                    </small>
+                  </div>
+                </ng-template>
+              </p-autocomplete>
+            </div>
+            <div>
+              <div class="kemp-is-bill__field-label">Č. p. *</div>
+              <input
+                pInputText
+                [ngModel]="le.houseNumber"
+                (ngModelChange)="updateLegalEntity('houseNumber', $event)"
+              />
+            </div>
+          </div>
+          <div class="kemp-is-bill__pay-address-city">
+            <div>
+              <div class="kemp-is-bill__field-label">PSČ *</div>
+              <input
+                pInputText
+                class="kemp-mono"
+                [ngModel]="le.zipCode"
+                (ngModelChange)="updateLegalEntity('zipCode', $event)"
+              />
+            </div>
+            <div>
+              <div class="kemp-is-bill__field-label">Město *</div>
+              <input
+                pInputText
+                [ngModel]="le.city"
+                (ngModelChange)="updateLegalEntity('city', $event)"
+              />
+            </div>
+            <div>
+              <div class="kemp-is-bill__field-label">Země *</div>
+              <p-select
+                [options]="nationalityOptions()"
+                optionLabel="name"
+                optionValue="alpha2"
+                [filter]="true"
+                filterBy="name"
+                [ngModel]="le.countryCode"
+                (ngModelChange)="updateLegalEntity('countryCode', $event)"
+                appendTo="body"
+              />
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="kemp-is-bill__col kemp-is-bill__pay-stack">
+    <div class="kemp-is-bill__pay-hero">
+      <div class="kemp-is-bill__pay-hero-eyebrow">K úhradě</div>
+      <div class="kemp-is-bill__pay-hero-amount kemp-mono">
+        {{ formatNumber(grandTotal()) }} <span>Kč</span>
+      </div>
+      <div class="kemp-is-bill__pay-hero-foot">
+        @if (payer().name || payer().surname) {
+          {{ payer().name }} {{ payer().surname }}
+        } @else {
+          Vyplňte plátce
+        }
+      </div>
+    </div>
+
+    <div class="kemp-is-bc">
+      <div class="kemp-is-bc__head">
+        <h3 class="kemp-is-bc__title">Jazyk účtenky</h3>
+      </div>
+      <div class="kemp-is-bc__body">
+        <p-select
+          [options]="languages()"
+          optionLabel="name"
+          optionValue="id"
+          [ngModel]="languageId()"
+          (ngModelChange)="languageId.set($event)"
+          placeholder="Vyberte jazyk"
+          appendTo="body"
+        />
+      </div>
+    </div>
+
+    <div class="kemp-is-bc">
+      <div class="kemp-is-bc__head">
+        <h3 class="kemp-is-bc__title">Tisk</h3>
+      </div>
+      <div class="kemp-is-bc__body">
+        <div class="kemp-is-bill__print-row">
+          <label
+            class="kemp-is-bill__print-toggle"
+            for="bill-print-toggle"
+          >
+            <p-checkbox
+              inputId="bill-print-toggle"
+              [binary]="true"
+              [ngModel]="printBill()"
+              (ngModelChange)="printBill.set($event)"
+            />
+            <span class="kemp-is-bill__print-toggle-text">
+              <span class="kemp-is-bill__print-toggle-label">
+                Vytisknout {{ billPrinterLabel | lowercase }}
+              </span>
+              @if (billPrinter(); as p) {
+                <span class="kemp-is-bill__print-toggle-meta">{{ p }}</span>
+              } @else {
+                <span
+                  class="kemp-is-bill__print-toggle-meta kemp-is-bill__print-toggle-meta--warn"
+                >
+                  Tiskárna není nastavena
+                </span>
+              }
+            </span>
+          </label>
+          <p-inputnumber
+            [ngModel]="printBillCopies()"
+            (ngModelChange)="updatePrintBillCopies($event)"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [min]="1"
+            [max]="99"
+            [maxFractionDigits]="0"
+            [disabled]="!printBill()"
+            decrementButtonClass="p-button-secondary p-button-text"
+            incrementButtonClass="p-button-secondary p-button-text"
+            [inputStyle]="{ width: '2.5rem', textAlign: 'center' }"
+          />
+        </div>
+
+        @if (tentTotalQty() > 0) {
+          <div class="kemp-is-bill__print-row">
+            <label
+              class="kemp-is-bill__print-toggle"
+              for="bill-print-tent-stickers"
+            >
+              <p-checkbox
+                inputId="bill-print-tent-stickers"
+                [binary]="true"
+                [ngModel]="printTentStickers()"
+                (ngModelChange)="printTentStickers.set($event)"
+              />
+              <span class="kemp-is-bill__print-toggle-text">
+                <span class="kemp-is-bill__print-toggle-label">
+                  Vytisknout {{ stickerPrinterLabel | lowercase }}
+                </span>
+                @if (stickerPrinter(); as p) {
+                  <span class="kemp-is-bill__print-toggle-meta">{{ p }}</span>
+                } @else {
+                  <span
+                    class="kemp-is-bill__print-toggle-meta kemp-is-bill__print-toggle-meta--warn"
+                  >
+                    Tiskárna není nastavena
+                  </span>
+                }
+              </span>
+            </label>
+            <p-inputnumber
+              [ngModel]="printTentStickerCopies()"
+              (ngModelChange)="updatePrintTentStickerCopies($event)"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              [min]="1"
+              [max]="99"
+              [maxFractionDigits]="0"
+              [disabled]="!printTentStickers()"
+              decrementButtonClass="p-button-secondary p-button-text"
+              incrementButtonClass="p-button-secondary p-button-text"
+              [inputStyle]="{ width: '2.5rem', textAlign: 'center' }"
+            />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<p-dialog
+  header="Spárování tabletu"
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="kemp-is-connect-tablet-dialog"
+  (onHide)="onClose()"
+>
+  @switch (state().kind) {
+    @case ("idle") {
+      <p class="kemp-is-connect-tablet-dialog__lead">
+        Vygenerujte QR kód, který recepční tablet naskenuje pro připojení.
+      </p>
+      <div class="kemp-is-connect-tablet-dialog__actions">
+        <p-button
+          label="Spárovat tablet"
+          icon="pi pi-qrcode"
+          (onClick)="onPair()"
+        />
+      </div>
+    }
+    @case ("issuing") {
+      <div class="kemp-is-connect-tablet-dialog__pending">
+        <p-progressSpinner
+          styleClass="kemp-is-connect-tablet-dialog__spinner"
+        />
+        <span>Generuji párovací kód…</span>
+      </div>
+    }
+    @case ("waitingForTablet") {
+      @if (waitingState(); as w) {
+        <div class="kemp-is-connect-tablet-dialog__qr">
+          <kemp-is-qr-render
+            [data]="w.pairCode"
+            ariaLabel="Párovací QR kód"
+            [size]="280"
+          />
+        </div>
+        <p class="kemp-is-connect-tablet-dialog__lead">
+          Naskenujte tento kód na tabletu.
+        </p>
+        @if (remainingLabel(); as t) {
+          @if (remainingSeconds()! > 0) {
+            <p class="kemp-is-connect-tablet-dialog__expiry">
+              Kód vyprší za
+              <span class="kemp-mono">{{ t }}</span>
+            </p>
+          } @else {
+            <p-message severity="warn">
+              Párovací kód vypršel. Vygenerujte nový.
+            </p-message>
+            <div class="kemp-is-connect-tablet-dialog__actions">
+              <p-button
+                label="Vygenerovat nový"
+                icon="pi pi-refresh"
+                (onClick)="onPair()"
+              />
+            </div>
+          }
+        }
+      }
+    }
+    @case ("paired") {
+      <p-message severity="success">
+        Tablet je připojen. Účtenka byla odeslána.
+      </p-message>
+      <div class="kemp-is-connect-tablet-dialog__actions">
+        <p-button
+          severity="secondary"
+          [text]="true"
+          label="Odpojit"
+          icon="pi pi-times"
+          (onClick)="onDisconnect()"
+        />
+      </div>
+    }
+    @case ("displaced") {
+      @if (errorMessage(); as msg) {
+        <p-message severity="warn">{{ msg }}</p-message>
+      }
+      <div class="kemp-is-connect-tablet-dialog__actions">
+        <p-button
+          label="Zkusit znovu"
+          icon="pi pi-refresh"
+          (onClick)="onPair()"
+        />
+      </div>
+    }
+    @case ("error") {
+      @if (errorMessage(); as msg) {
+        <p-message severity="error">{{ msg }}</p-message>
+      }
+      <div class="kemp-is-connect-tablet-dialog__actions">
+        <p-button
+          label="Zkusit znovu"
+          icon="pi pi-refresh"
+          (onClick)="onPair()"
+        />
+      </div>
+    }
+  }
+</p-dialog>

@@ -1,0 +1,55 @@
+<section
+  class="kemp-is-dash__card"
+  data-color="money"
+>
+  <header class="kemp-is-dash__card-head">
+    <span
+      class="kemp-is-dash__card-accent"
+      aria-hidden="true"
+    ></span>
+    <span class="kemp-is-dash__card-title">Nezaúčtované doklady</span>
+    <span class="kemp-is-dash__card-count kemp-mono">
+      {{ fmtCzk(money().totalAmount) }} Kč
+    </span>
+  </header>
+  <div class="kemp-is-dash__money">
+    <div class="kemp-is-dash__money-tiles">
+      <div class="kemp-is-dash__money-tile">
+        <div class="kemp-is-dash__money-tile-label">Hotovost</div>
+        <div class="kemp-is-dash__money-tile-value kemp-mono">
+          {{ fmtCzk(money().cashAmount) }} Kč
+        </div>
+      </div>
+      <div class="kemp-is-dash__money-tile">
+        <div class="kemp-is-dash__money-tile-label">Karta</div>
+        <div class="kemp-is-dash__money-tile-value kemp-mono">
+          {{ fmtCzk(money().cardAmount) }} Kč
+        </div>
+      </div>
+    </div>
+
+    @if (money().notClosedBills.length > 0) {
+      <ul class="kemp-is-dash__money-list">
+        @for (bill of money().notClosedBills; track bill.id) {
+          <li>
+            <button
+              type="button"
+              class="kemp-is-dash__money-recent"
+              (click)="onOpenBill(bill.id)"
+            >
+              <span class="kemp-is-dash__money-recent-name">
+                <span class="kemp-mono">{{ bill.number }}</span>
+                <span class="kemp-is-dash__money-recent-stay">
+                  {{ formatStay(bill.checkInAt, bill.checkOutAt) }}
+                </span>
+              </span>
+              <span class="kemp-is-dash__money-recent-amount kemp-mono">
+                {{ fmtCzk(bill.amount) }} Kč
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>

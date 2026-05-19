@@ -1,0 +1,136 @@
+<div class="kemp-is-accounting-closures">
+  <p-toast />
+  <header class="kemp-is-accounting-closures__toolbar">
+    <div class="kemp-is-accounting-closures__title">
+      <div class="kemp-is-accounting-closures__title-eyebrow">Recepce</div>
+      <div class="kemp-is-accounting-closures__title-main">Účetní závěrky</div>
+    </div>
+    <div class="kemp-is-accounting-closures__filters">
+      <div class="kemp-is-accounting-closures__field">
+        <span class="kemp-is-accounting-closures__field-label">Rok</span>
+        <p-select
+          [options]="years"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="selectedYear()"
+          (ngModelChange)="selectedYear.set($event)"
+          appendTo="body"
+          styleClass="kemp-is-accounting-closures__year-select"
+        />
+      </div>
+    </div>
+  </header>
+
+  <div class="kemp-is-accounting-closures__content">
+    <p-table
+      [value]="rows()"
+      [loading]="loading()"
+      dataKey="id"
+      sortField="financialClosingId"
+      [sortOrder]="-1"
+      styleClass="kemp-is-table"
+      [tableStyle]="{ 'min-width': '68rem' }"
+    >
+      <ng-template pTemplate="caption">
+        <div class="kemp-is-accounting-closures__caption">
+          <div class="kemp-is-accounting-closures__totals">
+            <span>
+              Počet závěrek: <strong>{{ count() }}</strong>
+            </span>
+            <span class="kemp-is-accounting-closures__totals-divider">·</span>
+            <span>
+              Celkem: <strong>{{ formatCzk(totalAmount()) }}</strong>
+            </span>
+          </div>
+          <div class="kemp-is-accounting-closures__caption-spacer"></div>
+        </div>
+        @if (hasError()) {
+          <div class="kemp-is-accounting-closures__error">
+            <p-message
+              severity="error"
+              text="Načtení selhalo. Zkuste to znovu."
+            />
+            <p-button
+              label="Zkusit znovu"
+              icon="pi pi-refresh"
+              size="small"
+              severity="secondary"
+              (onClick)="onRetry()"
+            />
+          </div>
+        }
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="financialClosingId">
+            Číslo <p-sortIcon field="financialClosingId" />
+          </th>
+          <th pSortableColumn="closedAtUtc">
+            Datum uzávěrky <p-sortIcon field="closedAtUtc" />
+          </th>
+          <th class="kemp-is-accounting-closures__person-col">Uzavřel</th>
+          <th
+            pSortableColumn="billCount"
+            class="kemp-is-accounting-closures__numeric-col"
+          >
+            Účtenek <p-sortIcon field="billCount" />
+          </th>
+          <th
+            pSortableColumn="totalAmount"
+            class="kemp-is-accounting-closures__numeric-col"
+          >
+            Celkem <p-sortIcon field="totalAmount" />
+          </th>
+          <th class="kemp-is-accounting-closures__action-col">Akce</th>
+        </tr>
+      </ng-template>
+
+      <ng-template
+        pTemplate="body"
+        let-row
+      >
+        <tr
+          class="kemp-is-accounting-closures__row"
+          (click)="onOpen(row.id)"
+        >
+          <td class="kemp-mono">#{{ row.financialClosingId }}</td>
+          <td>{{ formatClosedAt(row.closedAtUtc) }}</td>
+          <td>{{ displayedPerson(row) }}</td>
+          <td class="kemp-is-accounting-closures__numeric-cell">
+            {{ row.billCount }}
+          </td>
+          <td class="kemp-is-accounting-closures__numeric-cell kemp-mono">
+            {{ formatCzk(row.totalAmount) }}
+          </td>
+          <td
+            class="kemp-is-accounting-closures__action-cell"
+            (click)="$event.stopPropagation()"
+          >
+            <p-button
+              label="Stáhnout PDF"
+              icon="pi pi-download"
+              size="small"
+              severity="secondary"
+              [text]="true"
+              [loading]="downloadingId() === row.id"
+              [disabled]="downloadingId() !== null"
+              (onClick)="onDownload(row.id)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td
+            colspan="6"
+            class="kemp-is-accounting-closures__empty"
+          >
+            Žádné účetní závěrky pro vybraný rok.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

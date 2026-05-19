@@ -1,0 +1,173 @@
+<div class="kemp-is-invoices">
+  <header class="kemp-is-invoices__toolbar">
+    <div class="kemp-is-invoices__title">
+      <div class="kemp-is-invoices__title-eyebrow">Účetní</div>
+      <div class="kemp-is-invoices__title-main">Faktury</div>
+    </div>
+    <div class="kemp-is-invoices__filters">
+      <div class="kemp-is-invoices__field">
+        <span class="kemp-is-invoices__field-label">Od</span>
+        <p-datepicker
+          [ngModel]="from()"
+          (ngModelChange)="from.set($event)"
+          dateFormat="dd. mm. yy"
+          [showIcon]="true"
+          [showClear]="true"
+          appendTo="body"
+          placeholder="Vše"
+        />
+      </div>
+      <div class="kemp-is-invoices__field">
+        <span class="kemp-is-invoices__field-label">Do</span>
+        <p-datepicker
+          [ngModel]="to()"
+          (ngModelChange)="to.set($event)"
+          [minDate]="minToDate()"
+          dateFormat="dd. mm. yy"
+          [showIcon]="true"
+          [showClear]="true"
+          appendTo="body"
+          placeholder="Vše"
+        />
+      </div>
+      <div class="kemp-is-invoices__field">
+        <span class="kemp-is-invoices__field-label">Stav</span>
+        <p-select
+          [options]="stateOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="state()"
+          (ngModelChange)="state.set($event)"
+          appendTo="body"
+        />
+      </div>
+      <p-iconfield
+        iconPosition="left"
+        class="kemp-is-invoices__search"
+      >
+        <p-inputicon class="pi pi-search" />
+        <input
+          pInputText
+          type="text"
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+          placeholder="Hledat (číslo faktury)"
+        />
+      </p-iconfield>
+    </div>
+  </header>
+
+  <div class="kemp-is-invoices__content">
+    <p-table
+      [value]="rows()"
+      [loading]="loading()"
+      dataKey="id"
+      sortField="issuedAt"
+      [sortOrder]="-1"
+      styleClass="kemp-is-table"
+      [tableStyle]="{ 'min-width': '64rem' }"
+    >
+      <ng-template pTemplate="caption">
+        <div class="kemp-is-invoices__caption">
+          <div class="kemp-is-invoices__totals">
+            <span>
+              Počet faktur: <strong>{{ count() }}</strong>
+            </span>
+            <span class="kemp-is-invoices__totals-divider">·</span>
+            <span>
+              Celkem: <strong>{{ formatCzk(totalAmount()) }}</strong>
+            </span>
+          </div>
+          <div class="kemp-is-invoices__caption-spacer"></div>
+        </div>
+        @if (hasError()) {
+          <div class="kemp-is-invoices__error">
+            <p-message
+              severity="error"
+              text="Načtení selhalo. Zkuste to znovu."
+            />
+            <p-button
+              label="Zkusit znovu"
+              icon="pi pi-refresh"
+              size="small"
+              severity="secondary"
+              (onClick)="onRetry()"
+            />
+          </div>
+        }
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="number">Číslo <p-sortIcon field="number" /></th>
+          <th pSortableColumn="status">Stav <p-sortIcon field="status" /></th>
+          <th pSortableColumn="issuedAt">
+            Vystaveno <p-sortIcon field="issuedAt" />
+          </th>
+          <th pSortableColumn="paidAt">
+            Zaplaceno <p-sortIcon field="paidAt" />
+          </th>
+          <th class="kemp-is-invoices__linked-col">Účtenka</th>
+          <th
+            pSortableColumn="totalAmount"
+            class="kemp-is-invoices__amount-col"
+          >
+            Částka <p-sortIcon field="totalAmount" />
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template
+        pTemplate="body"
+        let-invoice
+      >
+        <tr
+          class="kemp-is-invoices__row--clickable"
+          (click)="onRowClick(invoice)"
+        >
+          <td class="kemp-mono">
+            @if (invoice.number) {
+              {{ invoice.number }}
+            } @else {
+              <span class="kemp-is-invoices__muted">— návrh —</span>
+            }
+          </td>
+          <td>
+            <p-tag
+              [value]="statusLabel(invoice.status)"
+              [severity]="statusSeverity(invoice.status)"
+              [icon]="statusIcon(invoice.status)"
+            />
+          </td>
+          <td>{{ formatIssued(invoice.issuedAt) }}</td>
+          <td>{{ formatPaid(invoice.paidAt) }}</td>
+          <td>
+            @if (invoice.linkedBillId) {
+              <i
+                class="pi pi-link"
+                title="Vázáno na účtenku"
+                aria-hidden="true"
+              ></i>
+            } @else {
+              <span class="kemp-is-invoices__muted">—</span>
+            }
+          </td>
+          <td class="kemp-is-invoices__amount-cell kemp-mono">
+            {{ formatCzk(invoice.totalAmount) }}
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td
+            colspan="6"
+            class="kemp-is-invoices__empty"
+          >
+            Žádné faktury ve zvoleném rozsahu.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

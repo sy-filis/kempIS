@@ -1,0 +1,572 @@
+<p-toast />
+
+<div class="kemp-is-bill-detail__top">
+  @if (bill(); as b) {
+    <div class="kemp-is-bill-detail__title-block">
+      <div class="kemp-is-bill-detail__eyebrow">Účtenka</div>
+      <div class="kemp-is-bill-detail__title kemp-mono">#{{ b.number }}</div>
+    </div>
+    <p-tag
+      [value]="kindLabel(b.kind)"
+      [severity]="kindSeverity(b.kind)"
+    />
+    @if (reservationSummary(); as r) {
+      <span
+        class="kemp-is-bill-detail__top-divider"
+        aria-hidden="true"
+      ></span>
+      <div class="kemp-is-bill-detail__top-context">
+        <i
+          class="pi pi-receipt"
+          aria-hidden="true"
+        ></i>
+        <span class="kemp-mono">{{ r.number }}</span>
+        @if (r.maker) {
+          <span class="kemp-is-bill-detail__resv-dot">·</span>
+          <span>{{ r.maker }}</span>
+        }
+      </div>
+    }
+  }
+  <span class="kemp-is-bill-detail__spacer"></span>
+  @if (bill(); as b) {
+    @if (b.reservationId) {
+      <p-button
+        severity="secondary"
+        [outlined]="true"
+        size="small"
+        icon="pi pi-calendar"
+        label="Otevřít rezervaci"
+        (onClick)="onOpenReservation()"
+      />
+    }
+    @if (canCreateRepair()) {
+      <p-button
+        severity="warn"
+        [outlined]="true"
+        size="small"
+        icon="pi pi-wrench"
+        label="Opravná účtenka"
+        (onClick)="openRepairDialog()"
+      />
+    }
+    @if (canDuplicate()) {
+      <p-button
+        severity="secondary"
+        [outlined]="true"
+        size="small"
+        icon="pi pi-copy"
+        label="Duplikovat"
+        (onClick)="onDuplicate()"
+      />
+    }
+    <p-button
+      size="small"
+      icon="pi pi-file-pdf"
+      label="PDF"
+      [loading]="viewing()"
+      [disabled]="viewing()"
+      (onClick)="onOpenPdf()"
+    />
+  }
+</div>
+
+<div class="kemp-is-bill-detail">
+  @if (loading()) {
+    <div class="kemp-is-bill-detail__loading">
+      <p-progressSpinner styleClass="kemp-is-bill-detail__spinner" />
+      <span>Načítám účtenku…</span>
+    </div>
+  } @else if (errorMessage(); as msg) {
+    <p-message
+      severity="error"
+      [text]="msg"
+    />
+  } @else if (bill(); as b) {
+    <article class="kemp-is-bill-detail__paper">
+      <header class="kemp-is-bill-detail__header">
+        <dl class="kemp-is-bill-detail__meta">
+          <div>
+            <dt>Vystaveno</dt>
+            <dd>{{ formatIssued(b.issuedAtUtc) }}</dd>
+          </div>
+          <div>
+            <dt>Pobyt</dt>
+            <dd>
+              {{ formatDate(b.checkInAt) }} – {{ formatDate(b.checkOutAt) }}
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      @if (hasOriginalBill()) {
+        <button
+          type="button"
+          class="kemp-is-bill-detail__resv-link kemp-is-bill-detail__resv-link--original"
+          (click)="onOpenOriginalBill()"
+        >
+          <i
+            class="pi pi-wrench"
+            aria-hidden="true"
+          ></i>
+          <span class="kemp-is-bill-detail__resv-text">
+            <span class="kemp-is-bill-detail__resv-eyebrow">
+              Opravuje účtenku
+            </span>
+            @if (originalBillSummary(); as o) {
+              <span class="kemp-is-bill-detail__resv-line">
+                <span class="kemp-mono">#{{ o.number }}</span>
+              </span>
+            } @else {
+              <span class="kemp-is-bill-detail__resv-line">Načítám…</span>
+            }
+          </span>
+          <i
+            class="pi pi-arrow-right kemp-is-bill-detail__resv-arrow"
+            aria-hidden="true"
+          ></i>
+        </button>
+      }
+
+      @if (hasReservationLink()) {
+        <button
+          type="button"
+          class="kemp-is-bill-detail__resv-link"
+          (click)="onOpenReservation()"
+        >
+          <i
+            class="pi pi-calendar"
+            aria-hidden="true"
+          ></i>
+          <span class="kemp-is-bill-detail__resv-text">
+            <span class="kemp-is-bill-detail__resv-eyebrow">Rezervace</span>
+            @if (reservationSummary(); as r) {
+              <span class="kemp-is-bill-detail__resv-line">
+                <span class="kemp-mono">{{ r.number }}</span>
+                @if (r.maker) {
+                  <span class="kemp-is-bill-detail__resv-dot">·</span>
+                  <span>{{ r.maker }}</span>
+                }
+              </span>
+            } @else {
+              <span class="kemp-is-bill-detail__resv-line">Načítám…</span>
+            }
+          </span>
+          <i
+            class="pi pi-arrow-right kemp-is-bill-detail__resv-arrow"
+            aria-hidden="true"
+          ></i>
+        </button>
+      }
+
+      <section class="kemp-is-bill-detail__parties">
+        <div class="kemp-is-bill-detail__party">
+          <h3>Plátce</h3>
+          <p class="kemp-is-bill-detail__party-name">
+            {{ b.payer.name }} {{ b.payer.surname }}
+          </p>
+          <p class="kemp-is-bill-detail__party-line">
+            {{ formatAddress(b.payer.address) }}
+          </p>
+        </div>
+        @if (b.legalEntity; as le) {
+          <div class="kemp-is-bill-detail__party">
+            <h3>Právnická osoba</h3>
+            <p class="kemp-is-bill-detail__party-name">{{ le.name }}</p>
+            <p class="kemp-is-bill-detail__party-line">
+              IČO {{ le.cin }} · DIČ {{ le.tin }}
+            </p>
+            <p class="kemp-is-bill-detail__party-line">
+              {{ formatAddress(le.address) }}
+            </p>
+          </div>
+        }
+        <div class="kemp-is-bill-detail__party">
+          <h3>Platba</h3>
+          <p class="kemp-is-bill-detail__party-name">
+            {{ paymentTypeLabel(b.payment.paymentType) }}
+          </p>
+          <p class="kemp-is-bill-detail__party-line kemp-mono">
+            {{ formatCzk2(b.payment.amount) }}
+          </p>
+        </div>
+      </section>
+
+      @if (linkedSpots().length > 0) {
+        <section class="kemp-is-bill-detail__section">
+          <h3 class="kemp-is-bill-detail__section-title">Připojené chatky</h3>
+          <ul class="kemp-is-bill-detail__chips">
+            @for (s of linkedSpots(); track s.itemId) {
+              <li class="kemp-is-bill-detail__chip">
+                <i
+                  class="pi pi-home"
+                  aria-hidden="true"
+                ></i>
+                <span class="kemp-is-bill-detail__chip-name">
+                  {{ s.spotName }}
+                </span>
+                @if (s.groupName) {
+                  <span class="kemp-is-bill-detail__chip-meta">
+                    {{ s.groupName }}
+                  </span>
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (linkedVehicles().length > 0) {
+        <section class="kemp-is-bill-detail__section">
+          <h3 class="kemp-is-bill-detail__section-title">Připojená vozidla</h3>
+          <ul class="kemp-is-bill-detail__chips">
+            @for (v of linkedVehicles(); track v.id) {
+              <li class="kemp-is-bill-detail__chip">
+                <i
+                  class="pi pi-car"
+                  aria-hidden="true"
+                ></i>
+                <span class="kemp-is-bill-detail__chip-name kemp-mono">
+                  {{ v.registrationNumber || "— — —" }}
+                </span>
+                @if (v.serviceName) {
+                  <span class="kemp-is-bill-detail__chip-meta">
+                    {{ v.serviceName }}
+                  </span>
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      <section class="kemp-is-bill-detail__section">
+        <h3 class="kemp-is-bill-detail__section-title">Položky</h3>
+        <p-table
+          [value]="itemRows()"
+          dataKey="id"
+          styleClass="kemp-is-table"
+          [tableStyle]="{ 'min-width': '40rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Služba</th>
+              <th class="kemp-is-bill-detail__num">Množství</th>
+              <th class="kemp-is-bill-detail__num">Dnů</th>
+              <th class="kemp-is-bill-detail__num">Jedn. cena</th>
+              <th class="kemp-is-bill-detail__num">DPH</th>
+              <th class="kemp-is-bill-detail__num">Celkem</th>
+            </tr>
+          </ng-template>
+          <ng-template
+            pTemplate="body"
+            let-row
+          >
+            <tr>
+              <td>{{ row.serviceName }}</td>
+              <td class="kemp-is-bill-detail__num">
+                {{ row.recapSingleQuantity }}
+              </td>
+              <td class="kemp-is-bill-detail__num">
+                {{ row.recapDayQuantity }}
+              </td>
+              <td class="kemp-is-bill-detail__num kemp-mono">
+                {{ formatCzk2(row.unitPrice) }}
+              </td>
+              <td class="kemp-is-bill-detail__num">
+                {{ row.vatRatePercentage }} %
+              </td>
+              <td class="kemp-is-bill-detail__num kemp-mono">
+                {{ formatCzk2(row.lineTotal) }}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="footer">
+            <tr>
+              <td
+                colspan="5"
+                class="kemp-is-bill-detail__total-label"
+              >
+                Položky celkem
+              </td>
+              <td class="kemp-is-bill-detail__num kemp-mono">
+                {{ formatCzk2(itemsTotal()) }}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td
+                colspan="6"
+                class="kemp-is-bill-detail__empty"
+              >
+                Účtenka neobsahuje žádné položky.
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </section>
+
+      @if (vatBreakdown().length > 0) {
+        <section class="kemp-is-bill-detail__section">
+          <h3 class="kemp-is-bill-detail__section-title">Rekapitulace DPH</h3>
+          <table class="kemp-is-bill-detail__vat-table">
+            <thead>
+              <tr>
+                <th>Sazba DPH</th>
+                <th class="kemp-is-bill-detail__num">Základ</th>
+                <th class="kemp-is-bill-detail__num">DPH</th>
+                <th class="kemp-is-bill-detail__num">Celkem</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (v of vatBreakdown(); track v.rate) {
+                <tr>
+                  <td>{{ v.rate }} %</td>
+                  <td class="kemp-is-bill-detail__num kemp-mono">
+                    {{ formatCzk2(v.base) }}
+                  </td>
+                  <td class="kemp-is-bill-detail__num kemp-mono">
+                    {{ formatCzk2(v.tax) }}
+                  </td>
+                  <td class="kemp-is-bill-detail__num kemp-mono">
+                    {{ formatCzk2(v.total) }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+            @let totals = vatTotals();
+            <tfoot>
+              <tr>
+                <td class="kemp-is-bill-detail__total-label">Celkem</td>
+                <td class="kemp-is-bill-detail__num kemp-mono">
+                  {{ formatCzk2(totals.base) }}
+                </td>
+                <td class="kemp-is-bill-detail__num kemp-mono">
+                  {{ formatCzk2(totals.tax) }}
+                </td>
+                <td class="kemp-is-bill-detail__num kemp-mono">
+                  {{ formatCzk2(totals.total) }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </section>
+      }
+
+      @if (hasDeductions()) {
+        <section class="kemp-is-bill-detail__section">
+          <h3 class="kemp-is-bill-detail__section-title">Odpočty faktur</h3>
+          <ul class="kemp-is-bill-detail__deductions">
+            @for (d of b.deductions; track d.id) {
+              <li>
+                <span class="kemp-mono">{{ d.invoiceNumber ?? "—" }}</span>
+                <span class="kemp-is-bill-detail__num kemp-mono">
+                  {{ formatCzk2(d.amount) }}
+                </span>
+              </li>
+            }
+            <li class="kemp-is-bill-detail__deductions-total">
+              <span>Odpočty celkem</span>
+              <span class="kemp-mono">{{ formatCzk(deductionsTotal()) }}</span>
+            </li>
+          </ul>
+        </section>
+      }
+
+      @if (hasGuests()) {
+        <section class="kemp-is-bill-detail__section">
+          <h3 class="kemp-is-bill-detail__section-title">Hosté</h3>
+          <div class="kemp-is-bill-detail__guest-grid">
+            @for (g of enrichedGuests(); track g.id) {
+              <button
+                type="button"
+                class="kemp-is-bill-detail__guest-card"
+                (click)="openGuest(g)"
+              >
+                <div class="kemp-is-bill-detail__guest-head">
+                  <span class="kemp-is-bill-detail__guest-name">
+                    {{ g.firstName }} {{ g.lastName }}
+                  </span>
+                  @if (g.paysRecreationFee === true) {
+                    <p-tag
+                      severity="info"
+                      value="Platí RP"
+                    />
+                  } @else if (g.paysRecreationFee === false) {
+                    <p-tag
+                      severity="secondary"
+                      value="Neplatí RP"
+                    />
+                  }
+                </div>
+                @if (g.full; as f) {
+                  <div class="kemp-is-bill-detail__guest-meta">
+                    <span>{{ formatDate(f.dateOfBirth) }}</span>
+                    <span class="kemp-is-bill-detail__resv-dot">·</span>
+                    <span>{{ nationalityName(f.nationalityId) }}</span>
+                    @if (f.documentNumber) {
+                      <span class="kemp-is-bill-detail__resv-dot">·</span>
+                      <span class="kemp-mono">{{ f.documentNumber }}</span>
+                    }
+                  </div>
+                }
+              </button>
+            }
+          </div>
+        </section>
+      }
+
+      @if (hasRepairs()) {
+        <section class="kemp-is-bill-detail__section">
+          <h3 class="kemp-is-bill-detail__section-title">Opravné účtenky</h3>
+          <ul class="kemp-is-bill-detail__repairs">
+            @for (r of b.repairs; track r.id) {
+              <li>
+                <button
+                  type="button"
+                  class="kemp-is-bill-detail__repair-link"
+                  (click)="openRepairBill(r.id)"
+                >
+                  <span class="kemp-mono">{{ r.number }}</span>
+                  <span>{{ formatIssued(r.issuedAtUtc) }}</span>
+                  <span class="kemp-is-bill-detail__num kemp-mono">
+                    {{ formatCzk2(r.amount) }}
+                  </span>
+                  <i
+                    class="pi pi-arrow-right kemp-is-bill-detail__repair-arrow"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </article>
+  }
+</div>
+
+<kemp-is-guest-editor-dialog
+  [visible]="guestDialogVisible()"
+  (visibleChange)="onGuestDialogVisibleChange($event)"
+  [guest]="guestEditorInput()"
+  (saved)="onGuestSaved()"
+/>
+
+<p-dialog
+  [visible]="repairOpen()"
+  (visibleChange)="onRepairDialogVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closeOnEscape]="true"
+  header="Opravná účtenka"
+  [style]="{ width: '760px' }"
+>
+  <div class="kemp-is-bill-detail__repair-editor">
+    <div class="kemp-is-bill-detail__repair-hint">
+      <i
+        class="pi pi-info-circle"
+        aria-hidden="true"
+      ></i>
+      <span>
+        Maximum je původně účtované množství; backend dále omezí podle dříve
+        vystavených oprav.
+      </span>
+    </div>
+
+    <div class="kemp-is-bill-detail__repair-reason">
+      <div class="kemp-is-bill-detail__field-label">Důvod opravy *</div>
+      <input
+        pInputText
+        [ngModel]="repairReason()"
+        (ngModelChange)="repairReason.set($event)"
+        placeholder="Stručně popište, proč se účtenka opravuje"
+      />
+    </div>
+
+    <table class="kemp-is-bill-detail__repair-table">
+      <thead>
+        <tr>
+          <th>Služba</th>
+          <th class="kemp-is-bill-detail__num">Původně</th>
+          <th class="kemp-is-bill-detail__num">Jedn. cena</th>
+          <th class="kemp-is-bill-detail__num">Opravit</th>
+          <th class="kemp-is-bill-detail__num">Celkem</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (line of repairLines(); track line.id) {
+          <tr>
+            <td>{{ line.serviceName }}</td>
+            <td class="kemp-is-bill-detail__num">
+              {{ repairLineMax(line) }}
+            </td>
+            <td class="kemp-is-bill-detail__num kemp-mono">
+              {{ formatCzk2(line.unitPrice) }}
+            </td>
+            <td class="kemp-is-bill-detail__num">
+              <p-inputnumber
+                [ngModel]="line.qty"
+                (ngModelChange)="updateRepairLineQty(line.id, $event)"
+                [min]="0"
+                [max]="repairLineMax(line)"
+                [maxFractionDigits]="0"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                decrementButtonClass="p-button-secondary p-button-text"
+                incrementButtonClass="p-button-secondary p-button-text"
+                [inputStyle]="{ width: '3rem', textAlign: 'center' }"
+              />
+            </td>
+            <td class="kemp-is-bill-detail__num kemp-mono">
+              {{ formatCzk2(line.qty * line.unitPrice) }}
+            </td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <td
+            colspan="4"
+            class="kemp-is-bill-detail__total-label"
+          >
+            Celkem opravná účtenka
+          </td>
+          <td class="kemp-is-bill-detail__num kemp-mono">
+            {{ formatCzk(repairTotal()) }}
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="kemp-is-bill-detail__repair-payment">
+      <div class="kemp-is-bill-detail__field-label">Způsob platby</div>
+      <p-select
+        [options]="paymentTypeOptions"
+        optionLabel="name"
+        optionValue="id"
+        [ngModel]="repairPaymentType()"
+        (ngModelChange)="repairPaymentType.set($event)"
+        appendTo="body"
+      />
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      [text]="true"
+      severity="secondary"
+      label="Zrušit"
+      (onClick)="onRepairDialogVisibleChange(false)"
+    />
+    <p-button
+      icon="pi pi-check"
+      label="Vystavit opravnou účtenku"
+      [loading]="repairSubmitting()"
+      [disabled]="repairSubmitting() || !hasRepairSelection()"
+      (onClick)="submitRepair()"
+    />
+  </ng-template>
+</p-dialog>

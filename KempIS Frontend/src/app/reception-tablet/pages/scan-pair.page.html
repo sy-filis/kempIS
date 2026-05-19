@@ -1,0 +1,22 @@
+<section class="kemp-is-scan-pair">
+  <header class="kemp-is-scan-pair__header">
+    <h1 i18n="@@tablet.scan.title">Naskenujte párovací kód</h1>
+    <p i18n="@@tablet.scan.subtitle">
+      Otočte tablet ke QR kódu zobrazenému na monitoru recepce.
+    </p>
+  </header>
+
+  <div class="kemp-is-scan-pair__viewport">
+    @if (cameraError(); as msg) {
+      <p class="kemp-is-scan-pair__error">{{ msg }}</p>
+    } @else {
+      <video
+        #video
+        class="kemp-is-scan-pair__video"
+        autoplay
+        muted
+        playsinline
+      ></video>
+    }
+  </div>
+</section>

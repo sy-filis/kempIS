@@ -1,0 +1,144 @@
+<div class="kemp-is-bc">
+  <div class="kemp-is-bc__head">
+    <h3 class="kemp-is-bc__title">Porce dle dne</h3>
+    <span class="kemp-is-bc__head-meta">
+      <span class="kemp-mono">{{ totals().all }}</span> porcí celkem
+    </span>
+  </div>
+  <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+    <div class="kemp-is-bill__row-head kemp-is-bill__meals-grid">
+      <span>Den</span>
+      <span class="kemp-is-bill__cell-center">
+        <i
+          class="pi pi-sun"
+          aria-hidden="true"
+        ></i>
+        Snídaně · {{ prices().b }} Kč
+      </span>
+      <span class="kemp-is-bill__cell-center">
+        <i
+          class="pi pi-cloud"
+          aria-hidden="true"
+        ></i>
+        Oběd · {{ prices().l }} Kč
+      </span>
+      <span class="kemp-is-bill__cell-center">
+        <i
+          class="pi pi-box"
+          aria-hidden="true"
+        ></i>
+        Balíček · {{ prices().lp }} Kč
+      </span>
+      <span class="kemp-is-bill__cell-center">
+        <i
+          class="pi pi-moon"
+          aria-hidden="true"
+        ></i>
+        Večeře · {{ prices().d }} Kč
+      </span>
+      <span class="kemp-is-bill__cell-right">Celkem</span>
+    </div>
+
+    @for (day of days(); track day.day; let i = $index) {
+      <div class="kemp-is-bill__row kemp-is-bill__meals-grid">
+        <div>
+          <div class="kemp-is-bill__meals-day">{{ day.date }}</div>
+          <div class="kemp-is-bill__meals-row-info">{{ dayLabel(i) }}</div>
+        </div>
+        <div class="kemp-is-bill__cell-center kemp-is-bill__numstepper-cell">
+          <p-inputnumber
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [min]="0"
+            [ngModel]="day.b"
+            (ngModelChange)="updateMeal(i, 'b', $event)"
+            styleClass="kemp-is-bill__numstepper"
+            decrementButtonClass="p-button-secondary p-button-text"
+            incrementButtonClass="p-button-secondary p-button-text"
+            [inputStyle]="{ width: '2.5rem' }"
+          />
+        </div>
+        <div class="kemp-is-bill__cell-center kemp-is-bill__numstepper-cell">
+          <p-inputnumber
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [min]="0"
+            [ngModel]="day.l"
+            (ngModelChange)="updateMeal(i, 'l', $event)"
+            styleClass="kemp-is-bill__numstepper"
+            decrementButtonClass="p-button-secondary p-button-text"
+            incrementButtonClass="p-button-secondary p-button-text"
+            [inputStyle]="{ width: '2.5rem' }"
+          />
+        </div>
+        <div class="kemp-is-bill__cell-center kemp-is-bill__numstepper-cell">
+          <p-inputnumber
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [min]="0"
+            [ngModel]="day.lp"
+            (ngModelChange)="updateMeal(i, 'lp', $event)"
+            styleClass="kemp-is-bill__numstepper"
+            decrementButtonClass="p-button-secondary p-button-text"
+            incrementButtonClass="p-button-secondary p-button-text"
+            [inputStyle]="{ width: '2.5rem' }"
+          />
+        </div>
+        <div class="kemp-is-bill__cell-center kemp-is-bill__numstepper-cell">
+          <p-inputnumber
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [min]="0"
+            [ngModel]="day.d"
+            (ngModelChange)="updateMeal(i, 'd', $event)"
+            styleClass="kemp-is-bill__numstepper"
+            decrementButtonClass="p-button-secondary p-button-text"
+            incrementButtonClass="p-button-secondary p-button-text"
+            [inputStyle]="{ width: '2.5rem' }"
+          />
+        </div>
+        <div
+          class="kemp-is-bill__cell-right kemp-is-bill__meals-day-total kemp-mono"
+          [class.kemp-is-bill__meals-day-total--zero]="dayTotal(day) === 0"
+        >
+          @if (dayTotal(day) > 0) {
+            {{ formatNumber(dayTotal(day)) }} Kč
+          } @else {
+            —
+          }
+        </div>
+      </div>
+    }
+
+    <div
+      class="kemp-is-bill__row kemp-is-bill__meals-grid kemp-is-bill__meals-totals"
+    >
+      <div class="kemp-is-bill__meals-totals-label">Celkem porcí</div>
+      <div
+        class="kemp-is-bill__cell-center kemp-mono kemp-is-bill__meals-totals-cell"
+      >
+        {{ totals().b }}
+      </div>
+      <div
+        class="kemp-is-bill__cell-center kemp-mono kemp-is-bill__meals-totals-cell"
+      >
+        {{ totals().l }}
+      </div>
+      <div
+        class="kemp-is-bill__cell-center kemp-mono kemp-is-bill__meals-totals-cell"
+      >
+        {{ totals().lp }}
+      </div>
+      <div
+        class="kemp-is-bill__cell-center kemp-mono kemp-is-bill__meals-totals-cell"
+      >
+        {{ totals().d }}
+      </div>
+      <div
+        class="kemp-is-bill__cell-right kemp-mono kemp-is-bill__meals-totals-grand"
+      >
+        {{ formatNumber(grandTotal()) }} Kč
+      </div>
+    </div>
+  </div>
+</div>

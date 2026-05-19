@@ -1,0 +1,83 @@
+@if (view(); as v) {
+  <section class="kemp-is-tablet-edoklady">
+    @switch (v.kind) {
+      @case ("starting") {
+        <div class="kemp-is-tablet-edoklady__pending">
+          <p-progressSpinner styleClass="kemp-is-tablet-edoklady__spinner" />
+          <p i18n="@@tablet.edoklady.starting">
+            Připravuji ověření přes eDoklady…
+          </p>
+        </div>
+      }
+      @case ("waiting") {
+        <h1 i18n="@@tablet.edoklady.title">Ověření přes eDoklady</h1>
+        <p i18n="@@tablet.edoklady.instructions">
+          Naskenujte QR kód aplikací eDoklady na svém telefonu.
+        </p>
+        <kemp-is-qr-render
+          [data]="v.tx.vscQrData"
+          [size]="320"
+          ariaLabel="QR kód eDoklady"
+          i18n-ariaLabel="@@tablet.edoklady.qrAlt"
+        />
+        <p class="kemp-is-tablet-edoklady__status">{{ stateLabel() }}</p>
+        <div class="kemp-is-tablet-edoklady__actions">
+          <p-button
+            severity="secondary"
+            [text]="true"
+            label="Zrušit"
+            i18n-label="@@tablet.edoklady.cancel"
+            (onClick)="onCancel()"
+          />
+        </div>
+      }
+      @case ("result") {
+        @if (v.result.outcome === "Success") {
+          <p-message severity="success">
+            <span i18n="@@tablet.edoklady.success">
+              Ověření proběhlo v pořádku.
+            </span>
+          </p-message>
+          <dl class="kemp-is-tablet-edoklady__attrs">
+            @for (a of v.result.attributes; track a.name) {
+              <div>
+                <dt>{{ a.name }}</dt>
+                <dd>
+                  @if (a.dataType === "Photo" || a.dataType === "Image") {
+                    <img
+                      class="kemp-is-tablet-edoklady__photo"
+                      [src]="'data:image/jpeg;base64,' + a.value"
+                      [alt]="a.name"
+                    />
+                  } @else {
+                    {{ a.value }}
+                  }
+                </dd>
+              </div>
+            }
+          </dl>
+          <div class="kemp-is-tablet-edoklady__actions">
+            <p-button
+              label="Pokračovat"
+              i18n-label="@@tablet.edoklady.continue"
+              (onClick)="onContinue()"
+            />
+          </div>
+        } @else {
+          <p-message severity="warn">
+            <span i18n="@@tablet.edoklady.failed">
+              Ověření se nezdařilo. Předejte tablet recepci.
+            </span>
+          </p-message>
+          <div class="kemp-is-tablet-edoklady__actions">
+            <p-button
+              label="Zpět"
+              i18n-label="@@tablet.edoklady.back"
+              (onClick)="onContinue()"
+            />
+          </div>
+        }
+      }
+    }
+  </section>
+}

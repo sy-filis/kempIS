@@ -1,0 +1,31 @@
+<div class="kemp-is-mobile-shell">
+  <main class="kemp-is-mobile-shell__content">
+    <router-outlet />
+  </main>
+
+  <nav
+    class="kemp-is-mobile-shell__nav"
+    aria-label="Hlavní navigace"
+  >
+    @for (item of navItems; track item.id) {
+      <a
+        class="kemp-is-mobile-shell__nav-item"
+        [routerLink]="item.link"
+        routerLinkActive="kemp-is-mobile-shell__nav-item--active"
+        #rla="routerLinkActive"
+      >
+        <span
+          class="kemp-is-mobile-shell__nav-pill"
+          [class.kemp-is-mobile-shell__nav-pill--active]="rla.isActive"
+        >
+          <i
+            class="pi"
+            [class]="item.icon"
+            aria-hidden="true"
+          ></i>
+        </span>
+        <span class="kemp-is-mobile-shell__nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</div>

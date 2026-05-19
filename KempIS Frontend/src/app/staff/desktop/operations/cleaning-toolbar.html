@@ -1,0 +1,100 @@
+<div class="kemp-is-ops-toolbar">
+  <div class="kemp-is-ops-toolbar__day-strip">
+    <p-button
+      severity="secondary"
+      size="small"
+      [text]="false"
+      [outlined]="true"
+      ariaLabel="Předchozí den"
+      (onClick)="step(-1)"
+    >
+      <i
+        class="pi pi-chevron-left"
+        aria-hidden="true"
+      ></i>
+    </p-button>
+
+    <div class="kemp-is-ops-toolbar__days">
+      @for (d of days(); track d.key) {
+        <button
+          type="button"
+          class="kemp-is-ops-toolbar__day"
+          [class.kemp-is-ops-toolbar__day--active]="isActive(d.key)"
+          [class.kemp-is-ops-toolbar__day--today]="d.today && !isActive(d.key)"
+          (click)="pick(d.key)"
+        >
+          <span class="kemp-is-ops-toolbar__day-dow">{{ d.dow }}</span>
+          <span class="kemp-is-ops-toolbar__day-num kemp-mono">
+            {{ d.day }}.
+          </span>
+        </button>
+      }
+    </div>
+
+    <p-button
+      severity="secondary"
+      size="small"
+      [text]="false"
+      [outlined]="true"
+      ariaLabel="Další den"
+      (onClick)="step(1)"
+    >
+      <i
+        class="pi pi-chevron-right"
+        aria-hidden="true"
+      ></i>
+    </p-button>
+
+    <p-datepicker
+      class="kemp-is-ops-toolbar__date-picker"
+      [ngModel]="pickerDate()"
+      (ngModelChange)="onPickerSelect($event)"
+      dateFormat="dd. mm. yy"
+      iconDisplay="input"
+      [showIcon]="true"
+      placeholder="Vybrat datum"
+      appendTo="body"
+      size="small"
+    />
+  </div>
+
+  <div class="kemp-is-ops-toolbar__progress">
+    <span class="kemp-is-ops-toolbar__progress-label">Hotovo:</span>
+    <span class="kemp-is-ops-toolbar__progress-count kemp-mono">
+      {{ done() }}/{{ total() }}
+    </span>
+    <div
+      class="kemp-is-ops-toolbar__progress-track"
+      role="progressbar"
+      [attr.aria-valuenow]="done()"
+      [attr.aria-valuemin]="0"
+      [attr.aria-valuemax]="total()"
+    >
+      <div
+        class="kemp-is-ops-toolbar__progress-fill"
+        [style.width.%]="progressPct()"
+      ></div>
+    </div>
+  </div>
+
+  <div class="kemp-is-ops-toolbar__spacer"></div>
+
+  @if (lastUpdatedLabel(); as label) {
+    <div class="kemp-is-ops-toolbar__meta">
+      <i
+        class="pi pi-history"
+        aria-hidden="true"
+      ></i>
+      <span>{{ label }}</span>
+    </div>
+  }
+
+  <p-button
+    size="small"
+    label="Předvyplnit plán z rezervací"
+    icon="pi pi-bolt"
+    [loading]="prefilling()"
+    [disabled]="prefilling()"
+    (onClick)="onPrefill()"
+  />
+</div>

@@ -1,0 +1,220 @@
+<section class="kemp-is-pickup">
+  <header class="kemp-is-pickup__head">
+    <span
+      class="kemp-is-pickup__head-icon"
+      aria-hidden="true"
+    >
+      <i class="pi pi-clock"></i>
+    </span>
+    <span class="kemp-is-pickup__head-title">
+      Plán výdejů — {{ meta().weekLabel }}
+    </span>
+    <span class="kemp-is-pickup__head-meta">
+      časy výdejů pro kuchyň · po skupinách
+    </span>
+    <span class="kemp-is-pickup__head-spacer"></span>
+    <span class="kemp-is-pickup__head-hint">
+      Prázdná buňka = jídlo se neservíruje
+    </span>
+  </header>
+
+  <div
+    #scroll
+    class="kemp-is-pickup__scroll"
+  >
+    <table class="kemp-is-pickup__table">
+      <colgroup>
+        <col class="kemp-is-pickup__col-group" />
+        <col class="kemp-is-pickup__col-arrive" />
+        <col class="kemp-is-pickup__col-depart" />
+        @for (d of weekDays(); track d.key) {
+          @for (mt of mealTypes; track mt.key) {
+            <col class="kemp-is-pickup__col-cell" />
+          }
+        }
+      </colgroup>
+
+      <thead>
+        <tr>
+          <th
+            colspan="3"
+            class="kemp-is-pickup__corner"
+          >
+            <div class="kemp-is-pickup__corner-row">
+              <i
+                class="pi pi-truck"
+                aria-hidden="true"
+              ></i>
+              Rezervace ({{ groups().length }})
+            </div>
+            <div class="kemp-is-pickup__corner-sub">
+              čas výdeje · denně podle jídel
+            </div>
+          </th>
+          @for (d of weekDays(); track d.key; let last = $last) {
+            <th
+              [attr.colspan]="mealTypes.length"
+              class="kemp-is-pickup__day-th"
+              [class.kemp-is-pickup__day-th--today]="!!d.today"
+              [class.kemp-is-pickup__day-th--weekend]="!!d.weekend"
+              [class.kemp-is-pickup__day-th--day-end]="!last"
+            >
+              <div class="kemp-is-pickup__day-label">
+                <span class="kemp-is-pickup__day-dow">{{ d.dow }}</span>
+                <span>{{ d.name }}</span>
+                <span class="kemp-is-pickup__day-date kemp-mono">
+                  {{ d.label }}
+                </span>
+                @if (d.today) {
+                  <span class="kemp-is-pickup__day-today-badge">DNES</span>
+                }
+              </div>
+            </th>
+          }
+        </tr>
+
+        <tr>
+          <th class="kemp-is-pickup__sub-th kemp-is-pickup__sub-th--left">
+            Rezervace
+          </th>
+          <th class="kemp-is-pickup__sub-th kemp-is-pickup__sub-th--center">
+            Příjezd
+          </th>
+          <th
+            class="kemp-is-pickup__sub-th kemp-is-pickup__sub-th--center kemp-is-pickup__sub-th--frozen"
+          >
+            Odjezd
+          </th>
+          @for (d of weekDays(); track d.key; let dlast = $last) {
+            @for (mt of mealTypes; track mt.key; let mlast = $last) {
+              <th
+                class="kemp-is-pickup__meal-th"
+                [class.kemp-is-pickup__meal-th--today]="!!d.today"
+                [class.kemp-is-pickup__meal-th--weekend]="!!d.weekend"
+                [class.kemp-is-pickup__meal-th--meal-end]="!mlast"
+                [class.kemp-is-pickup__meal-th--day-end]="mlast && !dlast"
+              >
+                <span class="kemp-is-pickup__meal-label">
+                  <i
+                    [class]="'pi ' + mt.icon"
+                    aria-hidden="true"
+                  ></i>
+                  {{ mt.label }}
+                </span>
+              </th>
+            }
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (g of groups(); track g.id; let glast = $last) {
+          <tr [class.kemp-is-pickup__row--last]="glast">
+            <td class="kemp-is-pickup__group-cell">
+              <div class="kemp-is-pickup__group-inner">
+                <span
+                  class="kemp-is-pickup__group-bar"
+                  [style.background]="g.color"
+                ></span>
+                <div class="kemp-is-pickup__group-text">
+                  <span class="kemp-is-pickup__group-short">
+                    {{ g.short }}
+                  </span>
+                  <span
+                    class="kemp-is-pickup__group-name"
+                    [title]="g.name"
+                  >
+                    {{ g.name }}
+                  </span>
+                </div>
+              </div>
+            </td>
+            <td class="kemp-is-pickup__date-cell kemp-mono">
+              {{ g.arrive.label }}
+            </td>
+            <td
+              class="kemp-is-pickup__date-cell kemp-mono kemp-is-pickup__date-cell--frozen"
+            >
+              {{ g.depart.label }}
+            </td>
+
+            @for (d of weekDays(); track d.key; let dlast = $last) {
+              @for (mt of mealTypes; track mt.key; let mlast = $last) {
+                @let portions = readPortions(g, d.key, mt.key);
+                @let disabled = isDisabled(g, d.key, mt.key);
+                @let time = readTime(g, d.key, mt.key);
+                <td
+                  class="kemp-is-pickup__time-cell"
+                  [class.kemp-is-pickup__time-cell--today]="!!d.today"
+                  [class.kemp-is-pickup__time-cell--weekend]="!!d.weekend"
+                  [class.kemp-is-pickup__time-cell--meal-end]="!mlast"
+                  [class.kemp-is-pickup__time-cell--day-end]="mlast && !dlast"
+                >
+                  @if (disabled) {
+                    <span class="kemp-is-pickup__time-empty">·</span>
+                  } @else {
+                    <div class="kemp-is-pickup__time-stack">
+                      <input
+                        type="text"
+                        class="kemp-is-pickup__time-input kemp-mono"
+                        [class.kemp-is-pickup__time-input--empty]="!time"
+                        placeholder="—:—"
+                        [ngModel]="time ?? ''"
+                        [ngModelOptions]="{ updateOn: 'blur' }"
+                        [style.background]="
+                          time ? g.color + '14' : 'transparent'
+                        "
+                        [style.color]="time ? g.color : null"
+                        [style.--kemp-accent]="g.color"
+                        (ngModelChange)="onTimeChange(g, d.key, mt.key, $event)"
+                      />
+                      <span class="kemp-is-pickup__time-portions kemp-mono">
+                        {{ portions }} p
+                      </span>
+                    </div>
+                  }
+                </td>
+              }
+            }
+          </tr>
+        }
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td
+            colspan="3"
+            class="kemp-is-pickup__totals-label"
+          >
+            <span class="kemp-is-pickup__totals-label-row">
+              <i
+                class="pi pi-clock"
+                aria-hidden="true"
+              ></i>
+              Nejranější výdej · {{ meta().weekLabel }}
+            </span>
+          </td>
+          @for (d of weekDays(); track d.key; let dlast = $last) {
+            @for (mt of mealTypes; track mt.key; let mlast = $last) {
+              @let info = earliestFor(d.key, mt.key);
+              <td
+                class="kemp-is-pickup__totals-cell"
+                [class.kemp-is-pickup__totals-cell--meal-end]="!mlast"
+                [class.kemp-is-pickup__totals-cell--day-end]="mlast && !dlast"
+                [class.kemp-is-pickup__totals-cell--empty]="!info.time"
+              >
+                @if (info.time) {
+                  <span class="kemp-is-pickup__totals-time kemp-mono">
+                    {{ info.time }}
+                  </span>
+                } @else {
+                  <span class="kemp-is-pickup__totals-empty kemp-mono">·</span>
+                }
+              </td>
+            }
+          }
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>

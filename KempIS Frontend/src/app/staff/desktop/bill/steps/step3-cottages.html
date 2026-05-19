@@ -1,0 +1,80 @@
+@if (cottages().length === 0) {
+  <div class="kemp-is-bill__empty">Žádná chatka není přiřazena k rezervaci</div>
+} @else {
+  <div class="kemp-is-bill__cottage-grid">
+    @for (c of cottages(); track c.itemId) {
+      <button
+        type="button"
+        class="kemp-is-bill__cottage"
+        [class.kemp-is-bill__cottage--selected]="c.selected && !c.billed"
+        [class.kemp-is-bill__cottage--billed]="c.billed"
+        [disabled]="c.billed"
+        (click)="toggle(c.itemId)"
+      >
+        @if (c.billed) {
+          <span
+            class="kemp-is-bill__cottage-tag kemp-is-bill__cottage-tag--billed"
+          >
+            Vyúčtováno
+          </span>
+        } @else {
+          <span class="kemp-is-bill__cottage-check">
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="c.selected"
+              (ngModelChange)="toggle(c.itemId)"
+              (click)="$event.stopPropagation()"
+            />
+          </span>
+        }
+        <div class="kemp-is-bill__cottage-row">
+          <span class="kemp-is-bill__cottage-id kemp-mono">{{ c.name }}</span>
+          <span class="kemp-is-bill__cottage-status">{{ c.groupName }}</span>
+        </div>
+        <div class="kemp-is-bill__cottage-meta">
+          <i
+            class="pi pi-users"
+            aria-hidden="true"
+          ></i>
+          {{ c.capacity }} os.
+          <span
+            class="kemp-is-bill__cottage-key kemp-is-bill__cottage-key--{{
+              c.keyState
+            }}"
+            [attr.title]="
+              c.keyState === 'out'
+                ? 'Klíče vydány hostovi'
+                : c.keyState === 'returned'
+                  ? 'Klíče vráceny'
+                  : 'Klíče zatím nevydány'
+            "
+          >
+            <i
+              class="pi pi-key"
+              aria-hidden="true"
+            ></i>
+            @switch (c.keyState) {
+              @case ("out") {
+                Klíče vydány
+              }
+              @case ("returned") {
+                Klíče vráceny
+              }
+              @default {
+                Klíče nevydány
+              }
+            }
+          </span>
+        </div>
+        <div class="kemp-is-bill__cottage-foot">
+          <span class="kemp-is-bill__cottage-rate kemp-mono">
+            {{ c.nightly }} Kč/noc
+          </span>
+          <span class="kemp-is-bill__cottage-total kemp-mono">
+            {{ formatNumber(c.lineTotal) }} Kč
+          </span>
+        </div>
+      </button>
+    }
+  </div>
+}

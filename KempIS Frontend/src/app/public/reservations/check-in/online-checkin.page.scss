@@ -1,0 +1,421 @@
+:host {
+  display: block;
+}
+
+.kemp-is-text-muted {
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-checkin {
+  display: flex;
+  flex-direction: column;
+  background: var(--p-surface-0, #ffffff);
+  border: 1px solid var(--p-content-border-color, #e4e4e7);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px rgba(18, 18, 23, 0.04),
+    0 4px 14px rgba(18, 18, 23, 0.04);
+  overflow: hidden;
+  min-height: calc(100dvh - 12rem);
+}
+
+.kemp-is-checkin__head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+}
+
+.kemp-is-checkin__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  min-width: 0;
+}
+
+.kemp-is-checkin__brand-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color, #ffffff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex: 0 0 auto;
+}
+
+.kemp-is-checkin__brand-name {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-checkin__brand-sep {
+  color: var(--p-text-muted-color, #71717a);
+  margin: 0 0.125rem;
+}
+
+.kemp-is-checkin__brand-sub {
+  color: var(--p-text-muted-color, #71717a);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .kemp-is-checkin__head {
+    padding: 0.75rem 1rem;
+  }
+
+  .kemp-is-checkin__brand-sep,
+  .kemp-is-checkin__brand-sub {
+    display: none;
+  }
+}
+
+.kemp-is-checkin__body {
+  padding: 1.75rem 2rem 2rem;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .kemp-is-checkin__body {
+    padding: 1.25rem 1rem 1.5rem;
+    gap: 1rem;
+  }
+}
+
+.kemp-is-checkin__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.015em;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+@media (max-width: 640px) {
+  .kemp-is-checkin__title {
+    font-size: 1.25rem;
+  }
+}
+
+.kemp-is-checkin__lead {
+  margin: -0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.kemp-is-checkin__context {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: var(--p-primary-50);
+  border: 1px solid var(--p-primary-200);
+  border-radius: 8px;
+
+  > .pi {
+    color: var(--p-primary-color);
+    font-size: 1rem;
+    flex: 0 0 auto;
+  }
+}
+
+.kemp-is-checkin__context-info {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+
+  strong {
+    font-size: 0.8125rem;
+    color: var(--p-primary-700);
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 0.75rem;
+  }
+}
+
+.kemp-is-checkin__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.kemp-is-checkin__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.kemp-is-checkin__section-eyebrow {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--p-text-muted-color, #71717a);
+  margin: 0;
+  font-weight: 600;
+}
+
+.kemp-is-checkin__section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.kemp-is-checkin__grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+.kemp-is-checkin__grid--two {
+  @media (min-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kemp-is-checkin__grid--street {
+  @media (min-width: 640px) {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* PrimeNG floatlabel-in inputs should fill the grid cell. */
+.kemp-is-checkin__form ::ng-deep p-floatlabel {
+  display: block;
+  width: 100%;
+}
+
+.kemp-is-checkin__form ::ng-deep p-floatlabel input,
+.kemp-is-checkin__form ::ng-deep p-floatlabel p-select,
+.kemp-is-checkin__form ::ng-deep p-floatlabel p-datepicker {
+  width: 100%;
+}
+
+.kemp-is-checkin__form ::ng-deep p-floatlabel .p-select,
+.kemp-is-checkin__form ::ng-deep p-floatlabel .p-datepicker,
+.kemp-is-checkin__form ::ng-deep p-floatlabel .p-datepicker-input {
+  width: 100%;
+}
+
+.kemp-is-checkin__choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.kemp-is-checkin__choice-legend {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--p-text-muted-color, #71717a);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0;
+  margin-bottom: 0.125rem;
+}
+
+.kemp-is-checkin__choice {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.875rem;
+  background: var(--p-surface-50, #fafafa);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+
+  &.is-on {
+    background: var(--p-primary-50);
+    border-color: var(--p-primary-200);
+  }
+}
+
+.kemp-is-checkin__choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+
+  strong {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--p-text-color-emphasis, #27272a);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+
+    .pi {
+      font-size: 0.8125rem;
+      color: var(--p-primary-color);
+    }
+  }
+
+  small {
+    font-size: 0.75rem;
+  }
+}
+
+.kemp-is-checkin__visa {
+  margin-top: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--p-primary-200);
+  border-radius: 8px;
+  background: #fafdfb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Inline variant: visa input shown directly under the radio choice
+   group, without the standalone heading/tag/lead chrome. */
+.kemp-is-checkin__visa--inline {
+  margin-top: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  gap: 0;
+}
+
+.kemp-is-checkin__visa-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .pi {
+    color: var(--p-primary-color);
+    font-size: 0.875rem;
+  }
+
+  strong {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--p-text-color-emphasis, #27272a);
+  }
+
+  p-tag {
+    margin-left: auto;
+  }
+}
+
+.kemp-is-checkin__visa-lead {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.kemp-is-checkin__plates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kemp-is-checkin__plate {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+
+  > .pi-car {
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color, #71717a);
+    text-align: center;
+  }
+}
+
+.kemp-is-checkin__plate-input {
+  width: 100%;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.kemp-is-checkin__consent {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  padding: 0.875rem 1rem;
+  background: var(--p-surface-50, #fafafa);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  color: var(--p-text-color);
+}
+
+.kemp-is-checkin__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.625rem;
+}
+
+@media (max-width: 640px) {
+  .kemp-is-checkin__actions {
+    flex-direction: column-reverse;
+
+    ::ng-deep .p-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+.kemp-is-checkin__error {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.75rem 1rem;
+  background: var(--p-red-50, #fef2f2);
+  border: 1px solid var(--p-red-200, #fecaca);
+  border-radius: 8px;
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.875rem;
+
+  .pi {
+    font-size: 1rem;
+    margin-top: 0.125rem;
+  }
+}
+
+.kemp-is-checkin__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1.5rem;
+}
+
+.kemp-is-checkin__success-mark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--p-green-100, #dcfce7);
+  color: var(--p-green-700, #15803d);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}

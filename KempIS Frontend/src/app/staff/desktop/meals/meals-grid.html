@@ -1,0 +1,302 @@
+<section class="kemp-is-meals-grid">
+  <header class="kemp-is-meals-grid__head">
+    <span
+      class="kemp-is-meals-grid__head-icon"
+      aria-hidden="true"
+    >
+      <i class="pi pi-shopping-cart"></i>
+    </span>
+    <span class="kemp-is-meals-grid__head-title">
+      Plán stravování — {{ meta().weekLabel }}
+    </span>
+    <span class="kemp-is-meals-grid__head-meta">
+      {{ meta().weekFrom }} — {{ meta().weekTo }}
+    </span>
+    <span class="kemp-is-meals-grid__head-spacer"></span>
+    <div class="kemp-is-meals-grid__legend">
+      @for (v of variants; track v.key) {
+        <span class="kemp-is-meals-grid__legend-item">
+          <span
+            class="kemp-is-meals-grid__legend-chip kemp-mono"
+            [style.background]="v.color + '15'"
+            [style.color]="v.color"
+          >
+            {{ v.key }}
+          </span>
+          <span class="kemp-is-meals-grid__legend-label">{{ v.label }}</span>
+        </span>
+      }
+    </div>
+  </header>
+
+  <div
+    #scroll
+    class="kemp-is-meals-grid__scroll"
+  >
+    <table class="kemp-is-meals-grid__table">
+      <colgroup>
+        <col class="kemp-is-meals-grid__col-group" />
+        <col class="kemp-is-meals-grid__col-arrive" />
+        <col class="kemp-is-meals-grid__col-depart" />
+        @for (d of weekDays(); track d.key) {
+          @for (mt of mealTypes; track mt.key) {
+            @for (v of variants; track v.key) {
+              <col class="kemp-is-meals-grid__col-cell" />
+            }
+          }
+        }
+      </colgroup>
+
+      <thead>
+        <tr>
+          <th
+            colspan="3"
+            rowspan="2"
+            class="kemp-is-meals-grid__corner"
+          >
+            <div class="kemp-is-meals-grid__corner-row">
+              <i
+                class="pi pi-users"
+                aria-hidden="true"
+              ></i>
+              Rezervace ({{ groups().length }})
+            </div>
+            <div class="kemp-is-meals-grid__corner-sub">
+              počty porcí · denně podle jídel a diet
+            </div>
+          </th>
+          @for (d of weekDays(); track d.key; let last = $last) {
+            <th
+              [attr.colspan]="mealTypes.length * variants.length"
+              class="kemp-is-meals-grid__day-th"
+              [class.kemp-is-meals-grid__day-th--today]="!!d.today"
+              [class.kemp-is-meals-grid__day-th--weekend]="!!d.weekend"
+              [class.kemp-is-meals-grid__day-th--day-end]="!last"
+            >
+              <div class="kemp-is-meals-grid__day-label">
+                <span class="kemp-is-meals-grid__day-dow">{{ d.dow }}</span>
+                <span>{{ d.name }}</span>
+                <span class="kemp-is-meals-grid__day-date kemp-mono">
+                  {{ d.label }}
+                </span>
+                @if (d.today) {
+                  <span class="kemp-is-meals-grid__day-today-badge">DNES</span>
+                }
+              </div>
+            </th>
+          }
+        </tr>
+
+        <tr>
+          @for (d of weekDays(); track d.key; let dlast = $last) {
+            @for (mt of mealTypes; track mt.key; let mlast = $last) {
+              <th
+                [attr.colspan]="variants.length"
+                class="kemp-is-meals-grid__meal-th"
+                [class.kemp-is-meals-grid__meal-th--today]="!!d.today"
+                [class.kemp-is-meals-grid__meal-th--weekend]="!!d.weekend"
+                [class.kemp-is-meals-grid__meal-th--meal-end]="!mlast"
+                [class.kemp-is-meals-grid__meal-th--day-end]="mlast && !dlast"
+              >
+                <span class="kemp-is-meals-grid__meal-label">
+                  <i
+                    [class]="'pi ' + mt.icon"
+                    aria-hidden="true"
+                  ></i>
+                  {{ mt.label }}
+                </span>
+              </th>
+            }
+          }
+        </tr>
+
+        <tr>
+          <th
+            class="kemp-is-meals-grid__sub-th kemp-is-meals-grid__sub-th--left"
+          >
+            Rezervace
+          </th>
+          <th
+            class="kemp-is-meals-grid__sub-th kemp-is-meals-grid__sub-th--center"
+          >
+            Příjezd
+          </th>
+          <th
+            class="kemp-is-meals-grid__sub-th kemp-is-meals-grid__sub-th--center kemp-is-meals-grid__sub-th--frozen"
+          >
+            Odjezd
+          </th>
+          @for (d of weekDays(); track d.key; let dlast = $last) {
+            @for (mt of mealTypes; track mt.key; let mlast = $last) {
+              @for (v of variants; track v.key; let vlast = $last) {
+                <th
+                  class="kemp-is-meals-grid__variant-th"
+                  [class.kemp-is-meals-grid__variant-th--today]="!!d.today"
+                  [class.kemp-is-meals-grid__variant-th--weekend]="!!d.weekend"
+                  [class.kemp-is-meals-grid__variant-th--meal-end]="
+                    vlast && !mlast
+                  "
+                  [class.kemp-is-meals-grid__variant-th--day-end]="
+                    vlast && mlast && !dlast
+                  "
+                  [style.color]="v.color"
+                  [attr.title]="v.full"
+                >
+                  {{ v.key }}
+                </th>
+              }
+            }
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (g of groups(); track g.id; let glast = $last) {
+          <tr [class.kemp-is-meals-grid__row--last]="glast">
+            <td class="kemp-is-meals-grid__group-cell">
+              <button
+                type="button"
+                class="kemp-is-meals-grid__group-inner"
+                (click)="onOpen(g.id)"
+                [attr.aria-label]="'Upravit rezervaci ' + g.short"
+              >
+                <span
+                  class="kemp-is-meals-grid__group-bar"
+                  [style.background]="g.color"
+                ></span>
+                <div class="kemp-is-meals-grid__group-text">
+                  <span
+                    class="kemp-is-meals-grid__group-short"
+                    [title]="g.name"
+                  >
+                    {{ g.name }}
+                  </span>
+                  @if (g.name !== g.short) {
+                    <span class="kemp-is-meals-grid__group-name kemp-mono">
+                      {{ g.short }}
+                    </span>
+                  }
+                </div>
+              </button>
+            </td>
+            <td class="kemp-is-meals-grid__date-cell kemp-mono">
+              {{ g.arrive.label }}
+            </td>
+            <td
+              class="kemp-is-meals-grid__date-cell kemp-mono kemp-is-meals-grid__date-cell--frozen"
+            >
+              {{ g.depart.label }}
+            </td>
+
+            @for (d of weekDays(); track d.key; let dlast = $last) {
+              @for (mt of mealTypes; track mt.key; let mlast = $last) {
+                @for (v of variants; track v.key; let vlast = $last) {
+                  <td
+                    class="kemp-is-meals-grid__count-cell"
+                    [class.kemp-is-meals-grid__count-cell--today]="!!d.today"
+                    [class.kemp-is-meals-grid__count-cell--weekend]="
+                      !!d.weekend
+                    "
+                    [class.kemp-is-meals-grid__count-cell--meal-end]="
+                      vlast && !mlast
+                    "
+                    [class.kemp-is-meals-grid__count-cell--day-end]="
+                      vlast && mlast && !dlast
+                    "
+                  >
+                    @let value = readVariant(g, d.key, mt.key, v.key);
+                    <span
+                      class="kemp-is-meals-grid__count-display kemp-mono"
+                      [class.kemp-is-meals-grid__count-display--empty]="!value"
+                      [style.background]="
+                        value ? variantTint(v.color) : 'transparent'
+                      "
+                      [style.color]="value ? v.color : null"
+                    >
+                      {{ value || "·" }}
+                    </span>
+                  </td>
+                }
+              }
+            }
+          </tr>
+        }
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td
+            colspan="3"
+            class="kemp-is-meals-grid__totals-label"
+          >
+            <span class="kemp-is-meals-grid__totals-label-row">
+              <i
+                class="pi pi-chart-bar"
+                aria-hidden="true"
+              ></i>
+              <span>Celkem porcí · {{ meta().weekLabel }}</span>
+              <span class="kemp-is-meals-grid__totals-spacer"></span>
+              <span class="kemp-mono">{{ weekGrandLabel() }}</span>
+            </span>
+          </td>
+          @for (d of weekDays(); track d.key; let dlast = $last) {
+            @for (mt of mealTypes; track mt.key; let mlast = $last) {
+              @for (v of variants; track v.key; let vlast = $last) {
+                @let total = variantTotal(d.key, mt.key, v.key);
+                <td
+                  class="kemp-is-meals-grid__totals-cell kemp-mono"
+                  [class.kemp-is-meals-grid__totals-cell--zero]="total === 0"
+                  [class.kemp-is-meals-grid__totals-cell--meal-end]="
+                    vlast && !mlast
+                  "
+                  [class.kemp-is-meals-grid__totals-cell--day-end]="
+                    vlast && mlast && !dlast
+                  "
+                >
+                  {{ total || "·" }}
+                </td>
+              }
+            }
+          }
+        </tr>
+
+        <tr>
+          <td
+            colspan="3"
+            class="kemp-is-meals-grid__servings-label"
+          >
+            <span class="kemp-is-meals-grid__servings-label-row">
+              <i
+                class="pi pi-bowl-food"
+                aria-hidden="true"
+              ></i>
+              Výdejů · {{ meta().weekLabel }}
+            </span>
+          </td>
+          @for (d of weekDays(); track d.key; let dlast = $last) {
+            @for (mt of mealTypes; track mt.key; let mlast = $last) {
+              @let info = earliestFor(d.key, mt.key);
+              <td
+                [attr.colspan]="variants.length"
+                class="kemp-is-meals-grid__servings-cell kemp-mono"
+                [class.kemp-is-meals-grid__servings-cell--meal-end]="!mlast"
+                [class.kemp-is-meals-grid__servings-cell--day-end]="
+                  mlast && !dlast
+                "
+                [class.kemp-is-meals-grid__servings-cell--empty]="
+                  info.count === 0
+                "
+              >
+                @if (info.count > 0) {
+                  {{ info.count }}× · {{ info.portions }} p
+                } @else {
+                  ·
+                }
+              </td>
+            }
+          }
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>

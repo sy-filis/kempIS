@@ -1,0 +1,22 @@
+.kemp-is-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kemp-is-user-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  > label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--p-text-color-emphasis, #27272a);
+  }
+
+  > input,
+  > p-select {
+    width: 100%;
+  }
+}

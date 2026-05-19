@@ -1,0 +1,69 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [dismissableMask]="!submitting()"
+  [style]="{ width: '28rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-service-type-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-service-type-form__field">
+      <label for="kemp-is-service-type-form-name">Název</label>
+      <input
+        id="kemp-is-service-type-form-name"
+        pInputText
+        type="text"
+        autocomplete="off"
+        maxlength="255"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div
+      class="kemp-is-service-type-form__field kemp-is-service-type-form__field--inline"
+    >
+      <label for="kemp-is-service-type-form-active">Aktivní</label>
+      <p-toggleswitch
+        inputId="kemp-is-service-type-form-active"
+        [ngModel]="isActive()"
+        (ngModelChange)="isActive.set($event)"
+        name="isActive"
+        [disabled]="submitting()"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>

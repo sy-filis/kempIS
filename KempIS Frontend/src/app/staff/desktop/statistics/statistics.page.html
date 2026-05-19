@@ -1,0 +1,44 @@
+<section class="kemp-is-statistics">
+  <header class="kemp-is-statistics__header">
+    <h1 class="kemp-is-statistics__title">Statistiky</h1>
+    <div class="kemp-is-statistics__range">
+      <span class="kemp-is-statistics__range-label">Období</span>
+      <p-datepicker
+        [ngModel]="range()"
+        (ngModelChange)="range.set($event)"
+        selectionMode="range"
+        [showButtonBar]="true"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+      />
+    </div>
+  </header>
+
+  <p-panel
+    header="Hosté"
+    [toggleable]="true"
+  >
+    <kemp-is-stats-guests-by-country [range]="range()" />
+  </p-panel>
+
+  <p-panel
+    header="Tržby podle skupiny služeb"
+    [toggleable]="true"
+  >
+    <kemp-is-stats-services [range]="range()" />
+  </p-panel>
+
+  <p-panel
+    header="Obsazenost"
+    [toggleable]="true"
+  >
+    <kemp-is-stats-occupancy [range]="range()" />
+  </p-panel>
+
+  <p-panel
+    header="Tržby podle způsobu úhrady"
+    [toggleable]="true"
+  >
+    <kemp-is-stats-revenue-by-payment-method [range]="range()" />
+  </p-panel>
+</section>

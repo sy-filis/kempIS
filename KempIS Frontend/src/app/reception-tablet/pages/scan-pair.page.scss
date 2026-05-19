@@ -1,0 +1,45 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100dvh;
+}
+
+.kemp-is-scan-pair {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  gap: 1rem;
+}
+
+.kemp-is-scan-pair__header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.kemp-is-scan-pair__header p {
+  margin: 0.25rem 0 0;
+  color: var(--p-text-muted-color);
+}
+
+.kemp-is-scan-pair__viewport {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  border-radius: var(--p-content-border-radius, 6px);
+  overflow: hidden;
+  min-height: 12rem;
+}
+
+.kemp-is-scan-pair__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kemp-is-scan-pair__error {
+  color: var(--p-form-field-invalid-placeholder-color, #b91c1c);
+  font-weight: 500;
+}

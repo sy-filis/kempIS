@@ -1,0 +1,260 @@
+<kemp-is-staff-screen-header
+  title="Skener"
+  [subtitle]="
+    mode() === 'plate'
+      ? 'Kamera běží · zaměřte RZ vozidla'
+      : 'Kamera běží · zaměřte QR kód stanu'
+  "
+>
+  <span
+    slot="trailing"
+    class="kemp-is-scanner__live"
+    aria-label="Kamera běží"
+  >
+    <span
+      class="kemp-is-scanner__live-dot"
+      aria-hidden="true"
+    ></span>
+    LIVE
+  </span>
+</kemp-is-staff-screen-header>
+
+<div class="kemp-is-scanner">
+  <div class="kemp-is-scanner__toggle">
+    <button
+      type="button"
+      class="kemp-is-scanner__toggle-btn"
+      [class.kemp-is-scanner__toggle-btn--active]="mode() === 'plate'"
+      (click)="setMode('plate')"
+    >
+      <i class="pi pi-car"></i>
+      SPZ vozidla
+    </button>
+    <button
+      type="button"
+      class="kemp-is-scanner__toggle-btn"
+      [class.kemp-is-scanner__toggle-btn--active]="mode() === 'qr'"
+      (click)="setMode('qr')"
+    >
+      <i class="pi pi-qrcode"></i>
+      QR stanu
+    </button>
+  </div>
+
+  <div
+    class="kemp-is-scanner__viewport"
+    [class.kemp-is-scanner__viewport--qr]="mode() === 'qr'"
+  >
+    <video
+      #video
+      class="kemp-is-scanner__video"
+      autoplay
+      playsinline
+      muted
+    ></video>
+
+    <div
+      class="kemp-is-scanner__reticle"
+      [class.kemp-is-scanner__reticle--qr]="mode() === 'qr'"
+      aria-hidden="true"
+    >
+      <span class="kemp-is-scanner__corner kemp-is-scanner__corner--tl"></span>
+      <span class="kemp-is-scanner__corner kemp-is-scanner__corner--tr"></span>
+      <span class="kemp-is-scanner__corner kemp-is-scanner__corner--bl"></span>
+      <span class="kemp-is-scanner__corner kemp-is-scanner__corner--br"></span>
+      <span class="kemp-is-scanner__scanline"></span>
+    </div>
+
+    <span
+      class="kemp-is-scanner__hint"
+      aria-hidden="true"
+    >
+      @if (mode() === "plate") {
+        Vyrovnejte SPZ s rámečkem
+      } @else {
+        Zarovnejte QR do středu
+      }
+    </span>
+
+    @if (cameraError() || detectorError()) {
+      <div
+        class="kemp-is-scanner__error"
+        role="status"
+      >
+        <i class="pi pi-exclamation-triangle"></i>
+        <span>{{ cameraError() ?? detectorError() }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="kemp-is-scanner__manual">
+    <div class="kemp-is-scanner__manual-label">
+      @if (mode() === "plate") {
+        Zadat RZ ručně
+      } @else {
+        Zadat kód účtenky ručně
+      }
+    </div>
+    <div class="kemp-is-scanner__manual-row">
+      <div class="kemp-is-scanner__manual-input">
+        <i class="pi pi-pencil kemp-is-scanner__manual-icon"></i>
+        <input
+          type="text"
+          pInputText
+          class="kemp-is-scanner__manual-text kemp-mono"
+          [placeholder]="
+            mode() === 'plate' ? 'např. 5AB 1234' : 'např. 2507142'
+          "
+          autocapitalize="characters"
+          autocomplete="off"
+          spellcheck="false"
+          [(ngModel)]="manualValue"
+        />
+      </div>
+      <p-button
+        label="Ověřit"
+        icon="pi pi-search"
+        severity="primary"
+        (onClick)="onManualSubmit()"
+      />
+    </div>
+    <div class="kemp-is-scanner__manual-hint">
+      <i
+        class="pi pi-info-circle"
+        aria-hidden="true"
+      ></i>
+      Použijte když nelze skenovat.
+    </div>
+  </div>
+
+  <section class="kemp-is-scanner__history">
+    <header class="kemp-is-scanner__history-head">
+      <div class="kemp-is-scanner__history-title">
+        <i
+          class="pi pi-history"
+          aria-hidden="true"
+        ></i>
+        Historie skenování
+        <span class="kemp-is-scanner__history-count kemp-mono">
+          {{ history().length }}
+        </span>
+      </div>
+      @if (hasHistory()) {
+        <button
+          type="button"
+          class="kemp-is-scanner__history-clear"
+          (click)="clearHistory()"
+        >
+          Vymazat
+        </button>
+      }
+    </header>
+
+    @if (hasHistory()) {
+      <ul class="kemp-is-scanner__history-list">
+        @for (entry of history(); track entry.id) {
+          <li
+            class="kemp-is-scanner__history-item kemp-is-scanner__history-item--{{
+              entry.status
+            }}"
+          >
+            <span
+              class="kemp-is-scanner__history-icon"
+              aria-hidden="true"
+            >
+              <i
+                [class]="entry.mode === 'plate' ? 'pi pi-car' : 'pi pi-qrcode'"
+              ></i>
+            </span>
+            <div class="kemp-is-scanner__history-main">
+              <div class="kemp-is-scanner__history-row">
+                <span class="kemp-is-scanner__history-value kemp-mono">
+                  {{ entry.value }}
+                </span>
+                <span class="kemp-is-scanner__history-time">{{
+                  formatRelative(entry.timestamp)
+                }}</span>
+              </div>
+              <div class="kemp-is-scanner__history-meta">
+                <span
+                  class="kemp-is-scanner__history-status kemp-is-scanner__history-status--{{
+                    entry.status
+                  }}"
+                >
+                  @if (entry.status === "matched") {
+                    <i
+                      class="pi pi-check-circle"
+                      aria-hidden="true"
+                    ></i>
+                  } @else if (entry.status === "duplicate") {
+                    <i
+                      class="pi pi-clone"
+                      aria-hidden="true"
+                    ></i>
+                  } @else if (entry.status === "pending") {
+                    <i
+                      class="pi pi-spin pi-spinner"
+                      aria-hidden="true"
+                    ></i>
+                  } @else {
+                    <i
+                      class="pi pi-times-circle"
+                      aria-hidden="true"
+                    ></i>
+                  }
+                  {{ statusLabel(entry.status) }}
+                </span>
+                @if (entry.guestName) {
+                  <span class="kemp-is-scanner__history-guest"
+                    >· {{ entry.guestName }}</span
+                  >
+                }
+                @if (entry.spotId) {
+                  <span class="kemp-is-scanner__history-spot kemp-mono"
+                    >· {{ entry.spotId }}</span
+                  >
+                }
+                @if (entry.checkoutAt) {
+                  <span class="kemp-is-scanner__history-checkout kemp-mono"
+                    >· odjezd {{ formatCheckout(entry.checkoutAt) }}</span
+                  >
+                }
+                @if (entry.source === "manual") {
+                  <span
+                    class="kemp-is-scanner__history-tag"
+                    title="Zadáno ručně"
+                  >
+                    <i
+                      class="pi pi-pencil"
+                      aria-hidden="true"
+                    ></i>
+                    ručně
+                  </span>
+                }
+                @if (entry.note && !entry.guestName) {
+                  <span class="kemp-is-scanner__history-note"
+                    >· {{ entry.note }}</span
+                  >
+                }
+              </div>
+            </div>
+            @if (entry.status === "matched") {
+              <i
+                class="pi pi-chevron-right kemp-is-scanner__history-chevron"
+                aria-hidden="true"
+              ></i>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="kemp-is-scanner__history-empty">
+        <i
+          class="pi pi-inbox"
+          aria-hidden="true"
+        ></i>
+        <span>Zatím žádné skeny.</span>
+      </div>
+    }
+  </section>
+</div>

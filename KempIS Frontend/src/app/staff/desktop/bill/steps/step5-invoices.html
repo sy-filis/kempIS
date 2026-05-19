@@ -1,0 +1,59 @@
+<div class="kemp-is-bc">
+  <div class="kemp-is-bc__head">
+    <h3 class="kemp-is-bc__title">Faktury rezervace</h3>
+    <span class="kemp-is-bc__head-meta">
+      <span class="kemp-mono kemp-is-bill__deposit-count">
+        {{ linkedCount() }}
+      </span>
+      z {{ rows().length }} na tento účet
+    </span>
+  </div>
+  <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+    @if (rows().length === 0) {
+      <div class="kemp-is-bill__empty">Rezervace nemá žádné faktury</div>
+    } @else {
+      <div class="kemp-is-bill__row-head kemp-is-bill__inv-grid">
+        <span>Vypořádat</span>
+        <span></span>
+        <span>Číslo dokladu</span>
+        <span>Vystaveno</span>
+        <span>Uhrazeno</span>
+        <span class="kemp-is-bill__cell-center">Stav</span>
+      </div>
+      @for (r of rows(); track r.invoice.id) {
+        <div
+          class="kemp-is-bill__row kemp-is-bill__inv-grid"
+          [class.kemp-is-bill__inv-row--deposit]="r.checked"
+        >
+          <p-checkbox
+            [binary]="true"
+            [ngModel]="r.checked"
+            (ngModelChange)="toggleLinked(r.invoice.id)"
+          />
+          <i
+            class="pi pi-file kemp-is-bill__inv-icon"
+            aria-hidden="true"
+          ></i>
+          <div>
+            <div class="kemp-is-bill__inv-id kemp-mono">
+              {{ r.invoice.number ?? "—" }}
+            </div>
+          </div>
+          <span class="kemp-mono kemp-is-bill__inv-text">
+            {{ formatDate(r.invoice.issuedAt) }}
+          </span>
+          <span class="kemp-mono kemp-is-bill__inv-text">
+            {{ formatDate(r.invoice.paidAt) }}
+          </span>
+          <div class="kemp-is-bill__cell-center">
+            <p-tag
+              [severity]="r.statusSeverity"
+              [icon]="r.statusIcon"
+              [value]="r.statusLabel"
+            />
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

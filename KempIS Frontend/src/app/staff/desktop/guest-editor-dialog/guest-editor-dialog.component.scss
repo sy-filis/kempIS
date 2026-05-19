@@ -1,0 +1,86 @@
+/* Reusable guest editor — same look-and-feel as the inline dialog the
+   bill detail page used to host, now packaged so the guests view can
+   open it without copying markup. */
+.kemp-is-guest-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+
+  p-message {
+    display: block;
+    width: 100%;
+  }
+}
+
+.kemp-is-guest-editor__section h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--p-text-muted-color, #71717a);
+  font-weight: 700;
+}
+
+.kemp-is-guest-editor__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem 0.75rem;
+}
+
+.kemp-is-guest-editor__grid p-select,
+.kemp-is-guest-editor__grid p-datepicker,
+.kemp-is-guest-editor__grid input,
+.kemp-is-guest-editor__grid textarea {
+  width: 100%;
+}
+
+.kemp-is-guest-editor textarea {
+  width: 100%;
+}
+
+.kemp-is-guest-editor__wide {
+  grid-column: span 2;
+}
+
+.kemp-is-guest-editor__label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  margin-bottom: 4px;
+}
+
+.kemp-is-guest-editor__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+/* p-autocomplete inside the address grid: force its internal wrapper
+   to fill the cell so it lines up with the other inputs. */
+.kemp-is-guest-editor__whisperer {
+  display: block;
+  width: 100%;
+
+  .p-autocomplete,
+  .p-autocomplete-input {
+    width: 100%;
+  }
+}
+
+.kemp-is-guest-editor__suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.125rem 0;
+}
+
+.kemp-is-guest-editor__suggestion-meta {
+  color: var(--p-text-muted-color, #71717a);
+  font-size: 0.75rem;
+}

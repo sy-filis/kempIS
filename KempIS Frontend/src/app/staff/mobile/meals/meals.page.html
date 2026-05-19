@@ -1,0 +1,148 @@
+<kemp-is-staff-screen-header
+  title="Strava"
+  [subtitle]="subtitle()"
+>
+  <div
+    slot="below"
+    class="kemp-is-meals__day"
+  >
+    <p-datepicker
+      [ngModel]="pickerDate()"
+      (ngModelChange)="onDateChange($event)"
+      dateFormat="dd. mm. yy"
+      iconDisplay="input"
+      [showIcon]="true"
+      appendTo="body"
+      placeholder="Vybrat datum"
+      class="kemp-is-meals__day-select"
+    />
+  </div>
+</kemp-is-staff-screen-header>
+
+<div class="kemp-is-meals__toggle">
+  @for (meal of mealTypes; track meal.key) {
+    <button
+      type="button"
+      class="kemp-is-meals__toggle-item"
+      [class.kemp-is-meals__toggle-item--active]="activeMeal() === meal.key"
+      (click)="setActiveMeal(meal.key)"
+    >
+      <i
+        class="pi kemp-is-meals__toggle-icon"
+        [class]="meal.icon"
+        aria-hidden="true"
+      ></i>
+      <span class="kemp-is-meals__toggle-label">{{ meal.label }}</span>
+      <span class="kemp-is-meals__toggle-count kemp-mono">{{
+        mealTotals()[meal.key]
+      }}</span>
+    </button>
+  }
+</div>
+
+<details class="kemp-is-meals__legend">
+  <summary class="kemp-is-meals__legend-title">Legenda diet</summary>
+  <div class="kemp-is-meals__legend-grid">
+    @for (diet of diets; track diet.key) {
+      <span class="kemp-is-meals__legend-item">
+        <span
+          class="kemp-is-meals__diet-badge kemp-mono"
+          [style.background]="diet.color"
+          >{{ diet.key }}</span
+        >
+        <span class="kemp-is-meals__legend-item-label">{{ diet.label }}</span>
+      </span>
+    }
+  </div>
+</details>
+
+<section class="kemp-is-meals__block">
+  <header class="kemp-is-meals__block-head">
+    <span
+      class="kemp-is-meals__block-icon"
+      aria-hidden="true"
+    >
+      <i
+        class="pi"
+        [class]="activeBlock().icon"
+      ></i>
+    </span>
+    <div class="kemp-is-meals__block-titles">
+      <h2 class="kemp-is-meals__block-title">{{ activeBlock().label }}</h2>
+    </div>
+    <div class="kemp-is-meals__block-total">
+      <span class="kemp-is-meals__block-total-num">{{
+        activeBlock().total
+      }}</span>
+      <span class="kemp-is-meals__block-total-label">porcí</span>
+    </div>
+  </header>
+
+  <div class="kemp-is-meals__totals">
+    <span class="kemp-is-meals__totals-title">Celkem</span>
+    <div class="kemp-is-meals__chips">
+      @for (diet of diets; track diet.key) {
+        @let count = activeBlock().diet[diet.key];
+        @if (count > 0) {
+          <span
+            class="kemp-is-meals__chip"
+            [style.background]="diet.color + '1a'"
+            [style.color]="diet.color"
+          >
+            <span
+              class="kemp-is-meals__chip-key kemp-mono"
+              [style.background]="diet.color"
+              >{{ diet.key }}</span
+            >
+            <span class="kemp-is-meals__chip-count kemp-mono">{{ count }}</span>
+          </span>
+        }
+      }
+    </div>
+  </div>
+
+  <ul class="kemp-is-meals__pickups">
+    @for (pickup of activeBlock().pickups; track pickup.groupId) {
+      <li
+        class="kemp-is-meals__pickup"
+        [style.borderLeftColor]="pickup.color"
+      >
+        <div class="kemp-is-meals__pickup-row">
+          <span class="kemp-is-meals__pickup-time kemp-mono">{{
+            pickup.time
+          }}</span>
+          <span class="kemp-is-meals__pickup-name">{{ pickup.groupName }}</span>
+          <span class="kemp-is-meals__pickup-total kemp-mono">{{
+            pickup.total
+          }}</span>
+        </div>
+
+        <div class="kemp-is-meals__chips">
+          @for (diet of diets; track diet.key) {
+            @let count = pickup.diet[diet.key];
+            @if (count > 0) {
+              <span
+                class="kemp-is-meals__chip"
+                [style.background]="diet.color + '1a'"
+                [style.color]="diet.color"
+              >
+                <span
+                  class="kemp-is-meals__chip-key kemp-mono"
+                  [style.background]="diet.color"
+                  >{{ diet.key }}</span
+                >
+                <span class="kemp-is-meals__chip-count kemp-mono">{{
+                  count
+                }}</span>
+              </span>
+            }
+          }
+        </div>
+      </li>
+    } @empty {
+      <li class="kemp-is-meals__empty">
+        Pro vybraný den a chod nejsou žádné výdeje.
+      </li>
+    }
+  </ul>
+</section>

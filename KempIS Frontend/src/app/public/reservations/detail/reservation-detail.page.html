@@ -1,0 +1,324 @@
+<article class="kemp-is-detail">
+  <header class="kemp-is-detail__head">
+    <div class="kemp-is-detail__brand">
+      <span
+        class="kemp-is-detail__brand-mark"
+        aria-hidden="true"
+      >
+        <i class="pi pi-sun"></i>
+      </span>
+      <span
+        class="kemp-is-detail__brand-name"
+        i18n="@@reservation-detail.brand"
+        >KempIS</span
+      >
+      <span class="kemp-is-detail__brand-sep">·</span>
+      <span
+        class="kemp-is-detail__brand-sub"
+        i18n="@@reservation-detail.title"
+        >Moje rezervace</span
+      >
+    </div>
+    <p-button
+      severity="secondary"
+      [text]="true"
+      size="small"
+      icon="pi pi-print"
+      [label]="printLabel"
+      [disabled]="!resource.hasValue()"
+      (onClick)="onPrint()"
+    />
+  </header>
+
+  <div class="kemp-is-detail__body">
+    @if (resource.isLoading()) {
+      <p
+        class="kemp-is-text-muted"
+        i18n="@@reservation-detail.loading"
+      >
+        Načítám rezervaci…
+      </p>
+    } @else if (resource.error()) {
+      <p-message
+        severity="error"
+        [closable]="false"
+      >
+        <span i18n="@@reservation-detail.error">
+          Rezervaci se nepodařilo načíst. Zkontrolujte odkaz z potvrzovacího
+          e-mailu.
+        </span>
+      </p-message>
+    } @else if (resource.value(); as r) {
+      <div class="kemp-is-detail__title-row">
+        <div>
+          <small class="kemp-is-detail__eyebrow kemp-mono">
+            <span i18n="@@reservation-detail.eyebrow">Rezervace</span>
+            {{ r.number }}
+          </small>
+          <h2 class="kemp-is-detail__title">{{ r.name }} {{ r.surname }}</h2>
+          <p class="kemp-is-detail__subtitle kemp-is-text-muted">
+            <i
+              class="pi pi-hashtag"
+              aria-hidden="true"
+            ></i>
+            {{ r.number }}
+          </p>
+        </div>
+        <p-tag
+          [severity]="stateTag().severity"
+          [icon]="stateTag().icon"
+          [value]="stateTag().label"
+        />
+      </div>
+
+      <section class="kemp-is-detail__period">
+        <div class="kemp-is-detail__period-side">
+          <small
+            class="kemp-is-detail__eyebrow"
+            i18n="@@new-reservation.dates.from"
+            >Příjezd</small
+          >
+          <strong>{{ formatDate(r.from) }}</strong>
+          <small class="kemp-is-text-muted">{{ checkInFrom }}</small>
+        </div>
+        <div
+          class="kemp-is-detail__period-mid"
+          aria-hidden="true"
+        >
+          <span
+            class="kemp-mono kemp-is-detail__period-nights"
+            i18n="@@reservation-detail.nights-eyebrow"
+          >
+            {nights(), plural,
+              =1 {1 noc}
+              few {{{ nights() }} noci}
+              other {{{ nights() }} nocí}
+            }
+          </span>
+          <i class="pi pi-arrow-right"></i>
+        </div>
+        <div
+          class="kemp-is-detail__period-side kemp-is-detail__period-side--right"
+        >
+          <small
+            class="kemp-is-detail__eyebrow"
+            i18n="@@new-reservation.dates.to"
+            >Odjezd</small
+          >
+          <strong>{{ formatDate(r.to) }}</strong>
+          <small class="kemp-is-text-muted">{{ checkOutBy }}</small>
+        </div>
+      </section>
+
+      @if (r.note) {
+        <section class="kemp-is-detail__note">
+          <small
+            class="kemp-is-detail__eyebrow"
+            i18n="@@reservation-detail.note"
+            >Poznámka</small
+          >
+          <p>{{ r.note }}</p>
+        </section>
+      }
+
+      @if (r.state !== "Cancelled") {
+        <section class="kemp-is-detail__checkin">
+          <header class="kemp-is-detail__checkin-head">
+            <h3 i18n="@@reservation-detail.checkin.title">Online check-in</h3>
+            <p
+              class="kemp-is-text-muted"
+              i18n="@@reservation-detail.checkin.lead"
+            >
+              Sdílejte tento odkaz se zbytkem výpravy, ať mohou vyplnit své
+              údaje před příjezdem.
+            </p>
+          </header>
+          <p-inputgroup class="kemp-is-detail__copy">
+            <input
+              pInputText
+              [value]="checkInUrl()"
+              [readOnly]="true"
+              [attr.aria-label]="checkInFieldLabel"
+              class="kemp-mono"
+            />
+            <p-button
+              [severity]="copied() ? 'primary' : 'secondary'"
+              [icon]="copied() ? 'pi pi-check' : 'pi pi-copy'"
+              [label]="copied() ? copiedLabel : copyLabel"
+              (onClick)="onCopy()"
+            />
+          </p-inputgroup>
+        </section>
+      }
+
+      <h3
+        class="kemp-is-detail__section-eyebrow"
+        i18n="@@reservation-detail.cottages"
+      >
+        Rezervované chatky
+      </h3>
+      <div class="kemp-is-detail__list">
+        @for (c of cottages(); track c.spotGroupId) {
+          <div class="kemp-is-detail__cottage">
+            <span
+              class="kemp-is-detail__cottage-code kemp-mono"
+              aria-hidden="true"
+              >{{ c.code }}</span
+            >
+            <div class="kemp-is-detail__cottage-info">
+              <strong>{{ c.name }}</strong>
+              <small
+                class="kemp-is-text-muted"
+                i18n="@@reservation-detail.cottage-qty"
+              >
+                {c.qty, plural,
+                  =1 {1 chatka rezervována}
+                  few {{{ c.qty }} chatky rezervovány}
+                  other {{{ c.qty }} chatek rezervováno}
+                }
+              </small>
+              @if (c.assigned.length > 0) {
+                <small class="kemp-is-text-muted">
+                  <i
+                    class="pi pi-map-marker"
+                    aria-hidden="true"
+                  ></i>
+                  {{ c.assigned.join(", ") }}
+                </small>
+              }
+            </div>
+            <span class="kemp-is-detail__cottage-qty kemp-mono"
+              >×{{ c.qty }}</span
+            >
+          </div>
+        }
+      </div>
+
+      @if (mealRows().length > 0) {
+        <header class="kemp-is-detail__section-head">
+          <h3
+            class="kemp-is-detail__section-eyebrow"
+            i18n="@@reservation-detail.meals"
+          >
+            Porce stravy
+          </h3>
+          <small
+            class="kemp-is-text-muted"
+            i18n="@@reservation-detail.meals-total"
+          >
+            celkem
+            {totalPortions(), plural,
+              =1 {1 porce}
+              few {{{ totalPortions() }} porce}
+              other {{{ totalPortions() }} porcí}
+            }
+          </small>
+        </header>
+        <div class="kemp-is-detail__meals">
+          <div class="kemp-is-detail__meals-head">
+            <span i18n="@@reservation-detail.meals.day">Den</span>
+            <span>
+              <i
+                class="pi pi-sun"
+                aria-hidden="true"
+              ></i>
+              <span i18n="@@reservation-detail.meals.breakfast">Snídaně</span>
+            </span>
+            <span>
+              <i
+                class="pi pi-cloud"
+                aria-hidden="true"
+              ></i>
+              <span i18n="@@reservation-detail.meals.lunch">Oběd</span>
+            </span>
+            <span>
+              <i
+                class="pi pi-briefcase"
+                aria-hidden="true"
+              ></i>
+              <span i18n="@@reservation-detail.meals.lunch-package"
+                >Balíček</span
+              >
+            </span>
+            <span>
+              <i
+                class="pi pi-moon"
+                aria-hidden="true"
+              ></i>
+              <span i18n="@@reservation-detail.meals.dinner">Večeře</span>
+            </span>
+          </div>
+          @for (m of mealRows(); track m.date) {
+            <div class="kemp-is-detail__meals-row">
+              <span class="kemp-is-detail__meals-day">{{
+                formatDateShort(m.date)
+              }}</span>
+              <span [class.is-zero]="m.breakfast === 0">
+                {{ m.breakfast > 0 ? m.breakfast : "—" }}
+              </span>
+              <span [class.is-zero]="m.lunch === 0">
+                {{ m.lunch > 0 ? m.lunch : "—" }}
+              </span>
+              <span [class.is-zero]="m.lunchPackage === 0">
+                {{ m.lunchPackage > 0 ? m.lunchPackage : "—" }}
+              </span>
+              <span [class.is-zero]="m.dinner === 0">
+                {{ m.dinner > 0 ? m.dinner : "—" }}
+              </span>
+            </div>
+          }
+        </div>
+      }
+
+      @if (r.bills.length > 0) {
+        <header class="kemp-is-detail__section-head">
+          <h3
+            class="kemp-is-detail__section-eyebrow"
+            i18n="@@reservation-detail.invoices"
+          >
+            Faktury
+          </h3>
+        </header>
+        <div class="kemp-is-detail__list">
+          @for (inv of r.bills; track inv.id) {
+            <div class="kemp-is-detail__invoice">
+              <i
+                class="pi pi-file kemp-is-detail__invoice-icon"
+                aria-hidden="true"
+              ></i>
+              <strong class="kemp-is-detail__invoice-kind">{{
+                billLabel(inv.kind)
+              }}</strong>
+              <small
+                class="kemp-mono kemp-is-text-muted kemp-is-detail__invoice-number"
+                >{{ inv.number }}</small
+              >
+              <span class="kemp-mono kemp-is-detail__invoice-amount"
+                >{{ inv.amount }} Kč</span
+              >
+              <p-button
+                severity="secondary"
+                [text]="true"
+                [rounded]="true"
+                size="small"
+                icon="pi pi-download"
+                [ariaLabel]="downloadLabel"
+              />
+            </div>
+          }
+        </div>
+      }
+
+      @if (cancelError(); as err) {
+        <p-message
+          severity="error"
+          [closable]="false"
+        >
+          <span>{{ err.detail }}</span>
+        </p-message>
+      }
+    }
+  </div>
+
+  <p-confirmdialog />
+</article>

@@ -1,0 +1,102 @@
+<div class="kemp-is-bill__split kemp-is-bill__split--7-3">
+  <div class="kemp-is-bc">
+    <div class="kemp-is-bc__head">
+      <h3 class="kemp-is-bc__title">Položky účtu</h3>
+    </div>
+    <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+      <div class="kemp-is-bill__row-head kemp-is-bill__recap-grid">
+        <span></span>
+        <span>Služba</span>
+        <span class="kemp-is-bill__cell-center">Množství</span>
+        <span class="kemp-is-bill__cell-center">Dnů</span>
+        <span class="kemp-is-bill__cell-center">Cena</span>
+        <span class="kemp-is-bill__cell-right">DPH</span>
+        <span class="kemp-is-bill__cell-right">Celkem</span>
+      </div>
+      @for (r of rows(); track r.id; let i = $index) {
+        <div class="kemp-is-bill__row kemp-is-bill__recap-grid">
+          <span class="kemp-mono kemp-is-bill__recap-index">{{ pad(i) }}</span>
+          <span class="kemp-is-bill__recap-name">{{ r.service }}</span>
+          <p-inputnumber
+            [styleClass]="
+              'kemp-is-bill__recap-price' +
+              (isModified(r.id, 'qty')
+                ? ' kemp-is-bill__recap-price--modified'
+                : '')
+            "
+            [ngModel]="r.qty"
+            (ngModelChange)="updateField(r.id, 'qty', $event)"
+            [min]="0"
+            [maxFractionDigits]="0"
+            mode="decimal"
+            [inputStyle]="{ textAlign: 'center' }"
+          />
+          <p-inputnumber
+            [styleClass]="
+              'kemp-is-bill__recap-price' +
+              (isModified(r.id, 'days')
+                ? ' kemp-is-bill__recap-price--modified'
+                : '')
+            "
+            [ngModel]="r.days"
+            (ngModelChange)="updateField(r.id, 'days', $event)"
+            [min]="0"
+            [maxFractionDigits]="0"
+            mode="decimal"
+            [inputStyle]="{ textAlign: 'center' }"
+          />
+          <p-inputnumber
+            [styleClass]="
+              'kemp-is-bill__recap-price' +
+              (isModified(r.id, 'price')
+                ? ' kemp-is-bill__recap-price--modified'
+                : '')
+            "
+            [ngModel]="r.price"
+            (ngModelChange)="updateField(r.id, 'price', $event)"
+            [min]="0"
+            [maxFractionDigits]="0"
+            mode="decimal"
+            suffix=" Kč"
+            [inputStyle]="{ textAlign: 'right' }"
+          />
+          <span
+            class="kemp-mono kemp-is-bill__cell-right kemp-is-bill__recap-vat"
+          >
+            {{ r.vat }}%
+          </span>
+          <span
+            class="kemp-mono kemp-is-bill__cell-right kemp-is-bill__recap-total"
+          >
+            {{ formatNumber(lineTotal(r)) }} Kč
+          </span>
+        </div>
+      }
+
+      <div class="kemp-is-bill__recap-subtotal">
+        <span class="kemp-is-bill__recap-subtotal-label">Mezisoučet</span>
+        <span class="kemp-mono kemp-is-bill__recap-subtotal-value">
+          {{ formatNumber(grandTotal()) }} Kč
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="kemp-is-bill__col">
+    <div class="kemp-is-bc">
+      <div class="kemp-is-bc__head">
+        <h3 class="kemp-is-bc__title">Souhrn</h3>
+      </div>
+      <div class="kemp-is-bc__body">
+        <div class="kemp-is-bill__summary-list">
+          <div class="kemp-is-bill__summary-grand">
+            <span class="kemp-is-bill__summary-grand-label">K úhradě</span>
+            <span class="kemp-mono kemp-is-bill__summary-grand-value">
+              {{ formatNumber(grandTotal()) }} Kč
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

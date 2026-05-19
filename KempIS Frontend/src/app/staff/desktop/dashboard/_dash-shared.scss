@@ -1,0 +1,75 @@
+.kemp-is-dash__card {
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-content-border-color, #e4e4e7);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+
+  &[data-color="arr"] {
+    --c: var(--kemp-dash-arr);
+  }
+  &[data-color="clean"] {
+    --c: var(--kemp-dash-clean);
+  }
+  &[data-color="money"] {
+    --c: var(--kemp-dash-money);
+  }
+  &[data-color="alert"] {
+    --c: var(--kemp-dash-alert);
+  }
+  &[data-color="meals"] {
+    --c: var(--kemp-dash-meals);
+  }
+  &[data-color="outlook"] {
+    --c: var(--kemp-dash-outlook);
+  }
+  &[data-color="events"] {
+    --c: var(--kemp-dash-events);
+  }
+}
+
+.kemp-is-dash__card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  flex-shrink: 0;
+}
+
+.kemp-is-dash__card-accent {
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--c, var(--p-primary-color));
+}
+
+.kemp-is-dash__card-title {
+  font-size: 0.78125rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+  letter-spacing: -0.005em;
+}
+
+.kemp-is-dash__card-count {
+  margin-left: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--kemp-page-background, #f7f6f3);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-dash__card-total {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--kemp-dash-alert);
+}
+
+.kemp-is-dash__card-spacer {
+  flex: 1;
+}

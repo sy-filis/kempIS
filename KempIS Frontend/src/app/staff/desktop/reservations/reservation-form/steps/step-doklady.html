@@ -1,0 +1,155 @@
+<section class="kemp-is-doklady__section">
+  <header class="kemp-is-doklady__header">
+    <div class="kemp-is-doklady__title-block">
+      <span class="kemp-is-doklady__eyebrow">Účetní</span>
+      <h3 class="kemp-is-doklady__title">Faktury</h3>
+      <span class="kemp-is-doklady__count">{{ invoices().length }}</span>
+    </div>
+    <p-button
+      size="small"
+      (onClick)="onCreateInvoice()"
+      [disabled]="!reservationId()"
+    >
+      <i
+        class="pi pi-plus"
+        aria-hidden="true"
+      ></i>
+      <span>Nová faktura</span>
+    </p-button>
+  </header>
+
+  <p-table
+    [value]="invoiceRows()"
+    dataKey="id"
+    styleClass="kemp-is-table kemp-is-doklady__table"
+    [tableStyle]="{ 'min-width': '48rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="kemp-is-doklady__col-number">Číslo</th>
+        <th class="kemp-is-doklady__col-status">Stav</th>
+        <th>Vystaveno</th>
+        <th>Zaplaceno</th>
+        <th class="kemp-is-doklady__col-link">Účtenka</th>
+      </tr>
+    </ng-template>
+
+    <ng-template
+      pTemplate="body"
+      let-inv
+    >
+      <tr>
+        <td class="kemp-mono">
+          @if (inv.number) {
+            {{ inv.number }}
+          } @else {
+            <span class="kemp-is-doklady__muted">— návrh —</span>
+          }
+        </td>
+        <td>
+          <p-tag
+            [value]="invoiceStatusLabel(inv.status)"
+            [severity]="invoiceStatusSeverity(inv.status)"
+            [icon]="invoiceStatusIcon(inv.status)"
+          />
+        </td>
+        <td>{{ formatDate(inv.issuedAt) }}</td>
+        <td>{{ formatDate(inv.paidAt) }}</td>
+        <td class="kemp-is-doklady__cell-center">
+          @if (inv.linkedBillId) {
+            <i
+              class="pi pi-link"
+              title="Vázáno na účtenku"
+              aria-hidden="true"
+            ></i>
+          } @else {
+            <span class="kemp-is-doklady__muted">—</span>
+          }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="5"
+          class="kemp-is-doklady__empty"
+        >
+          Žádné faktury této rezervace.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>
+
+<section class="kemp-is-doklady__section">
+  <header class="kemp-is-doklady__header">
+    <div class="kemp-is-doklady__title-block">
+      <span class="kemp-is-doklady__eyebrow">Pokladna</span>
+      <h3 class="kemp-is-doklady__title">Účtenky</h3>
+      <span class="kemp-is-doklady__count">{{ bills().length }}</span>
+    </div>
+    <p-button
+      size="small"
+      (onClick)="onCreateBill()"
+      [disabled]="!reservationId()"
+    >
+      <i
+        class="pi pi-plus"
+        aria-hidden="true"
+      ></i>
+      <span>Nová účtenka</span>
+    </p-button>
+  </header>
+
+  <p-table
+    [value]="billRows()"
+    dataKey="id"
+    styleClass="kemp-is-table kemp-is-doklady__table"
+    [tableStyle]="{ 'min-width': '48rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="kemp-is-doklady__col-number">Číslo</th>
+        <th class="kemp-is-doklady__col-status">Typ</th>
+        <th>Platba</th>
+        <th>Vystaveno</th>
+        <th class="kemp-is-doklady__col-amount">Částka</th>
+      </tr>
+    </ng-template>
+
+    <ng-template
+      pTemplate="body"
+      let-bill
+    >
+      <tr
+        class="kemp-is-doklady__row"
+        (click)="onOpenBill(bill.id)"
+      >
+        <td class="kemp-mono">{{ bill.number }}</td>
+        <td>
+          <p-tag
+            [value]="billKindLabel(bill.kind)"
+            [severity]="billKindSeverity(bill.kind)"
+          />
+        </td>
+        <td>{{ paymentTypeLabel(bill.paymentType) }}</td>
+        <td>{{ formatDate(bill.issuedAtUtc) }}</td>
+        <td class="kemp-is-doklady__cell-amount kemp-mono">
+          {{ formatCzk(bill.amount) }}
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="5"
+          class="kemp-is-doklady__empty"
+        >
+          Žádné účtenky této rezervace.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

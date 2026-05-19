@@ -1,0 +1,78 @@
+<section
+  class="kemp-is-dash__card"
+  data-color="events"
+>
+  <header class="kemp-is-dash__card-head">
+    <span
+      class="kemp-is-dash__card-accent"
+      aria-hidden="true"
+    ></span>
+    <span class="kemp-is-dash__card-title">Akce</span>
+    <span class="kemp-is-dash__card-count kemp-mono">
+      {{ today().length + upcoming().length }}
+    </span>
+  </header>
+  <div class="kemp-is-dash__events-grid">
+    <div class="kemp-is-dash__events-col">
+      <div class="kemp-is-dash__events-colhead">
+        <i
+          class="pi pi-calendar"
+          style="color: var(--kemp-dash-events)"
+          aria-hidden="true"
+        ></i>
+      </div>
+      @for (e of today(); track e.id) {
+        <div
+          class="kemp-is-dash__event"
+          [class.kemp-is-dash__event--past]="e.status === 'past'"
+        >
+          @if (e.startTime) {
+            <span
+              class="kemp-is-dash__event-time kemp-mono"
+              [class.kemp-is-dash__event-time--past]="e.status === 'past'"
+            >
+              {{ e.startTime }}
+            </span>
+          }
+          <div class="kemp-is-dash__event-title">
+            <i
+              class="pi pi-megaphone kemp-is-dash__event-icon"
+              aria-hidden="true"
+            ></i>
+            <span>{{ e.title }}</span>
+          </div>
+          @if (e.status === "past") {
+            <p-tag
+              severity="success"
+              icon="pi pi-check"
+              value="Proběhlo"
+              [rounded]="true"
+            />
+          }
+        </div>
+      }
+    </div>
+
+    <div class="kemp-is-dash__events-col">
+      <div class="kemp-is-dash__events-colhead">
+        <i
+          class="pi pi-calendar-plus"
+          style="color: var(--kemp-dash-events)"
+          aria-hidden="true"
+        ></i>
+      </div>
+      @for (e of upcoming(); track e.id) {
+        <div class="kemp-is-dash__event">
+          <span class="kemp-is-dash__event-day kemp-mono">{{ e.day }}</span>
+          <div class="kemp-is-dash__event-title">
+            <i
+              class="pi pi-megaphone kemp-is-dash__event-icon"
+              aria-hidden="true"
+            ></i>
+            <span>{{ e.title }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

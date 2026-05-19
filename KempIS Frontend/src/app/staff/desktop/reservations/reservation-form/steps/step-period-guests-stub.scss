@@ -1,0 +1,343 @@
+:host {
+  display: block;
+}
+
+.kemp-is-rsp-guests {
+  display: block;
+}
+
+.kemp-is-bc {
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 10px;
+}
+
+.kemp-is-bc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  gap: 0.5rem;
+}
+
+.kemp-is-bc__title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  letter-spacing: -0.005em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kemp-is-bc__body {
+  padding: 1rem;
+}
+
+.kemp-is-bc__body--flush {
+  padding: 0;
+}
+
+.kemp-is-bill-step__actions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.kemp-is-bill__field-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  margin-bottom: 5px;
+}
+
+.kemp-is-bill__registry-card {
+  margin-bottom: 0.875rem;
+}
+
+.kemp-is-bill__registry-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr 60px 130px 110px 1.6fr 116px;
+  padding: 0.625rem 0.875rem;
+  background: var(--p-surface-50, #fafafa);
+  border-bottom: 1px solid var(--p-surface-200, #e4e4e7);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  gap: 0.5rem;
+}
+
+.kemp-is-bill__registry-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 60px 130px 110px 1.6fr 116px;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+// Declared after the base rules so it wins the cascade when both
+// classes are present.
+.kemp-is-bill__registry-head--fee,
+.kemp-is-bill__registry-row--fee {
+  grid-template-columns: 1fr 1fr 60px 130px 110px 1.6fr 36px 116px;
+}
+
+.kemp-is-bill__registry-head--fee > :nth-child(7),
+.kemp-is-bill__registry-row--fee > :nth-child(7) {
+  justify-self: center;
+}
+
+.kemp-is-bill__registry-row:last-child {
+  border-bottom: none;
+}
+
+.kemp-is-bill__registry-actions {
+  display: flex;
+  gap: 0.125rem;
+  justify-self: end;
+}
+
+.kemp-is-bill__registry-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kemp-is-bill__empty {
+  padding: 1rem;
+  font-size: 0.78125rem;
+  color: var(--p-text-muted-color, #71717a);
+  text-align: center;
+}
+
+.kemp-is-bill__registry-row--add input {
+  padding: 0.375rem 0.5rem !important;
+  font-size: 0.78125rem !important;
+  width: 100%;
+}
+
+.kemp-is-bill__registry-row--add .p-datepicker {
+  width: 100%;
+}
+
+.kemp-is-bill__registry-row--add .p-datepicker-input {
+  padding: 0.375rem 0.5rem !important;
+  font-size: 0.78125rem !important;
+}
+
+.kemp-is-bill__registry-whisperer,
+.kemp-is-bill__registry-whisperer .p-autocomplete,
+.kemp-is-bill__registry-whisperer .p-autocomplete-input {
+  width: 100%;
+}
+
+.kemp-is-bill__registry-whisperer .p-autocomplete-input {
+  padding: 0.375rem 0.5rem !important;
+  font-size: 0.78125rem !important;
+}
+
+.kemp-is-bill__quick-add-default {
+  font-size: 0.78125rem;
+  color: var(--p-primary-700, #047857);
+  font-weight: 600;
+}
+
+.kemp-is-bill__quick-add-hint {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+  font-style: italic;
+}
+
+.kemp-is-bill__guest-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.kemp-is-bill__guest-editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kemp-is-bill__guest-editor-section-title {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-bill__guest-editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+}
+
+.kemp-is-bill__guest-editor-wide {
+  grid-column: 1 / -1;
+}
+
+.kemp-is-bill__guest-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.kemp-is-bill__guest-editor p-select,
+.kemp-is-bill__guest-editor p-datepicker {
+  width: 100%;
+}
+
+.kemp-is-bill__guest-editor .p-select,
+.kemp-is-bill__guest-editor .p-datepicker,
+.kemp-is-bill__guest-editor .p-datepicker-input {
+  width: 100%;
+}
+
+.kemp-is-bill__guest-editor-grid input,
+.kemp-is-bill__guest-editor-section > input,
+.kemp-is-bill__guest-editor-section > textarea {
+  width: 100%;
+}
+
+.kemp-is-bill__guest-editor p-autocomplete,
+.kemp-is-bill__guest-editor .p-autocomplete {
+  width: 100%;
+}
+
+.kemp-is-bill__guest-editor .p-autocomplete-input {
+  width: 100%;
+}
+
+
+.kemp-is-bill__address-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.125rem 0;
+}
+
+.kemp-is-bill__address-suggestion-meta {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-bill__scanner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  background: var(--p-primary-50, #ecfdf5);
+  border: 1px dashed var(--p-primary-200, #a7f3d0);
+  border-radius: 6px;
+  padding: 0.625rem 0.75rem;
+
+  .kemp-is-bill__field-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0;
+    color: var(--p-primary-700, #047857);
+  }
+
+  input {
+    width: 100%;
+  }
+}
+
+.kemp-is-bill__scanner-error {
+  font-size: 0.71875rem;
+  color: var(--p-red-500, #ef4444);
+}
+
+.kemp-is-bill__scanner--inline {
+  border-radius: 0;
+  border-width: 0 0 1px 0;
+  border-left: 0;
+  border-right: 0;
+  background: var(--p-surface-50, #fafafa);
+  border-color: var(--p-surface-200, #e4e4e7);
+  border-style: solid;
+  padding: 0.5rem 0.875rem;
+
+  .kemp-is-bill__field-label {
+    color: var(--p-text-muted-color, #71717a);
+  }
+}
+
+.kemp-is-bill__scanner--row {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0.875rem;
+}
+
+.kemp-is-bill__scanner-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.kemp-is-bill__scanner-col--edoklady {
+  flex: 0 0 auto;
+}
+
+.kemp-is-bill__guest-editor-hint {
+  font-size: 0.78125rem;
+  color: var(--p-text-muted-color, #71717a);
+  background: var(--p-surface-50, #fafafa);
+  border: 1px dashed var(--p-surface-200, #e4e4e7);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.kemp-is-bill__passport-type {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.kemp-is-bill__passport-type-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.kemp-is-bill__passport-type-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.78125rem;
+  }
+
+  small {
+    font-size: 0.6875rem;
+    color: var(--p-text-muted-color, #71717a);
+  }
+}
+
+.kemp-is-bill__passport-type-option--active {
+  border-color: var(--p-primary-color, #10b981);
+  background: var(--p-primary-50, #ecfdf5);
+}

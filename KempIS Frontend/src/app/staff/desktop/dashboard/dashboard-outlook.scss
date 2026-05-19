@@ -1,0 +1,59 @@
+@use "./dash-shared" as *;
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.kemp-is-dash__outlook {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+.kemp-is-dash__outlook-row {
+  display: grid;
+  grid-template-columns: 78px 1fr 38px 38px;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 7px 14px;
+  font-size: 0.71875rem;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  }
+}
+
+.kemp-is-dash__outlook-day {
+  color: var(--p-text-color-emphasis, #27272a);
+  font-weight: 600;
+}
+
+.kemp-is-dash__outlook-bar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--kemp-page-background, #f7f6f3);
+  overflow: hidden;
+}
+
+.kemp-is-dash__outlook-bar-fill {
+  height: 100%;
+  background: var(--p-primary-color, #10b981);
+}
+
+.kemp-is-dash__outlook-arrivals,
+.kemp-is-dash__outlook-departures {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--p-text-color-emphasis, #27272a);
+  font-weight: 600;
+  font-size: 0.6875rem;
+
+  > i {
+    font-size: 0.75rem;
+  }
+}

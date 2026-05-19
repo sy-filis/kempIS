@@ -1,0 +1,64 @@
+<div class="kemp-is-meals-toolbar">
+  <div class="kemp-is-meals-toolbar__week-strip">
+    <p-button
+      severity="secondary"
+      size="small"
+      [outlined]="true"
+      ariaLabel="Předchozí týden"
+      (onClick)="step(-1)"
+    >
+      <i
+        class="pi pi-chevron-left"
+        aria-hidden="true"
+      ></i>
+    </p-button>
+
+    <div class="kemp-is-meals-toolbar__weeks">
+      @for (w of weeks(); track w.year + "-" + w.week) {
+        <button
+          type="button"
+          class="kemp-is-meals-toolbar__week"
+          [class.kemp-is-meals-toolbar__week--active]="
+            w.year === activeYear() && w.week === activeWeek()
+          "
+          [class.kemp-is-meals-toolbar__week--current]="w.current"
+          (click)="onPick(w)"
+        >
+          <span class="kemp-is-meals-toolbar__week-label">{{ w.label }}</span>
+          <span class="kemp-is-meals-toolbar__week-range kemp-mono">
+            {{ w.range }}
+          </span>
+        </button>
+      }
+    </div>
+
+    <p-button
+      severity="secondary"
+      size="small"
+      [outlined]="true"
+      ariaLabel="Další týden"
+      (onClick)="step(1)"
+    >
+      <i
+        class="pi pi-chevron-right"
+        aria-hidden="true"
+      ></i>
+    </p-button>
+  </div>
+
+  <div class="kemp-is-meals-toolbar__divider"></div>
+
+  <div class="kemp-is-meals-toolbar__counts">
+    <span class="kemp-is-meals-toolbar__counts-label">Rezervací:</span>
+    <span class="kemp-is-meals-toolbar__counts-value kemp-mono">
+      {{ groupCount() }}
+    </span>
+    <span class="kemp-is-meals-toolbar__counts-sep">·</span>
+    <span class="kemp-is-meals-toolbar__counts-label">Porcí v týdnu:</span>
+    <span class="kemp-is-meals-toolbar__counts-value kemp-mono">
+      {{ formatTotal(weekTotal()) }}
+    </span>
+  </div>
+
+  <div class="kemp-is-meals-toolbar__spacer"></div>
+</div>

@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.kemp-is-tablet-session {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.kemp-is-tablet-session__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1rem 1.25rem;
+}
+
+.kemp-is-tablet-session__header h1 {
+  margin: 0;
+}
+
+.kemp-is-tablet-session__number {
+  color: var(--p-text-muted-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.kemp-is-tablet-session__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.kemp-is-tablet-session__meta div {
+  display: flex;
+  flex-direction: column;
+}
+
+.kemp-is-tablet-session__meta dt {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.kemp-is-tablet-session__meta dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.kemp-is-tablet-session__guests ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kemp-is-tablet-session__guests h2 {
+  margin: 0 0 0.75rem;
+}

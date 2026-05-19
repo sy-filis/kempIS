@@ -1,0 +1,51 @@
+<div class="kemp-is-meals">
+  <kemp-is-meals-toolbar
+    [activeYear]="activeYear()"
+    [activeWeek]="activeWeek()"
+    [groupCount]="groups().length"
+    [weekTotal]="weekTotal()"
+    (weekPick)="onWeekPick($event)"
+  />
+
+  <div class="kemp-is-meals__body">
+    @if (isLoading()) {
+      <div
+        class="kemp-is-meals__loader"
+        role="status"
+        aria-live="polite"
+      >
+        <i
+          class="pi pi-spinner pi-spin kemp-is-meals__loader-icon"
+          aria-hidden="true"
+        ></i>
+        <p class="kemp-is-meals__loader-text">Načítám stravování…</p>
+      </div>
+    } @else if (isEmpty()) {
+      <div class="kemp-is-meals__empty">
+        <i
+          class="pi pi-bowl-food kemp-is-meals__empty-icon"
+          aria-hidden="true"
+        ></i>
+        <p class="kemp-is-meals__empty-title">
+          Pro tento týden nejsou žádná stravování.
+        </p>
+        <p class="kemp-is-meals__empty-hint">
+          {{ meta().weekFrom }} — {{ meta().weekTo }}
+        </p>
+      </div>
+    } @else {
+      <kemp-is-meals-grid
+        [groups]="groups()"
+        [weekDays]="weekDays()"
+        [meta]="meta()"
+      />
+
+      <kemp-is-pickup-schedule
+        [groups]="groups()"
+        [weekDays]="weekDays()"
+        [meta]="meta()"
+        (timeChange)="onTimeChange($event)"
+      />
+    }
+  </div>
+</div>

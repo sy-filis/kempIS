@@ -1,0 +1,103 @@
+<section class="kemp-is-stats-panel">
+  @if (totals(); as t) {
+    <p class="kemp-is-stats-panel__summary">
+      {{ t.nightsInRange }} nocí · obsazeno {{ t.totalOccupiedSpotNights }} /
+      {{ t.totalCapacitySpotNights }} ({{
+        formatPercent(t.totalOccupancyPercent)
+      }})
+    </p>
+  }
+
+  <p-message
+    severity="info"
+    text="Kapacita nezohledňuje mimo provoz. Pro skupiny s historickou obsazeností se zobrazuje aktuální kapacita."
+  />
+
+  @if (rangeTooLarge()) {
+    <p-message
+      severity="warn"
+      text="Rozsah nesmí přesáhnout 366 dní"
+    />
+  }
+
+  @if (errorMessage(); as msg) {
+    <p-message
+      severity="error"
+      [text]="msg"
+    />
+  }
+
+  <p-table
+    [value]="rows()"
+    [loading]="resource.isLoading()"
+    sortField="occupancyPercent"
+    [sortOrder]="-1"
+    dataKey="spotGroupId"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="name">
+          Skupina míst
+          <p-sortIcon field="name" />
+        </th>
+        <th
+          pSortableColumn="capacity"
+          class="kemp-is-stats-cell--num"
+        >
+          Kapacita
+          <p-sortIcon field="capacity" />
+        </th>
+        <th
+          pSortableColumn="occupiedSpotNights"
+          class="kemp-is-stats-cell--num"
+        >
+          Obsazeno (osob/noc)
+          <p-sortIcon field="occupiedSpotNights" />
+        </th>
+        <th
+          pSortableColumn="occupancyPercent"
+          class="kemp-is-stats-cell--num"
+        >
+          Obsazenost
+          <p-sortIcon field="occupancyPercent" />
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-row
+    >
+      <tr>
+        <td>
+          {{ row.name }}
+          @if (!row.isActive) {
+            <span class="kemp-is-stats-inactive">(neaktivní)</span>
+          }
+        </td>
+        <td class="kemp-is-stats-cell--num">{{ row.capacity }}</td>
+        <td class="kemp-is-stats-cell--num">
+          {{ row.occupiedSpotNights }} / {{ row.capacitySpotNights }}
+        </td>
+        <td class="kemp-is-stats-cell--num">
+          {{ formatPercent(row.occupancyPercent) }}
+          <div class="kemp-is-stats-progress">
+            <div
+              class="kemp-is-stats-progress__bar"
+              [style.width]="barWidth(row.occupancyPercent)"
+            ></div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="4"
+          class="kemp-is-stats-empty"
+        >
+          Žádná obsazenost v tomto rozsahu.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

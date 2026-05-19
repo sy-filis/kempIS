@@ -1,0 +1,501 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+$day-right: 1px solid var(--p-surface-200, #e4e4e7);
+$meal-right: 1px dashed var(--p-surface-200, #e4e4e7);
+$frozen-right: 2px solid var(--p-surface-200, #e4e4e7);
+
+.kemp-is-pickup {
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.kemp-is-pickup__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  flex-shrink: 0;
+}
+
+.kemp-is-pickup__head-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: #fef3c7;
+  color: #92400e;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  > i {
+    font-size: 0.6875rem;
+  }
+}
+
+.kemp-is-pickup__head-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-pickup__head-meta {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-pickup__head-spacer {
+  flex: 1;
+}
+
+.kemp-is-pickup__head-hint {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-pickup__scroll {
+  overflow: auto;
+}
+
+.kemp-is-pickup__table {
+  /* `separate` is required for sticky <th>/<td> to stack correctly in Chromium. */
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+  table-layout: fixed;
+  font-family: inherit;
+}
+
+$pickup-w-group: 200px;
+$pickup-w-arrive: 100px;
+$pickup-w-depart: 100px;
+$pickup-edge-shadow: 6px 0 8px -4px rgba(18, 18, 23, 0.08);
+
+.kemp-is-pickup__col-group {
+  width: $pickup-w-group;
+}
+.kemp-is-pickup__col-arrive {
+  width: $pickup-w-arrive;
+}
+.kemp-is-pickup__col-depart {
+  width: $pickup-w-depart;
+}
+.kemp-is-pickup__col-cell {
+  width: 78px;
+}
+
+.kemp-is-pickup__corner {
+  background: var(--p-surface-50, #fafafa);
+  border-bottom: 1px solid var(--p-surface-200, #e4e4e7);
+  border-right: $frozen-right;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: bottom;
+  font-weight: 700;
+  font-size: 0.71875rem;
+  color: var(--p-surface-800, #27272a);
+  letter-spacing: 0.02em;
+}
+
+.kemp-is-pickup__corner-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  > i {
+    font-size: 0.6875rem;
+    color: var(--p-text-muted-color, #71717a);
+  }
+}
+
+.kemp-is-pickup__corner-sub {
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--p-text-muted-color, #71717a);
+  margin-top: 2px;
+}
+
+.kemp-is-pickup__day-th {
+  padding: 8px 6px 6px;
+  background: var(--p-surface-0, #fff);
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  text-align: center;
+  font-weight: 600;
+
+  &--weekend {
+    background: var(--p-surface-50, #fafafa);
+  }
+
+  &--today {
+    background: var(--p-primary-50, #ecfdf5);
+  }
+
+  &--day-end {
+    border-right: $day-right;
+  }
+}
+
+.kemp-is-pickup__day-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.71875rem;
+  color: var(--p-surface-800, #27272a);
+
+  .kemp-is-pickup__day-th--today & {
+    color: var(--p-primary-700, #047857);
+  }
+}
+
+.kemp-is-pickup__day-dow {
+  font-size: 0.59375rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  font-weight: 700;
+
+  .kemp-is-pickup__day-th--today & {
+    color: var(--p-primary-700, #047857);
+  }
+}
+
+.kemp-is-pickup__day-date {
+  font-size: 0.65625rem;
+  font-weight: 600;
+  color: var(--p-text-muted-color, #71717a);
+
+  .kemp-is-pickup__day-th--today & {
+    color: var(--p-primary-700, #047857);
+  }
+}
+
+.kemp-is-pickup__day-today-badge {
+  padding: 0 5px;
+  border-radius: 3px;
+  background: var(--p-primary-color);
+  color: #fff;
+  font-size: 0.53125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.kemp-is-pickup__meal-th {
+  padding: 6px 4px;
+  background: var(--p-surface-0, #fff);
+  border-bottom: 2px solid var(--p-surface-200, #e4e4e7);
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.65625rem;
+  color: var(--p-surface-700, #3f3f46);
+
+  &--weekend {
+    background: var(--p-surface-50, #fafafa);
+  }
+
+  &--today {
+    background: var(--p-primary-50, #ecfdf5);
+  }
+
+  &--meal-end {
+    border-right: $meal-right;
+  }
+
+  &--day-end {
+    border-right: $day-right;
+  }
+}
+
+.kemp-is-pickup__meal-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  > i {
+    font-size: 0.5625rem;
+    color: var(--p-text-muted-color, #71717a);
+  }
+}
+
+.kemp-is-pickup__sub-th {
+  padding: 6px 8px;
+  background: var(--p-surface-50, #fafafa);
+  border-bottom: 2px solid var(--p-surface-200, #e4e4e7);
+  font-size: 0.59375rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+
+  &--left {
+    text-align: left;
+  }
+
+  &--center {
+    text-align: center;
+  }
+
+  &--right {
+    text-align: right;
+  }
+
+  &--frozen {
+    border-right: $frozen-right;
+  }
+}
+
+tbody tr {
+  td {
+    border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  }
+
+  &.kemp-is-pickup__row--last td {
+    border-bottom: 2px solid var(--p-surface-200, #e4e4e7);
+  }
+}
+
+.kemp-is-pickup__group-cell {
+  padding: 8px 12px;
+  border-right: 1px solid var(--p-surface-100, #f4f4f5);
+  background: var(--p-surface-0, #fff);
+}
+
+.kemp-is-pickup__group-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kemp-is-pickup__group-bar {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.kemp-is-pickup__group-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.kemp-is-pickup__group-short {
+  font-size: 0.78125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-pickup__group-name {
+  font-size: 0.65625rem;
+  color: var(--p-text-muted-color, #71717a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  display: block;
+}
+
+.kemp-is-pickup__date-cell {
+  padding: 8px 12px;
+  border-right: 1px solid var(--p-surface-100, #f4f4f5);
+  font-size: 0.75rem;
+  color: var(--p-surface-700, #3f3f46);
+  background: var(--p-surface-0, #fff);
+  text-align: center;
+
+  &--frozen {
+    border-right: $frozen-right;
+  }
+}
+
+.kemp-is-pickup__time-cell {
+  background: var(--p-surface-0, #fff);
+  padding: 1px;
+  text-align: center;
+
+  &--weekend {
+    background: var(--p-surface-50, #fafafa);
+  }
+
+  &--today {
+    background: oklch(0.985 0.025 160);
+  }
+
+  &--meal-end {
+    border-right: $meal-right;
+  }
+
+  &--day-end {
+    border-right: $day-right;
+  }
+}
+
+.kemp-is-pickup__time-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  color: var(--p-surface-300, #d4d4d8);
+  font-size: 0.8125rem;
+  font-family: var(--kemp-font-mono);
+}
+
+.kemp-is-pickup__time-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.kemp-is-pickup__time-input {
+  width: 100%;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  text-align: center;
+  font-family: var(--kemp-font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  outline: none;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  background: transparent;
+
+  &--empty {
+    font-weight: 400;
+    color: var(--p-surface-300, #d4d4d8);
+  }
+
+  &:focus {
+    background: var(--p-surface-0, #fff) !important;
+    border-color: var(--kemp-accent, var(--p-primary-color)) !important;
+    box-shadow:
+      0 0 0 2px color-mix(
+          in srgb,
+          var(--kemp-accent, var(--p-primary-color)) 20%,
+          transparent
+        ) !important;
+  }
+}
+
+.kemp-is-pickup__time-portions {
+  font-size: 0.5625rem;
+  color: var(--p-text-muted-color, #71717a);
+  font-weight: 600;
+  margin-top: 1px;
+  opacity: 0.85;
+}
+
+.kemp-is-pickup__totals-label {
+  background: var(--p-surface-800, #27272a);
+  color: #fff;
+  border-right: 2px solid var(--p-surface-900, #18181b);
+  padding: 10px 14px;
+  font-size: 0.71875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kemp-is-pickup__totals-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  > i {
+    font-size: 0.75rem;
+  }
+}
+
+.kemp-is-pickup__totals-cell {
+  background: var(--p-surface-800, #27272a);
+  color: #fff;
+  padding: 8px 4px;
+  text-align: center;
+
+  &--empty {
+    opacity: 0.35;
+  }
+
+  &--meal-end {
+    border-right: 1px dashed rgba(255, 255, 255, 0.18);
+  }
+
+  &--day-end {
+    border-right: 1px solid var(--p-surface-900, #18181b);
+  }
+}
+
+.kemp-is-pickup__totals-time {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.kemp-is-pickup__totals-empty {
+  font-size: 0.6875rem;
+}
+
+$pickup-left-1: 0;
+$pickup-left-2: $pickup-w-group;
+$pickup-left-3: $pickup-w-group + $pickup-w-arrive;
+
+.kemp-is-pickup__table {
+  thead tr:first-child > th:first-child {
+    position: sticky;
+    left: $pickup-left-1;
+    z-index: 3;
+    box-shadow: $pickup-edge-shadow;
+  }
+
+  thead tr:last-child > th:nth-child(1) {
+    position: sticky;
+    left: $pickup-left-1;
+    z-index: 3;
+  }
+  thead tr:last-child > th:nth-child(2) {
+    position: sticky;
+    left: $pickup-left-2;
+    z-index: 3;
+  }
+  thead tr:last-child > th:nth-child(3) {
+    position: sticky;
+    left: $pickup-left-3;
+    z-index: 3;
+    box-shadow: $pickup-edge-shadow;
+  }
+
+  tbody tr > td:nth-child(1) {
+    position: sticky;
+    left: $pickup-left-1;
+    z-index: 2;
+  }
+  tbody tr > td:nth-child(2) {
+    position: sticky;
+    left: $pickup-left-2;
+    z-index: 2;
+  }
+  tbody tr > td:nth-child(3) {
+    position: sticky;
+    left: $pickup-left-3;
+    z-index: 2;
+    box-shadow: $pickup-edge-shadow;
+  }
+
+  tfoot tr > td:first-child {
+    position: sticky;
+    left: $pickup-left-1;
+    z-index: 2;
+    box-shadow: $pickup-edge-shadow;
+  }
+}

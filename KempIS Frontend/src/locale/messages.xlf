@@ -1,0 +1,1404 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="cs">
+  <file id="ngi18n" original="ng.template">
+    <unit id="not-found.title">
+      <notes>
+        <note category="location">src/app/public/not-found/not-found.html:2,3</note>
+      </notes>
+      <segment>
+        <source>Stránka nenalezena</source>
+      </segment>
+    </unit>
+    <unit id="not-found.body">
+      <notes>
+        <note category="location">src/app/public/not-found/not-found.html:4,7</note>
+      </notes>
+      <segment>
+        <source> Zkontrolujte prosím odkaz nebo se vraťte na hlavní stránku. </source>
+      </segment>
+    </unit>
+    <unit id="not-found.back">
+      <notes>
+        <note category="location">src/app/public/not-found/not-found.html:9,12</note>
+      </notes>
+      <segment>
+        <source>Zpět na hlavní stránku</source>
+      </segment>
+    </unit>
+    <unit id="shell.brand">
+      <notes>
+        <note category="location">src/app/public/public-shell/public-shell.html:6,8</note>
+      </notes>
+      <segment>
+        <source>Kemp Olšovec</source>
+      </segment>
+    </unit>
+    <unit id="shell.footer.copyright">
+      <notes>
+        <note category="location">src/app/public/public-shell/public-shell.html:22,23</note>
+      </notes>
+      <segment>
+        <source>© <ph id="0" equiv="INTERPOLATION" disp="{{ year }}"/> Kemp Olšovec</source>
+      </segment>
+    </unit>
+    <unit id="checkin.brand">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:13,15</note>
+      </notes>
+      <segment>
+        <source>KempIS</source>
+      </segment>
+    </unit>
+    <unit id="checkin.title">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:19,22</note>
+      </notes>
+      <segment>
+        <source>Online check-in</source>
+      </segment>
+    </unit>
+    <unit id="checkin.heading">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:29,32</note>
+      </notes>
+      <segment>
+        <source> Online check-in </source>
+      </segment>
+    </unit>
+    <unit id="checkin.lead">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:35,39</note>
+      </notes>
+      <segment>
+        <source> Vyplňte před příjezdem, ať se nezdržujete papírováním na recepci. </source>
+      </segment>
+    </unit>
+    <unit id="checkin.section.personal">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:48,50</note>
+      </notes>
+      <segment>
+        <source> Osobní údaje </source>
+      </segment>
+    </unit>
+    <unit id="checkin.first-name">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:60,62</note>
+      </notes>
+      <segment>
+        <source>Jméno</source>
+      </segment>
+    </unit>
+    <unit id="checkin.surname">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:72,74</note>
+      </notes>
+      <segment>
+        <source>Příjmení</source>
+      </segment>
+    </unit>
+    <unit id="checkin.birth-date">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:89,91</note>
+      </notes>
+      <segment>
+        <source>Datum narození</source>
+      </segment>
+    </unit>
+    <unit id="checkin.section.address">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:101,103</note>
+      </notes>
+      <segment>
+        <source> Adresa trvalého bydliště </source>
+      </segment>
+    </unit>
+    <unit id="checkin.street">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:113,115</note>
+      </notes>
+      <segment>
+        <source>Ulice a č.p.</source>
+      </segment>
+    </unit>
+    <unit id="checkin.zip">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:125,127</note>
+      </notes>
+      <segment>
+        <source>PSČ</source>
+      </segment>
+    </unit>
+    <unit id="checkin.city">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:139,141</note>
+      </notes>
+      <segment>
+        <source>Město</source>
+      </segment>
+    </unit>
+    <unit id="checkin.country">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:157,159</note>
+      </notes>
+      <segment>
+        <source>Země</source>
+      </segment>
+    </unit>
+    <unit id="checkin.section.citizenship">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:169,171</note>
+      </notes>
+      <segment>
+        <source> Doklad totožnosti </source>
+      </segment>
+    </unit>
+    <unit id="checkin.nationality">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:187,189</note>
+      </notes>
+      <segment>
+        <source>Občanství</source>
+      </segment>
+    </unit>
+    <unit id="checkin.document-type">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:203,205</note>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:219,221</note>
+      </notes>
+      <segment>
+        <source>Typ dokladu</source>
+      </segment>
+    </unit>
+    <unit id="checkin.document-type.passport">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:211,212</note>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:317</note>
+      </notes>
+      <segment>
+        <source>Cestovní pas</source>
+      </segment>
+    </unit>
+    <unit id="checkin.passport-issuer">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:252,254</note>
+      </notes>
+      <segment>
+        <source>Země vydání</source>
+      </segment>
+    </unit>
+    <unit id="checkin.biometric.label">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:275,277</note>
+      </notes>
+      <segment>
+        <source>Biometrický pas</source>
+      </segment>
+    </unit>
+    <unit id="checkin.biometric.hint">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:281,282</note>
+      </notes>
+      <segment>
+        <source> Pas se symbolem čipu na obálce — vízum se neeviduje. </source>
+      </segment>
+    </unit>
+    <unit id="checkin.visa.heading">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:294,296</note>
+      </notes>
+      <segment>
+        <source>Vízum vyžadováno</source>
+      </segment>
+    </unit>
+    <unit id="checkin.visa.lead">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:304,306</note>
+      </notes>
+      <segment>
+        <source> Pas je vydaný mimo EU, pro registraci ubytování je nutné uvést schengenské / EU vízum. </source>
+      </segment>
+    </unit>
+    <unit id="checkin.visa.number">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:317,319</note>
+      </notes>
+      <segment>
+        <source>Číslo víza</source>
+      </segment>
+    </unit>
+    <unit id="checkin.visa.issuer">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:334,336</note>
+      </notes>
+      <segment>
+        <source>Vízum vystavila (EU země)</source>
+      </segment>
+    </unit>
+    <unit id="checkin.section.vehicles">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:349,351</note>
+      </notes>
+      <segment>
+        <source> Vozidla a přívěsy </source>
+      </segment>
+    </unit>
+    <unit id="checkin.plate.placeholder">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:365,366</note>
+      </notes>
+      <segment>
+        <source>např. 5AB1234</source>
+      </segment>
+    </unit>
+    <unit id="checkin.section.signature">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:398,400</note>
+      </notes>
+      <segment>
+        <source> Podpis hosta </source>
+      </segment>
+    </unit>
+    <unit id="checkin.signature.lead">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:404,406</note>
+      </notes>
+      <segment>
+        <source> Cizinci se musí podepsat na přihlašovací list — vyžaduje to zákon o pobytu cizinců. </source>
+      </segment>
+    </unit>
+    <unit id="checkin.consent">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.html:425,427</note>
+      </notes>
+      <segment>
+        <source> Potvrzuji správnost zadaných údajů. </source>
+      </segment>
+    </unit>
+    <unit id="checkin.document.passport-number">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:189</note>
+      </notes>
+      <segment>
+        <source>Číslo pasu</source>
+      </segment>
+    </unit>
+    <unit id="checkin.document.id-number">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:190</note>
+      </notes>
+      <segment>
+        <source>Číslo dokladu</source>
+      </segment>
+    </unit>
+    <unit id="checkin.first-name.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:196</note>
+      </notes>
+      <segment>
+        <source>Vyplňte jméno</source>
+      </segment>
+    </unit>
+    <unit id="checkin.surname.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:199</note>
+      </notes>
+      <segment>
+        <source>Vyplňte příjmení</source>
+      </segment>
+    </unit>
+    <unit id="checkin.birth-date.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:202</note>
+      </notes>
+      <segment>
+        <source>Vyplňte datum narození</source>
+      </segment>
+    </unit>
+    <unit id="checkin.street.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:205</note>
+      </notes>
+      <segment>
+        <source>Vyplňte ulici a č.p.</source>
+      </segment>
+    </unit>
+    <unit id="checkin.zip.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:208</note>
+      </notes>
+      <segment>
+        <source>Vyplňte PSČ</source>
+      </segment>
+    </unit>
+    <unit id="checkin.city.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:211</note>
+      </notes>
+      <segment>
+        <source>Vyplňte město</source>
+      </segment>
+    </unit>
+    <unit id="checkin.country.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:214</note>
+      </notes>
+      <segment>
+        <source>Vyberte zemi</source>
+      </segment>
+    </unit>
+    <unit id="checkin.nationality.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:217</note>
+      </notes>
+      <segment>
+        <source>Vyberte občanství</source>
+      </segment>
+    </unit>
+    <unit id="checkin.document-type.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:225</note>
+      </notes>
+      <segment>
+        <source>Vyberte typ dokladu</source>
+      </segment>
+    </unit>
+    <unit id="checkin.document-number.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:231</note>
+      </notes>
+      <segment>
+        <source>Vyplňte číslo dokladu</source>
+      </segment>
+    </unit>
+    <unit id="checkin.passport-issuer.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:239</note>
+      </notes>
+      <segment>
+        <source>Vyberte zemi vydání pasu</source>
+      </segment>
+    </unit>
+    <unit id="checkin.visa-number.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:249</note>
+      </notes>
+      <segment>
+        <source>Vyplňte číslo víza</source>
+      </segment>
+    </unit>
+    <unit id="checkin.visa-issuer.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:252</note>
+      </notes>
+      <segment>
+        <source>Vyberte zemi vydání víza</source>
+      </segment>
+    </unit>
+    <unit id="checkin.plate.invalid">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:264</note>
+      </notes>
+      <segment>
+        <source>Neplatné SPZ</source>
+      </segment>
+    </unit>
+    <unit id="checkin.consent.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:274</note>
+      </notes>
+      <segment>
+        <source>Potvrďte souhlas</source>
+      </segment>
+    </unit>
+    <unit id="checkin.signature.required">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:283</note>
+      </notes>
+      <segment>
+        <source>Podepište se prosím</source>
+      </segment>
+    </unit>
+    <unit id="checkin.submit">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:299</note>
+      </notes>
+      <segment>
+        <source>Odeslat check-in</source>
+      </segment>
+    </unit>
+    <unit id="checkin.save-draft">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:300</note>
+      </notes>
+      <segment>
+        <source>Uložit a dokončit později</source>
+      </segment>
+    </unit>
+    <unit id="checkin.plate.add">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:301</note>
+      </notes>
+      <segment>
+        <source>Přidat další SPZ</source>
+      </segment>
+    </unit>
+    <unit id="checkin.plate.remove">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:302</note>
+      </notes>
+      <segment>
+        <source>Odebrat SPZ</source>
+      </segment>
+    </unit>
+    <unit id="checkin.visa.tag">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:303</note>
+      </notes>
+      <segment>
+        <source>Pas s výzovou povinností</source>
+      </segment>
+    </unit>
+    <unit id="checkin.document-type.id">
+      <notes>
+        <note category="location">src/app/public/reservations/check-in/online-checkin.page.ts:313</note>
+      </notes>
+      <segment>
+        <source>Občanský průkaz</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.brand">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:13,15</note>
+      </notes>
+      <segment>
+        <source>KempIS</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.title">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:19,22</note>
+      </notes>
+      <segment>
+        <source>Moje rezervace</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.loading">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:39,41</note>
+      </notes>
+      <segment>
+        <source> Načítám rezervaci… </source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.error">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:47,50</note>
+      </notes>
+      <segment>
+        <source> Rezervaci se nepodařilo načíst. Zkontrolujte odkaz z potvrzovacího e-mailu. </source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.eyebrow">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:55,57</note>
+      </notes>
+      <segment>
+        <source>Rezervace</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.dates.from">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:79,81</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:96,98</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:595,597</note>
+      </notes>
+      <segment>
+        <source>Příjezd</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.nights-eyebrow">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:92,98</note>
+      </notes>
+      <segment>
+        <source> <ph id="0" equiv="ICU" disp="{nights(), plural,
+              =1 {1 noc}
+              few {{{ nights() }} noci}
+              other {{{ nights() }} nocí}
+            }" subFlows="4522762628419283327"/> </source>
+      </segment>
+    </unit>
+    <unit id="3557283225951443350">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:92,95</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:161,163</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:520,523</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:688,691</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {1 noc} few {<ph id="0" equiv="INTERPOLATION"/> noci} other {<ph id="1" equiv="INTERPOLATION"/> nocí}}</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.dates.to">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:106,108</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:104,106</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:608,610</note>
+      </notes>
+      <segment>
+        <source>Odjezd</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.note">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:118,120</note>
+      </notes>
+      <segment>
+        <source>Poznámka</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.checkin.title">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:127,129</note>
+      </notes>
+      <segment>
+        <source>Online check-in</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.checkin.lead">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:132,135</note>
+      </notes>
+      <segment>
+        <source> Sdílejte tento odkaz se zbytkem výpravy, ať mohou vyplnit své údaje před příjezdem. </source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.cottages">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:158,160</note>
+      </notes>
+      <segment>
+        <source> Rezervované chatky </source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.cottage-qty">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:174,180</note>
+      </notes>
+      <segment>
+        <source> <ph id="0" equiv="ICU" disp="{c.qty, plural,
+                  =1 {1 chatka rezervována}
+                  few {{{ c.qty }} chatky rezervovány}
+                  other {{{ c.qty }} chatek rezervováno}
+                }" subFlows="7628901940471827210"/> </source>
+      </segment>
+    </unit>
+    <unit id="599573182781560487">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:174,177</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {1 chatka rezervována} few {<ph id="0" equiv="INTERPOLATION"/> chatky rezervovány} other {<ph id="1" equiv="INTERPOLATION"/> chatek rezervováno}}</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.meals">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:203,205</note>
+      </notes>
+      <segment>
+        <source> Porce stravy </source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.meals-total">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:209,216</note>
+      </notes>
+      <segment>
+        <source> celkem <ph id="0" equiv="ICU" disp="{totalPortions(), plural,
+              =1 {1 porce}
+              few {{{ totalPortions() }} porce}
+              other {{{ totalPortions() }} porcí}
+            }" subFlows="6746060122246628968"/> </source>
+      </segment>
+    </unit>
+    <unit id="6412812652267624626">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:210,213</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {1 porce} few {<ph id="0" equiv="INTERPOLATION"/> porce} other {<ph id="1" equiv="INTERPOLATION"/> porcí}}</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.meals.day">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:219,221</note>
+      </notes>
+      <segment>
+        <source>Den</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.meals.breakfast">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:225,228</note>
+      </notes>
+      <segment>
+        <source>Snídaně</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.meals.lunch">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:232,234</note>
+      </notes>
+      <segment>
+        <source>Oběd</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.meals.lunch-package">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:240,243</note>
+      </notes>
+      <segment>
+        <source>Balíček</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.meals.dinner">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:248,251</note>
+      </notes>
+      <segment>
+        <source>Večeře</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.invoices">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.html:279,281</note>
+      </notes>
+      <segment>
+        <source> Faktury </source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.state.created">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:153</note>
+      </notes>
+      <segment>
+        <source>Čeká na potvrzení</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.state.confirmed">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:159</note>
+      </notes>
+      <segment>
+        <source>Potvrzeno</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.state.checked-in">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:165</note>
+      </notes>
+      <segment>
+        <source>Pobyt probíhá</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.state.cancelled">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:171</note>
+      </notes>
+      <segment>
+        <source>Zrušeno</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.state.completed">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:177</note>
+      </notes>
+      <segment>
+        <source>Dokončeno</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.bill.deposit">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:217</note>
+      </notes>
+      <segment>
+        <source>Záloha</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.bill.balance">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:219</note>
+      </notes>
+      <segment>
+        <source>Doplatek</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.bill.tourist-tax">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:221</note>
+      </notes>
+      <segment>
+        <source>Pobytová taxa</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.bill.cancellation">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:223</note>
+      </notes>
+      <segment>
+        <source>Storno</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.print">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:254</note>
+      </notes>
+      <segment>
+        <source>Tisk</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.cancel">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:255</note>
+      </notes>
+      <segment>
+        <source>Zrušit rezervaci</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.download-invoice">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:256</note>
+      </notes>
+      <segment>
+        <source>Stáhnout fakturu</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.copy">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:257</note>
+      </notes>
+      <segment>
+        <source>Kopírovat</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.copied">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:258</note>
+      </notes>
+      <segment>
+        <source>Zkopírováno</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.copy-checkin">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:259</note>
+      </notes>
+      <segment>
+        <source>Kopírovat odkaz pro online check-in</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.copy-checkin.copied">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:260</note>
+      </notes>
+      <segment>
+        <source>Odkaz zkopírován</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.copy-field">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:261</note>
+      </notes>
+      <segment>
+        <source>Odkaz pro online check-in</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.header">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:284</note>
+      </notes>
+      <segment>
+        <source>Zrušit rezervaci?</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.message">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:285</note>
+      </notes>
+      <segment>
+        <source>Tuto akci nelze vrátit zpět. Opravdu chcete rezervaci zrušit?</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.accept">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:287</note>
+      </notes>
+      <segment>
+        <source>Ano, zrušit</source>
+      </segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.reject">
+      <notes>
+        <note category="location">src/app/public/reservations/detail/reservation-detail.page.ts:288</note>
+      </notes>
+      <segment>
+        <source>Zpět</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.brand">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:13,15</note>
+      </notes>
+      <segment>
+        <source>KempIS</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.brand-sub">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:19,24</note>
+      </notes>
+      <segment>
+        <source>Rezervace</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.step.dates">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:33,36</note>
+      </notes>
+      <segment>
+        <source>Termín</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.step.cottages">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:38,41</note>
+      </notes>
+      <segment>
+        <source>Ubytování</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.step.details">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:43,46</note>
+      </notes>
+      <segment>
+        <source>Vaše údaje</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.step.confirmation">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:48,52</note>
+      </notes>
+      <segment>
+        <source>Potvrzení</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.dates.heading">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:65,67</note>
+      </notes>
+      <segment>
+        <source> Kdy si přejete přijet? </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.dates.lead">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:71,73</note>
+      </notes>
+      <segment>
+        <source> Vyberte data příjezdu a odjezdu. Volné chatky se načtou v dalším kroku. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.dates.nights">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:116,119</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:161,167</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:520,526</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:688,694</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {1 noc} few {<ph id="0" equiv="INTERPOLATION"/> noci} other {<ph id="1" equiv="INTERPOLATION"/> nocí}}</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.dates.empty">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:128,129</note>
+      </notes>
+      <segment>
+        <source> Vyberte v kalendáři rozsah pobytu. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.heading">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:150,152</note>
+      </notes>
+      <segment>
+        <source> Vyberte ubytování </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.loading">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:185,187</note>
+      </notes>
+      <segment>
+        <source> Načítám dostupnost… </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.error">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:193,195</note>
+      </notes>
+      <segment>
+        <source> Dostupnost se nepodařilo načíst. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.sold-out">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:240,242</note>
+      </notes>
+      <segment>
+        <source>Vyprodáno</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.left">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:250,252</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:261,263</note>
+      </notes>
+      <segment>
+        <source>Zbývá <ph id="0" equiv="INTERPOLATION" disp="{{ row.available }}"/> z <ph id="1" equiv="INTERPOLATION_1" disp="{{ row.totalSpots }}"/></source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.sleeps">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:271,278</note>
+      </notes>
+      <segment>
+        <source> Pro <ph id="0" equiv="ICU" disp="{row.capacity, plural,
+                          =1 {1 osobu}
+                          few {{{ row.capacity }} osoby}
+                          other {{{ row.capacity }} osob}
+                        }" subFlows="915927061292419937"/> </source>
+      </segment>
+    </unit>
+    <unit id="6850003206370253856">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:272,274</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {1 osobu} few {<ph id="0" equiv="INTERPOLATION"/> osoby} other {<ph id="1" equiv="INTERPOLATION"/> osob}}</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.details">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:290,292</note>
+      </notes>
+      <segment>
+        <source>Více informací</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.event">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:308,313</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_ITALIC_TEXT" equivEnd="CLOSE_ITALIC_TEXT" type="fmt" dispStart="&lt;i
+                            class=&quot;pi pi-bell&quot;
+                            aria-hidden=&quot;true&quot;
+                          &gt;" dispEnd="&lt;/i&gt;"></pc> Probíhající akce: <pc id="1" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;"><ph id="2" equiv="INTERPOLATION" disp="{{ notice.name }}"/></pc></source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.footnote">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:357,359</note>
+      </notes>
+      <segment>
+        <source> Vyberte počet kusů. Cenu vám potvrdíme v rezervačním e-mailu. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.details.heading">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:376,378</note>
+      </notes>
+      <segment>
+        <source> Vaše údaje </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.details.lead">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:382,384</note>
+      </notes>
+      <segment>
+        <source> Použijeme je pro potvrzení rezervace. Žádné platby teď — platí se na místě. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.contact.name">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:406,408</note>
+      </notes>
+      <segment>
+        <source>Jméno</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.contact.surname">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:418,420</note>
+      </notes>
+      <segment>
+        <source>Příjmení</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.contact.email">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:431,433</note>
+      </notes>
+      <segment>
+        <source>E-mail</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.contact.phone">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:444,446</note>
+      </notes>
+      <segment>
+        <source>Telefon</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.contact.note">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:462,464</note>
+      </notes>
+      <segment>
+        <source>Poznámka (volitelné)</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.details.privacy">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:499,501</note>
+      </notes>
+      <segment>
+        <source> Vaše údaje použijeme jen pro správu rezervace. Potvrzovací e-mail vám zašleme během několika minut. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.details.recap">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:508,510</note>
+      </notes>
+      <segment>
+        <source> Souhrn rezervace </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.recap.pay">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:541,543</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:636,638</note>
+      </notes>
+      <segment>
+        <source>Platba na místě</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.recap.pricing">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:546,548</note>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:641,643</note>
+      </notes>
+      <segment>
+        <source>Ceny potvrdíme e-mailem</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.heading">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:568,570</note>
+      </notes>
+      <segment>
+        <source> Žádost o rezervaci přijata </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.lead">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:574,579</note>
+      </notes>
+      <segment>
+        <source> Potvrzení jsme zaslali na <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong
+              &gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ contactModel().email }}"/></pc>. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.ref">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:585,586</note>
+      </notes>
+      <segment>
+        <source> Číslo rezervace </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.from-time">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:601,603</note>
+      </notes>
+      <segment>
+        <source>od 14:00</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.to-time">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:614,616</note>
+      </notes>
+      <segment>
+        <source>do 10:00</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.note">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:651,653</note>
+      </notes>
+      <segment>
+        <source> Toto je žádost o rezervaci. Brzy ji potvrdíme e-mailem. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.contact">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:659,662</note>
+      </notes>
+      <segment>
+        <source> Potřebujete něco změnit? Odpovězte na potvrzovací e-mail nebo zavolejte na recepci +420 725 896 488. </source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.summary.no-dates">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:682,685</note>
+      </notes>
+      <segment>
+        <source>Termín nezvolen</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.summary.pick-dates">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:698,701</note>
+      </notes>
+      <segment>
+        <source>Vyberte termín</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.summary.cottages">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:706,713</note>
+      </notes>
+      <segment>
+        <source> · <ph id="0" equiv="ICU" disp="{totalCottages(), plural,
+                =1 {1 ubytování}
+                few {{{ totalCottages() }} ubytování}
+                other {{{ totalCottages() }} ubytování}
+              }" subFlows="426786349484723226"/> </source>
+      </segment>
+    </unit>
+    <unit id="7345691115324344562">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.html:707,710</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {1 ubytování} few {<ph id="0" equiv="INTERPOLATION"/> ubytování} other {<ph id="1" equiv="INTERPOLATION"/> ubytování}}</source>
+      </segment>
+    </unit>
+    <unit id="form.dates.from-required">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:207</note>
+      </notes>
+      <segment>
+        <source>Vyberte datum příjezdu</source>
+      </segment>
+    </unit>
+    <unit id="form.dates.to-required">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:210</note>
+      </notes>
+      <segment>
+        <source>Vyberte datum odjezdu</source>
+      </segment>
+    </unit>
+    <unit id="form.dates.past">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:217</note>
+      </notes>
+      <segment>
+        <source>Datum nemůže být v minulosti</source>
+      </segment>
+    </unit>
+    <unit id="form.dates.order">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:226</note>
+      </notes>
+      <segment>
+        <source>Datum odjezdu musí být po datu příjezdu</source>
+      </segment>
+    </unit>
+    <unit id="form.spots.required">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:237</note>
+      </notes>
+      <segment>
+        <source>Vyberte aspoň jedno místo</source>
+      </segment>
+    </unit>
+    <unit id="form.spots.exceeds">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:250</note>
+      </notes>
+      <segment>
+        <source>Překračuje volnou kapacitu</source>
+      </segment>
+    </unit>
+    <unit id="form.name.required">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:259</note>
+      </notes>
+      <segment>
+        <source>Vyplňte jméno</source>
+      </segment>
+    </unit>
+    <unit id="form.surname.required">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:262</note>
+      </notes>
+      <segment>
+        <source>Vyplňte příjmení</source>
+      </segment>
+    </unit>
+    <unit id="form.email.required">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:265</note>
+      </notes>
+      <segment>
+        <source>Vyplňte e-mail</source>
+      </segment>
+    </unit>
+    <unit id="form.email.invalid">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:268</note>
+      </notes>
+      <segment>
+        <source>Neplatný e-mail</source>
+      </segment>
+    </unit>
+    <unit id="form.phone.required">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:271</note>
+      </notes>
+      <segment>
+        <source>Vyplňte telefon</source>
+      </segment>
+    </unit>
+    <unit id="form.phone.invalid">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:274</note>
+      </notes>
+      <segment>
+        <source>Neplatný formát telefonu</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.cottages.edit-dates">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:333</note>
+      </notes>
+      <segment>
+        <source>Změnit termín</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.back">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:334</note>
+      </notes>
+      <segment>
+        <source>Zpět</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.confirm.manage">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:335</note>
+      </notes>
+      <segment>
+        <source>Otevřít rezervaci</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.continue.dates">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:340</note>
+      </notes>
+      <segment>
+        <source>Pokračovat</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.continue.cottages">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:342</note>
+      </notes>
+      <segment>
+        <source>Pokračovat na údaje</source>
+      </segment>
+    </unit>
+    <unit id="new-reservation.continue.confirm">
+      <notes>
+        <note category="location">src/app/public/reservations/new/new-reservation.page.ts:344</note>
+      </notes>
+      <segment>
+        <source>Potvrdit rezervaci</source>
+      </segment>
+    </unit>
+    <unit id="checkin.signature.clear">
+      <notes>
+        <note category="location">src/app/shared/signature-pad/signature-pad.component.ts:32</note>
+      </notes>
+      <segment>
+        <source>Vymazat</source>
+      </segment>
+    </unit>
+    <unit id="checkin.signature.placeholder">
+      <notes>
+        <note category="location">src/app/shared/signature-pad/signature-pad.component.ts:33</note>
+      </notes>
+      <segment>
+        <source>Podepište se prstem nebo perem</source>
+      </segment>
+    </unit>
+    <unit id="staff.login.title">
+      <notes>
+        <note category="location">src/app/staff/login/login.page.ts:31</note>
+      </notes>
+      <segment>
+        <source>Přihlášení personálu</source>
+      </segment>
+    </unit>
+    <unit id="staff.login.button">
+      <notes>
+        <note category="location">src/app/staff/login/login.page.ts:32</note>
+      </notes>
+      <segment>
+        <source>Přihlásit se</source>
+      </segment>
+    </unit>
+    <unit id="staff.login.error.unsupported">
+      <notes>
+        <note category="location">src/app/staff/login/login.page.ts:81</note>
+      </notes>
+      <segment>
+        <source>Tento prohlížeč nepodporuje passkey.</source>
+      </segment>
+    </unit>
+    <unit id="staff.login.error.cancelled">
+      <notes>
+        <note category="location">src/app/staff/login/login.page.ts:84</note>
+      </notes>
+      <segment>
+        <source>Přihlášení bylo zrušeno.</source>
+      </segment>
+    </unit>
+    <unit id="staff.login.error.generic">
+      <notes>
+        <note category="location">src/app/staff/login/login.page.ts:90</note>
+      </notes>
+      <segment>
+        <source>Přihlášení se nezdařilo. Zkuste to prosím znovu.</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>

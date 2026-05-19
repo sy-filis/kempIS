@@ -1,0 +1,30 @@
+<section class="kemp-is-tablet-pairing">
+  <header class="kemp-is-tablet-pairing__head">
+    <h2 class="kemp-is-tablet-pairing__title">Tablet</h2>
+    <p class="kemp-is-tablet-pairing__hint">
+      Spárování recepčního tabletu s tímto počítačem.
+    </p>
+  </header>
+
+  <div class="kemp-is-tablet-pairing__row">
+    <div class="kemp-is-tablet-pairing__status">
+      <span class="kemp-is-tablet-pairing__status-label">Stav:</span>
+      @if (pairingLabel(); as label) {
+        <p-tag
+          [value]="label.text"
+          [severity]="label.severity"
+        />
+      }
+    </div>
+
+    <p-button
+      icon="pi pi-tablet"
+      [label]="paired() ? 'Odpojit tablet' : 'Spárovat tablet'"
+      [severity]="paired() ? 'secondary' : 'primary'"
+      [outlined]="paired()"
+      (onClick)="onClick()"
+    />
+  </div>
+
+  <kemp-is-connect-tablet-dialog [(visible)]="dialogVisible" />
+</section>

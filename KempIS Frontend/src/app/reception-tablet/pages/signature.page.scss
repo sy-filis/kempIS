@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  height: 100dvh;
+}
+
+.kemp-is-tablet-signature {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  padding: 1.5rem;
+  gap: 1rem;
+}
+
+.kemp-is-tablet-signature__header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.kemp-is-tablet-signature__header p {
+  margin: 0.25rem 0 0;
+  color: var(--p-text-muted-color);
+}
+
+.kemp-is-tablet-signature__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}

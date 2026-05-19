@@ -1,0 +1,192 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [header]="
+    mode() === 'edit'
+      ? 'Upravit skupinovou rezervaci'
+      : 'Nová skupinová rezervace'
+  "
+  [modal]="true"
+  [dismissableMask]="!submitting()"
+  [closeOnEscape]="!submitting()"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!submitting()"
+  [style]="{ width: '40rem' }"
+  styleClass="kemp-is-group-reservation-dialog"
+  appendTo="body"
+>
+  <form
+    class="kemp-is-group-reservation-dialog__form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-group-reservation-dialog__row-pair">
+      <div class="kemp-is-group-reservation-dialog__row">
+        <label for="group-from">Od *</label>
+        <p-datePicker
+          inputId="group-from"
+          name="group-from"
+          dateFormat="d. m. yy"
+          appendTo="body"
+          [maxDate]="to() ?? undefined"
+          [ngModel]="from()"
+          (ngModelChange)="from.set($event)"
+        />
+      </div>
+      <div class="kemp-is-group-reservation-dialog__row">
+        <label for="group-to">Do *</label>
+        <p-datePicker
+          inputId="group-to"
+          name="group-to"
+          dateFormat="d. m. yy"
+          appendTo="body"
+          [minDate]="from() ?? undefined"
+          [ngModel]="to()"
+          (ngModelChange)="to.set($event)"
+        />
+      </div>
+    </div>
+
+    <div class="kemp-is-group-reservation-dialog__row">
+      <label for="group-spots">Chaty *</label>
+      <p-treeSelect
+        inputId="group-spots"
+        selectionMode="checkbox"
+        display="chip"
+        placeholder="Vyberte chaty"
+        [filter]="true"
+        filterBy="label"
+        appendTo="body"
+        [options]="treeNodes()"
+        [ngModel]="treeSelection()"
+        (ngModelChange)="treeSelection.set($event)"
+        name="group-spots"
+      >
+        <ng-template
+          pTemplate="value"
+          let-placeholder="placeholder"
+        >
+          @if (selectedSpotChips().length === 0) {
+            <span>{{ placeholder }}</span>
+          } @else {
+            @for (chip of selectedSpotChips(); track chip.key) {
+              <p-chip [label]="chip.label" />
+            }
+          }
+        </ng-template>
+      </p-treeSelect>
+    </div>
+
+    <div class="kemp-is-group-reservation-dialog__row">
+      <label for="group-organizer-name">Jméno organizátora *</label>
+      <input
+        pInputText
+        id="group-organizer-name"
+        name="group-organizer-name"
+        type="text"
+        maxlength="200"
+        autocomplete="off"
+        [ngModel]="organizerName()"
+        (ngModelChange)="organizerName.set($event)"
+      />
+    </div>
+
+    <div class="kemp-is-group-reservation-dialog__row-pair">
+      <div class="kemp-is-group-reservation-dialog__row">
+        <label for="group-organizer-email">E-mail *</label>
+        <input
+          pInputText
+          id="group-organizer-email"
+          name="group-organizer-email"
+          type="email"
+          maxlength="200"
+          autocomplete="off"
+          [ngModel]="organizerEmail()"
+          (ngModelChange)="organizerEmail.set($event)"
+        />
+      </div>
+      <div class="kemp-is-group-reservation-dialog__row">
+        <label for="group-organizer-phone">Telefon *</label>
+        <input
+          pInputText
+          id="group-organizer-phone"
+          name="group-organizer-phone"
+          type="tel"
+          maxlength="40"
+          autocomplete="off"
+          [ngModel]="organizerPhone()"
+          (ngModelChange)="organizerPhone.set($event)"
+        />
+      </div>
+    </div>
+
+    <div class="kemp-is-group-reservation-dialog__row">
+      <label for="group-display-name">Název rezervace</label>
+      <input
+        pInputText
+        id="group-display-name"
+        name="group-display-name"
+        type="text"
+        maxlength="255"
+        autocomplete="off"
+        placeholder="např. Novákovi – 3 chaty"
+        [ngModel]="displayName()"
+        (ngModelChange)="displayName.set($event)"
+      />
+    </div>
+
+    <div class="kemp-is-group-reservation-dialog__row">
+      <label for="group-note">Poznámka</label>
+      <textarea
+        pTextarea
+        id="group-note"
+        name="group-note"
+        rows="3"
+        maxlength="1000"
+        [ngModel]="note()"
+        (ngModelChange)="note.set($event)"
+      ></textarea>
+    </div>
+
+    @if (errorMessage(); as err) {
+      <p-message
+        severity="error"
+        [text]="err"
+      />
+    }
+  </form>
+
+  <ng-template #footer>
+    <div class="kemp-is-group-reservation-dialog__footer">
+      @if (canCancel()) {
+        <p-button
+          label="Zrušit rezervaci"
+          severity="danger"
+          [outlined]="true"
+          [disabled]="submitting()"
+          (onClick)="onCancelReservation()"
+        />
+      }
+      <span class="kemp-is-group-reservation-dialog__footer-spacer"></span>
+      <p-button
+        label="Zavřít"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="submitting()"
+        (onClick)="onCancel()"
+      />
+      <p-button
+        [label]="mode() === 'edit' ? 'Uložit' : 'Vytvořit'"
+        [disabled]="!canSubmit()"
+        [loading]="submitting()"
+        (onClick)="onSubmit()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog
+  [closable]="false"
+  [closeOnEscape]="true"
+  appendTo="body"
+/>

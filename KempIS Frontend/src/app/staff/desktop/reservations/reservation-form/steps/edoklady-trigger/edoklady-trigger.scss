@@ -1,0 +1,25 @@
+.kemp-is-edoklady-trigger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__running {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &__label {
+    font-size: 0.95em;
+    color: var(--p-text-color, #3f3f46);
+  }
+
+  &__message {
+    align-self: flex-start;
+  }
+}

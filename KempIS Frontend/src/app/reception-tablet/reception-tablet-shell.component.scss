@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--p-content-background, #ffffff);
+}
+
+.kemp-is-reception-tablet {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 0;
+}

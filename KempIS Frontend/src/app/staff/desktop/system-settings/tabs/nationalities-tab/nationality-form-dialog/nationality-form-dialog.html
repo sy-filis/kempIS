@@ -1,0 +1,187 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [dismissableMask]="!submitting()"
+  [style]="{ width: '40rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-nationality-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div
+      class="kemp-is-nationality-form__row kemp-is-nationality-form__row--two"
+    >
+      <div class="kemp-is-nationality-form__field">
+        <label for="kemp-is-nationality-form-name">Název (česky)</label>
+        <input
+          id="kemp-is-nationality-form-name"
+          pInputText
+          type="text"
+          autocomplete="off"
+          maxlength="100"
+          [ngModel]="name()"
+          (ngModelChange)="name.set($event)"
+          name="name"
+          required
+          [disabled]="submitting()"
+        />
+      </div>
+
+      <div class="kemp-is-nationality-form__field">
+        <label for="kemp-is-nationality-form-name-en">Anglický název</label>
+        <input
+          id="kemp-is-nationality-form-name-en"
+          pInputText
+          type="text"
+          autocomplete="off"
+          maxlength="100"
+          [ngModel]="nameEn()"
+          (ngModelChange)="nameEn.set($event)"
+          name="nameEn"
+          required
+          [disabled]="submitting()"
+        />
+      </div>
+    </div>
+
+    <div
+      class="kemp-is-nationality-form__row kemp-is-nationality-form__row--three"
+    >
+      <div class="kemp-is-nationality-form__field">
+        <label for="kemp-is-nationality-form-alpha2">Alfa-2</label>
+        <input
+          id="kemp-is-nationality-form-alpha2"
+          pInputText
+          type="text"
+          autocomplete="off"
+          maxlength="2"
+          class="kemp-is-nationality-form__code"
+          [ngModel]="alpha2()"
+          (ngModelChange)="onAlpha2Change($event)"
+          name="alpha2"
+          required
+          [disabled]="submitting()"
+        />
+      </div>
+
+      <div class="kemp-is-nationality-form__field">
+        <label for="kemp-is-nationality-form-alpha3">Alfa-3</label>
+        <input
+          id="kemp-is-nationality-form-alpha3"
+          pInputText
+          type="text"
+          autocomplete="off"
+          maxlength="3"
+          class="kemp-is-nationality-form__code"
+          [ngModel]="alpha3()"
+          (ngModelChange)="onAlpha3Change($event)"
+          name="alpha3"
+          required
+          [disabled]="submitting()"
+        />
+      </div>
+
+      <div class="kemp-is-nationality-form__field">
+        <label for="kemp-is-nationality-form-numeric">Číselný</label>
+        <input
+          id="kemp-is-nationality-form-numeric"
+          pInputText
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          maxlength="3"
+          class="kemp-is-nationality-form__code"
+          [ngModel]="numeric()"
+          (ngModelChange)="numeric.set($event)"
+          name="numeric"
+          required
+          [disabled]="submitting()"
+        />
+      </div>
+    </div>
+
+    <div class="kemp-is-nationality-form__field">
+      <label for="kemp-is-nationality-form-language">Jazyk</label>
+      <p-select
+        inputId="kemp-is-nationality-form-language"
+        [options]="languageOptions()"
+        optionLabel="label"
+        optionValue="id"
+        [ngModel]="languageId()"
+        (ngModelChange)="languageId.set($event)"
+        name="languageId"
+        placeholder="Vyberte jazyk"
+        [filter]="true"
+        appendTo="body"
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div class="kemp-is-nationality-form__flags">
+      <div class="kemp-is-nationality-form__flag">
+        <p-checkbox
+          inputId="kemp-is-nationality-form-eu"
+          [binary]="true"
+          [ngModel]="isEu()"
+          (ngModelChange)="isEu.set($event)"
+          name="isEu"
+          [disabled]="submitting()"
+        />
+        <label for="kemp-is-nationality-form-eu">EU</label>
+      </div>
+
+      <div class="kemp-is-nationality-form__flag">
+        <p-checkbox
+          inputId="kemp-is-nationality-form-visa"
+          [binary]="true"
+          [ngModel]="visaRequired()"
+          (ngModelChange)="visaRequired.set($event)"
+          name="visaRequired"
+          [disabled]="submitting()"
+        />
+        <label for="kemp-is-nationality-form-visa">Vízum povinné</label>
+      </div>
+
+      <div class="kemp-is-nationality-form__flag">
+        <p-checkbox
+          inputId="kemp-is-nationality-form-bio"
+          [binary]="true"
+          [ngModel]="biometricsRequired()"
+          (ngModelChange)="biometricsRequired.set($event)"
+          name="biometricsRequired"
+          [disabled]="submitting()"
+        />
+        <label for="kemp-is-nationality-form-bio">Biometrie</label>
+      </div>
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>

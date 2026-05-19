@@ -1,0 +1,21 @@
+.kemp-is-language-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kemp-is-language-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  > label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--p-text-color-emphasis, #27272a);
+  }
+
+  > input {
+    width: 100%;
+  }
+}

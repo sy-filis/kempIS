@@ -1,0 +1,106 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="kemp-is-vat-rates">
+  <header class="kemp-is-vat-rates__toolbar">
+    <p-button
+      label="Přidat sazbu"
+      icon="pi pi-plus"
+      (onClick)="onCreate()"
+    />
+  </header>
+
+  <p-table
+    [value]="rows()"
+    [loading]="loading()"
+    dataKey="id"
+    [scrollable]="true"
+    scrollHeight="flex"
+    styleClass="kemp-is-table kemp-is-table-scrollable"
+    [tableStyle]="{ 'min-width': '40rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="name">Název <p-sortIcon field="name" /></th>
+        <th
+          pSortableColumn="rate"
+          style="width: 10rem"
+        >
+          Sazba <p-sortIcon field="rate" />
+        </th>
+        <th
+          pSortableColumn="isActive"
+          style="width: 8rem"
+        >
+          Stav <p-sortIcon field="isActive" />
+        </th>
+        <th
+          style="width: 8rem"
+          class="kemp-is-vat-rates__actions-col"
+        >
+          Akce
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template
+      pTemplate="body"
+      let-rate
+    >
+      <tr>
+        <td>{{ rate.name }}</td>
+        <td>{{ formatRate(rate.rate) }}</td>
+        <td>
+          @if (rate.isActive) {
+            <p-tag
+              value="Aktivní"
+              severity="success"
+            />
+          } @else {
+            <p-tag
+              value="Neaktivní"
+              severity="secondary"
+            />
+          }
+        </td>
+        <td class="kemp-is-vat-rates__actions-cell">
+          <p-button
+            icon="pi pi-pencil"
+            severity="secondary"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Upravit"
+            (onClick)="onEdit(rate)"
+          />
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Smazat"
+            (onClick)="onDelete(rate)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="4"
+          class="kemp-is-vat-rates__empty"
+        >
+          Žádné záznamy. Začněte tlačítkem Přidat.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<kemp-is-vat-rate-form-dialog
+  [(visible)]="formVisible"
+  [vatRate]="editingVatRate()"
+  (saved)="onFormSaved($event)"
+/>

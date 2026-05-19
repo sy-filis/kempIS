@@ -1,0 +1,31 @@
+@if (interactive()) {
+  <button
+    class="kemp-is-tablet-guest-row"
+    type="button"
+    [class.is-done]="badge().kind === 'done'"
+    (click)="onTap()"
+  >
+    <span class="kemp-is-tablet-guest-row__name">{{ guest().fullName }}</span>
+    <span class="kemp-is-tablet-guest-row__nationality">{{
+      guest().nationality
+    }}</span>
+    <p-tag
+      [severity]="badge().severity"
+      [value]="badge().label"
+    />
+  </button>
+} @else {
+  <div
+    class="kemp-is-tablet-guest-row kemp-is-tablet-guest-row--readonly"
+    [class.is-done]="badge().kind === 'done'"
+  >
+    <span class="kemp-is-tablet-guest-row__name">{{ guest().fullName }}</span>
+    <span class="kemp-is-tablet-guest-row__nationality">{{
+      guest().nationality
+    }}</span>
+    <p-tag
+      [severity]="badge().severity"
+      [value]="badge().label"
+    />
+  </div>
+}

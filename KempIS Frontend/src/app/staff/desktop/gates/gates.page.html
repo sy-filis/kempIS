@@ -1,0 +1,150 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="kemp-is-gates">
+  <header class="kemp-is-gates__toolbar">
+    <div class="kemp-is-gates__title">
+      <div class="kemp-is-gates__title-eyebrow">Závory</div>
+      <div class="kemp-is-gates__title-main">Přístupové karty</div>
+    </div>
+    <div class="kemp-is-gates__spacer"></div>
+    <p-button
+      label="Přidat kartu"
+      icon="pi pi-plus"
+      (onClick)="onCreate()"
+    />
+  </header>
+
+  <div class="kemp-is-gates__content">
+    <p-table
+      [value]="rows()"
+      [loading]="loading()"
+      dataKey="id"
+      sortField="issuedAtUtc"
+      [sortOrder]="-1"
+      styleClass="kemp-is-gates__table"
+      [tableStyle]="{ 'min-width': '60rem' }"
+    >
+      <ng-template pTemplate="caption">
+        <div class="kemp-is-gates__caption">
+          <div class="kemp-is-gates__totals">
+            <span>
+              Karty v oběhu: <strong>{{ totalCount() }}</strong>
+            </span>
+            <span class="kemp-is-gates__totals-sep">·</span>
+            <span>
+              Σ kauce:
+              <strong class="kemp-mono">
+                {{ formatDeposit(totalDeposit()) }}
+              </strong>
+            </span>
+          </div>
+          <div class="kemp-is-gates__caption-spacer"></div>
+          <p-iconfield
+            iconPosition="left"
+            class="kemp-is-gates__search"
+          >
+            <p-inputicon class="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              inputmode="numeric"
+              [ngModel]="uidFilter()"
+              (ngModelChange)="uidFilter.set($event)"
+              placeholder="Filtrovat podle UID"
+            />
+          </p-iconfield>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="uid">UID <p-sortIcon field="uid" /></th>
+          <th>Vratná kauce</th>
+          <th>Účtenka</th>
+          <th>Poznámka</th>
+          <th pSortableColumn="issuedAtUtc">
+            Vystaveno <p-sortIcon field="issuedAtUtc" />
+          </th>
+          <th pSortableColumn="validUntil">
+            Platnost do <p-sortIcon field="validUntil" />
+          </th>
+          <th
+            style="width: 8rem"
+            class="kemp-is-gates__actions-col"
+          >
+            Akce
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template
+        pTemplate="body"
+        let-card
+      >
+        <tr>
+          <td class="kemp-is-gates__uid kemp-mono">{{ card.uid }}</td>
+          <td>{{ formatDeposit(card.deposit) }}</td>
+          <td>
+            @if (card.bill) {
+              <p-tag
+                [value]="card.bill.number"
+                severity="info"
+                icon="pi pi-receipt"
+              />
+            } @else {
+              <span class="kemp-is-gates__muted">—</span>
+            }
+          </td>
+          <td
+            class="kemp-is-gates__note"
+            [title]="card.note ?? ''"
+          >
+            {{ card.note ?? "" }}
+          </td>
+          <td>{{ formatIssued(card.issuedAtUtc) }}</td>
+          <td [class.kemp-is-gates__expired]="isExpired(card.validUntil)">
+            {{ formatValidUntil(card.validUntil) }}
+          </td>
+          <td class="kemp-is-gates__actions-cell">
+            <p-button
+              icon="pi pi-pencil"
+              severity="secondary"
+              [text]="true"
+              [rounded]="true"
+              size="small"
+              ariaLabel="Upravit kartu"
+              (onClick)="onEdit(card)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              [text]="true"
+              [rounded]="true"
+              size="small"
+              ariaLabel="Vrátit kartu"
+              (onClick)="onReturn(card)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td
+            colspan="7"
+            class="kemp-is-gates__empty"
+          >
+            Žádné karty v oběhu.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<kemp-is-card-form-dialog
+  [(visible)]="formVisible"
+  [card]="editingCard()"
+  (saved)="onFormSaved($event)"
+/>

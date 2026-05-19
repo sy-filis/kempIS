@@ -1,0 +1,84 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [dismissableMask]="!submitting()"
+  [style]="{ width: '28rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-vat-rate-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-vat-rate-form__field">
+      <label for="kemp-is-vat-rate-form-name">Název</label>
+      <input
+        id="kemp-is-vat-rate-form-name"
+        pInputText
+        type="text"
+        autocomplete="off"
+        maxlength="100"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div class="kemp-is-vat-rate-form__field">
+      <label for="kemp-is-vat-rate-form-rate">Sazba (%)</label>
+      <p-inputnumber
+        inputId="kemp-is-vat-rate-form-rate"
+        [ngModel]="rate()"
+        (ngModelChange)="rate.set($event)"
+        name="rate"
+        [min]="0"
+        [max]="100"
+        [maxFractionDigits]="2"
+        [disabled]="submitting()"
+        suffix=" %"
+      />
+    </div>
+
+    <div
+      class="kemp-is-vat-rate-form__field kemp-is-vat-rate-form__field--inline"
+    >
+      <label for="kemp-is-vat-rate-form-active">Aktivní</label>
+      <p-toggleswitch
+        inputId="kemp-is-vat-rate-form-active"
+        [ngModel]="isActive()"
+        (ngModelChange)="isActive.set($event)"
+        name="isActive"
+        [disabled]="submitting()"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,142 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="kemp-is-services">
+  <header class="kemp-is-services__toolbar">
+    <p-button
+      label="Přidat službu"
+      icon="pi pi-plus"
+      (onClick)="onCreate()"
+    />
+  </header>
+
+  <p-table
+    #servicesTable
+    [value]="rows()"
+    [loading]="loading()"
+    dataKey="id"
+    [globalFilterFields]="['name']"
+    [scrollable]="true"
+    scrollHeight="flex"
+    styleClass="kemp-is-table kemp-is-table-scrollable"
+    [tableStyle]="{ 'min-width': '60rem' }"
+  >
+    <ng-template pTemplate="caption">
+      <div class="kemp-is-services__caption">
+        <p-iconfield iconPosition="left">
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="
+              servicesTable.filterGlobal($any($event.target).value, 'contains')
+            "
+            placeholder="Hledat podle názvu"
+          />
+        </p-iconfield>
+        <p-select
+          [options]="serviceGroupFilterOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="serviceGroupFilter()"
+          (ngModelChange)="serviceGroupFilter.set($event)"
+          placeholder="Filtr podle skupiny"
+          appendTo="body"
+          styleClass="kemp-is-services__group-filter"
+        />
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="groupLabel">
+          Skupina <p-sortIcon field="groupLabel" />
+        </th>
+        <th pSortableColumn="typeName">Typ <p-sortIcon field="typeName" /></th>
+        <th pSortableColumn="vatName">DPH <p-sortIcon field="vatName" /></th>
+        <th pSortableColumn="name">Název <p-sortIcon field="name" /></th>
+        <th
+          pSortableColumn="basePrice"
+          style="width: 10rem"
+        >
+          Cena <p-sortIcon field="basePrice" />
+        </th>
+        <th
+          pSortableColumn="isActive"
+          style="width: 8rem"
+        >
+          Stav <p-sortIcon field="isActive" />
+        </th>
+        <th
+          style="width: 8rem"
+          class="kemp-is-services__actions-col"
+        >
+          Akce
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template
+      pTemplate="body"
+      let-s
+    >
+      <tr>
+        <td>{{ s.groupLabel }}</td>
+        <td>{{ s.typeName }}</td>
+        <td>{{ s.vatName }}</td>
+        <td>{{ s.name }}</td>
+        <td>{{ formatPrice(s.basePrice) }}</td>
+        <td>
+          @if (s.isActive) {
+            <p-tag
+              value="Aktivní"
+              severity="success"
+            />
+          } @else {
+            <p-tag
+              value="Neaktivní"
+              severity="secondary"
+            />
+          }
+        </td>
+        <td class="kemp-is-services__actions-cell">
+          <p-button
+            icon="pi pi-pencil"
+            severity="secondary"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Upravit"
+            (onClick)="onEdit(s)"
+          />
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Smazat"
+            (onClick)="onDelete(s)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="7"
+          class="kemp-is-services__empty"
+        >
+          Žádné záznamy. Začněte tlačítkem Přidat.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<kemp-is-service-form-dialog
+  [(visible)]="formVisible"
+  [service]="editingService()"
+  (saved)="onFormSaved($event)"
+/>

@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+.kemp-is-dash__metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.kemp-is-dash__metric {
+  position: relative;
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-content-border-color, #e4e4e7);
+  border-radius: 10px;
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  color: var(--p-text-color-emphasis, #27272a);
+
+  &[data-color="primary"] {
+    --c: var(--p-primary-color, #10b981);
+  }
+  &[data-color="arr"] {
+    --c: var(--kemp-dash-arr);
+  }
+  &[data-color="dep"] {
+    --c: var(--kemp-dash-dep);
+  }
+  &[data-color="guests"] {
+    --c: var(--kemp-dash-guests);
+  }
+  &[data-color="vehicles"] {
+    --c: var(--kemp-dash-vehicles);
+  }
+  &[data-color="money"] {
+    --c: var(--kemp-dash-money);
+  }
+}
+
+.kemp-is-dash__metric-stripe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--c);
+}
+
+.kemp-is-dash__metric-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kemp-is-dash__metric-icon {
+  font-size: 0.875rem;
+  color: var(--c);
+}
+
+.kemp-is-dash__metric-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  letter-spacing: -0.005em;
+}
+
+.kemp-is-dash__metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.kemp-is-dash__metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.kemp-is-dash__metric-out-of {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  letter-spacing: -0.01em;
+  opacity: 0.55;
+}

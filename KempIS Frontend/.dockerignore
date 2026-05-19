@@ -1,0 +1,10 @@
+node_modules
+dist
+.angular
+.git
+.claude
+.agents
+.worktrees
+.vscode
+docs
+_reference

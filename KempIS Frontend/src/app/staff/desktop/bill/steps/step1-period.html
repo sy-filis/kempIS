@@ -1,0 +1,356 @@
+<section class="kemp-is-bill__panel">
+  <div class="kemp-is-bill__period-grid">
+    <label
+      class="kemp-is-bill__period-field"
+      for="bill-period-from"
+    >
+      <span class="kemp-is-bill__field-label">Příjezd *</span>
+      <p-datepicker
+        inputId="bill-period-from"
+        [ngModel]="from()"
+        (ngModelChange)="from.set($event)"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+        [disabled]="!periodEditable()"
+        placeholder="Vyberte datum"
+      />
+    </label>
+    <label
+      class="kemp-is-bill__period-field"
+      for="bill-period-nights"
+    >
+      <span class="kemp-is-bill__field-label">Nocí</span>
+      <p-inputnumber
+        inputId="bill-period-nights"
+        [ngModel]="nights()"
+        (ngModelChange)="onNightsChange($event)"
+        [min]="0"
+        [disabled]="!periodEditable() || !from()"
+        [inputStyle]="{ width: '100%' }"
+        placeholder="–"
+      />
+    </label>
+    <label
+      class="kemp-is-bill__period-field"
+      for="bill-period-to"
+    >
+      <span class="kemp-is-bill__field-label">Odjezd *</span>
+      <p-datepicker
+        inputId="bill-period-to"
+        [ngModel]="to()"
+        (ngModelChange)="to.set($event)"
+        [minDate]="from() ?? undefined"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+        [disabled]="!periodEditable()"
+        placeholder="Vyberte datum"
+      />
+    </label>
+  </div>
+</section>
+
+<p-dialog
+  header="Upravit hosta"
+  [visible]="guestEditorOpen()"
+  (visibleChange)="onGuestDialogVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closeOnEscape]="true"
+  [style]="{ width: '640px' }"
+  styleClass="kemp-is-bill__guest-dialog"
+>
+  <div class="kemp-is-bill__guest-editor">
+    <section class="kemp-is-bill__guest-editor-section">
+      <h4 class="kemp-is-bill__guest-editor-section-title">Osobní údaje</h4>
+      <div class="kemp-is-bill__guest-editor-grid">
+        <div>
+          <div class="kemp-is-bill__field-label">Jméno</div>
+          <input
+            pInputText
+            placeholder="Jméno"
+            [ngModel]="preloadedDraft().firstName"
+            (ngModelChange)="updatePreloadedDraft('firstName', $event)"
+          />
+        </div>
+        <div>
+          <div class="kemp-is-bill__field-label">Příjmení</div>
+          <input
+            pInputText
+            placeholder="Příjmení"
+            [ngModel]="preloadedDraft().surname"
+            (ngModelChange)="updatePreloadedDraft('surname', $event)"
+          />
+        </div>
+        <div class="kemp-is-bill__guest-editor-wide">
+          <div class="kemp-is-bill__field-label">Datum narození</div>
+          <p-datepicker
+            [ngModel]="preloadedDraft().birth"
+            (ngModelChange)="updatePreloadedDraft('birth', $event)"
+            dateFormat="dd. mm. yy"
+            [showIcon]="true"
+            [iconDisplay]="'input'"
+            appendTo="body"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="kemp-is-bill__guest-editor-section">
+      <h4 class="kemp-is-bill__guest-editor-section-title">
+        Adresa trvalého bydliště
+      </h4>
+      <div
+        class="kemp-is-bill__guest-editor-grid kemp-is-bill__guest-editor-address"
+      >
+        <div class="kemp-is-bill__guest-editor-street">
+          <div class="kemp-is-bill__field-label">Ulice</div>
+          <input
+            pInputText
+            placeholder="Ulice"
+            [ngModel]="preloadedDraft().street"
+            (ngModelChange)="updatePreloadedDraft('street', $event)"
+          />
+        </div>
+        <div>
+          <div class="kemp-is-bill__field-label">Č. p.</div>
+          <input
+            pInputText
+            placeholder="Č. p."
+            [ngModel]="preloadedDraft().houseNumber"
+            (ngModelChange)="updatePreloadedDraft('houseNumber', $event)"
+          />
+        </div>
+        <div>
+          <div class="kemp-is-bill__field-label">PSČ</div>
+          <input
+            pInputText
+            class="kemp-mono"
+            placeholder="000 00"
+            [ngModel]="preloadedDraft().postalCode"
+            (ngModelChange)="updatePreloadedDraft('postalCode', $event)"
+          />
+        </div>
+        <div>
+          <div class="kemp-is-bill__field-label">Město</div>
+          <input
+            pInputText
+            placeholder="Město"
+            [ngModel]="preloadedDraft().city"
+            (ngModelChange)="updatePreloadedDraft('city', $event)"
+          />
+        </div>
+        <div class="kemp-is-bill__guest-editor-wide">
+          <div class="kemp-is-bill__field-label">Země</div>
+          <p-select
+            [options]="countryOptions"
+            optionLabel="label"
+            optionValue="code"
+            [ngModel]="preloadedDraft().country"
+            (ngModelChange)="updatePreloadedDraft('country', $event)"
+            appendTo="body"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="kemp-is-bill__guest-editor-section">
+      <h4 class="kemp-is-bill__guest-editor-section-title">
+        Doklad totožnosti
+      </h4>
+      <div class="kemp-is-bill__guest-editor-grid">
+        <div>
+          <div class="kemp-is-bill__field-label">Občanství</div>
+          <p-select
+            [options]="countryOptions"
+            optionLabel="label"
+            optionValue="code"
+            [ngModel]="preloadedDraft().citizenship"
+            (ngModelChange)="updatePreloadedDraft('citizenship', $event)"
+            appendTo="body"
+          />
+        </div>
+        <div>
+          <div class="kemp-is-bill__field-label">Typ dokladu</div>
+          <p-select
+            [options]="docTypeOptions"
+            optionLabel="label"
+            optionValue="id"
+            [ngModel]="preloadedDraft().docType"
+            (ngModelChange)="updatePreloadedDraft('docType', $event)"
+            appendTo="body"
+          />
+        </div>
+        <div class="kemp-is-bill__guest-editor-wide">
+          <div class="kemp-is-bill__field-label">Číslo dokladu</div>
+          <input
+            pInputText
+            class="kemp-mono"
+            placeholder="123 456 789"
+            [ngModel]="preloadedDraft().docNumber"
+            (ngModelChange)="updatePreloadedDraft('docNumber', $event)"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="kemp-is-bill__guest-editor-section">
+      <h4 class="kemp-is-bill__guest-editor-section-title">Sazba poplatku</h4>
+      <p-select
+        [options]="feeCategoryOptions"
+        optionLabel="label"
+        optionValue="id"
+        [ngModel]="preloadedDraft().fee"
+        (ngModelChange)="updatePreloadedDraft('fee', $event)"
+        appendTo="body"
+      >
+        <ng-template
+          let-cat
+          #selectedItem
+        >
+          <span>{{ cat.label }} · {{ cat.rate }} Kč/noc</span>
+        </ng-template>
+        <ng-template
+          let-cat
+          #item
+        >
+          <span class="kemp-is-bill__fee-option">
+            <span>{{ cat.label }}</span>
+            <span class="kemp-is-bill__fee-option-meta">
+              {{ cat.rate }} Kč/noc · {{ cat.note }}
+            </span>
+          </span>
+        </ng-template>
+      </p-select>
+    </section>
+  </div>
+
+  <ng-template #footer>
+    <div class="kemp-is-bill__guest-editor-actions">
+      <p-button
+        [text]="true"
+        severity="secondary"
+        (onClick)="cancelPreloadedEdit()"
+      >
+        <span>Zrušit</span>
+      </p-button>
+      <p-button
+        [disabled]="!preloadedDraftValid()"
+        (onClick)="savePreloadedEdit()"
+      >
+        <i
+          class="pi pi-check"
+          aria-hidden="true"
+        ></i>
+        <span>Uložit</span>
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+@if (preloadedGuests().length > 0) {
+  <div class="kemp-is-bc kemp-is-bill__guests-card">
+    <div class="kemp-is-bc__head">
+      <h3 class="kemp-is-bc__title">
+        Hosté z rezervace · {{ linkedPreloadedCount() }}/{{
+          preloadedGuests().length
+        }}
+        připojeno
+      </h3>
+      <span class="kemp-is-bc__head-meta">
+        Vyberte hosty na tento účet, poté označte, kdo platí rekreační poplatek
+        (RP).
+      </span>
+    </div>
+    <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+      <div class="kemp-is-bill__guests-grid">
+        @for (g of preloadedGuests(); track g.id) {
+          <div
+            class="kemp-is-bill__guest"
+            [class.kemp-is-bill__guest--unchecked]="!g.checked"
+          >
+            <label
+              class="kemp-is-bill__guest-clickable"
+              [for]="'guest-' + g.id"
+            >
+              <p-checkbox
+                [binary]="true"
+                [inputId]="'guest-' + g.id"
+                [ngModel]="g.checked"
+                (ngModelChange)="toggleGuest(g.id)"
+              />
+              <div class="kemp-is-bill__guest-text">
+                <div class="kemp-is-bill__guest-name">
+                  <span>{{ g.firstName }} {{ g.surname }}</span>
+                </div>
+                <div class="kemp-is-bill__guest-meta">
+                  {{ ageOf(g) }} let · {{ feeFor(g.fee).label }} ·
+                  {{ feeFor(g.fee).rate }} Kč/noc
+                </div>
+              </div>
+            </label>
+            <label
+              class="kemp-is-bill__guest-rp-toggle"
+              [for]="'guest-rp-' + g.id"
+              [class.kemp-is-bill__guest-rp-toggle--disabled]="!g.checked"
+              title="Platí rekreační poplatek"
+            >
+              <p-checkbox
+                [binary]="true"
+                [inputId]="'guest-rp-' + g.id"
+                [ngModel]="g.paysFee"
+                (ngModelChange)="togglePaysFee(g.id)"
+                [disabled]="!g.checked"
+              />
+              <span class="kemp-is-bill__guest-rp">RP</span>
+            </label>
+            <p-button
+              [text]="true"
+              severity="secondary"
+              size="small"
+              ariaLabel="Upravit hosta"
+              styleClass="kemp-is-bill__guest-edit-btn"
+              (onClick)="openPreloadedEditor($event, g)"
+            >
+              <i
+                class="pi pi-pencil"
+                aria-hidden="true"
+              ></i>
+            </p-button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<kemp-is-reservation-step-period-guests-stub
+  [reservationId]="null"
+  [guests]="[]"
+  [reservationFrom]="from()"
+  [reservationTo]="to()"
+  [showsFeeColumn]="true"
+  [(localGuests)]="registryGuests"
+  [(localFeePayingIds)]="registryFeePayingIds"
+  (feePayingCountChanged)="feePayingRegistryCount.set($event)"
+/>
+
+<div class="kemp-is-bill__fee-banner">
+  <div class="kemp-is-bill__fee-icon">
+    <i
+      class="pi pi-receipt"
+      aria-hidden="true"
+    ></i>
+  </div>
+  <div>
+    <div class="kemp-is-bill__fee-eyebrow">Rekreační poplatek</div>
+    <div class="kemp-is-bill__fee-body">
+      {{ feePayingCount() }} osob × {{ nights() }} nocí
+    </div>
+  </div>
+  <div class="kemp-is-bill__fee-total kemp-mono">
+    {{ formatNumber(feeTotal()) }} Kč
+  </div>
+</div>

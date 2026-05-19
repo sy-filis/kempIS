@@ -1,0 +1,52 @@
+<p-dialog
+  header="Označit jako vypořádané"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '28rem' }"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+>
+  <div class="kemp-is-mp-dialog">
+    <div class="kemp-is-mp-dialog__field">
+      <label for="mp-paid"
+        >Datum platby <span class="kemp-is-mp-dialog__required">*</span></label
+      >
+      <p-datepicker
+        inputId="mp-paid"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+        [maxDate]="paidMaxDate"
+        [minDate]="paidMinDate() ?? undefined"
+        [ngModel]="paidAt()"
+        (ngModelChange)="paidAt.set($event)"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="warn"
+        [text]="msg"
+      />
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      (onClick)="onCancel()"
+    >
+      Zrušit
+    </p-button>
+    <p-button
+      size="small"
+      [disabled]="!canSubmit()"
+      [loading]="submitting()"
+      (onClick)="onSubmit()"
+    >
+      Označit jako vypořádané
+    </p-button>
+  </ng-template>
+</p-dialog>

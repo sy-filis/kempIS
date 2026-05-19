@@ -1,0 +1,99 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="kemp-is-service-types">
+  <header class="kemp-is-service-types__toolbar">
+    <p-button
+      label="Přidat typ"
+      icon="pi pi-plus"
+      (onClick)="onCreate()"
+    />
+  </header>
+
+  <p-table
+    [value]="rows()"
+    [loading]="loading()"
+    dataKey="id"
+    [scrollable]="true"
+    scrollHeight="flex"
+    styleClass="kemp-is-table kemp-is-table-scrollable"
+    [tableStyle]="{ 'min-width': '40rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="name">Název <p-sortIcon field="name" /></th>
+        <th
+          pSortableColumn="isActive"
+          style="width: 8rem"
+        >
+          Stav <p-sortIcon field="isActive" />
+        </th>
+        <th
+          style="width: 8rem"
+          class="kemp-is-service-types__actions-col"
+        >
+          Akce
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template
+      pTemplate="body"
+      let-t
+    >
+      <tr>
+        <td>{{ t.name }}</td>
+        <td>
+          @if (t.isActive) {
+            <p-tag
+              value="Aktivní"
+              severity="success"
+            />
+          } @else {
+            <p-tag
+              value="Neaktivní"
+              severity="secondary"
+            />
+          }
+        </td>
+        <td class="kemp-is-service-types__actions-cell">
+          <p-button
+            icon="pi pi-pencil"
+            severity="secondary"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Upravit"
+            (onClick)="onEdit(t)"
+          />
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            ariaLabel="Smazat"
+            (onClick)="onDelete(t)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="3"
+          class="kemp-is-service-types__empty"
+        >
+          Žádné záznamy. Začněte tlačítkem Přidat.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<kemp-is-service-type-form-dialog
+  [(visible)]="formVisible"
+  [serviceType]="editingServiceType()"
+  (saved)="onFormSaved($event)"
+/>

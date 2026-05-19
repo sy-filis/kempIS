@@ -1,0 +1,44 @@
+<section
+  class="kemp-is-dash__card"
+  data-color="outlook"
+>
+  <header class="kemp-is-dash__card-head">
+    <span
+      class="kemp-is-dash__card-accent"
+      aria-hidden="true"
+    ></span>
+    <span class="kemp-is-dash__card-title">Výhled · 7 dní</span>
+  </header>
+  <div class="kemp-is-dash__outlook">
+    @for (d of outlook(); track d.day) {
+      <div class="kemp-is-dash__outlook-row">
+        <span class="kemp-is-dash__outlook-day kemp-mono">{{ d.day }}</span>
+        <div
+          class="kemp-is-dash__outlook-bar"
+          aria-hidden="true"
+        >
+          <div
+            class="kemp-is-dash__outlook-bar-fill"
+            [style.width.%]="d.occupancyPct"
+          ></div>
+        </div>
+        <span class="kemp-is-dash__outlook-arrivals">
+          <i
+            class="pi pi-sign-in"
+            style="color: var(--kemp-dash-arr)"
+            aria-hidden="true"
+          ></i>
+          {{ d.arrivals }}
+        </span>
+        <span class="kemp-is-dash__outlook-departures">
+          <i
+            class="pi pi-sign-out"
+            style="color: var(--kemp-dash-dep)"
+            aria-hidden="true"
+          ></i>
+          {{ d.departures }}
+        </span>
+      </div>
+    }
+  </div>
+</section>

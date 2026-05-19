@@ -1,0 +1,36 @@
+.kemp-is-group-reservation-dialog {
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--p-text-color);
+    }
+  }
+
+  &__row-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  &__footer-spacer {
+    flex: 1 1 auto;
+  }
+}

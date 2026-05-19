@@ -1,0 +1,115 @@
+:host {
+  display: block;
+}
+
+.kemp-is-meals-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  box-sizing: border-box;
+  padding: 0 20px;
+  background: var(--p-surface-0, #fff);
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+}
+
+.kemp-is-meals-toolbar__week-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kemp-is-meals-toolbar__weeks {
+  display: flex;
+  gap: 4px;
+}
+
+.kemp-is-meals-toolbar__week {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px 10px;
+  min-width: 92px;
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 5px;
+  color: var(--p-surface-800, #27272a);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+
+  &:hover {
+    background: var(--p-surface-50, #fafafa);
+  }
+}
+
+.kemp-is-meals-toolbar__week--current:not(.kemp-is-meals-toolbar__week--active) {
+  border-color: var(--p-primary-300, #6ee7b7);
+  background: var(--p-primary-50, #ecfdf5);
+}
+
+.kemp-is-meals-toolbar__week--active {
+  background: var(--p-primary-color);
+  border-color: var(--p-primary-color);
+  color: #fff;
+}
+
+.kemp-is-meals-toolbar__week-label {
+  font-size: 0.59375rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  line-height: 1.1;
+}
+
+.kemp-is-meals-toolbar__week--current:not(.kemp-is-meals-toolbar__week--active)
+  .kemp-is-meals-toolbar__week-label {
+  color: var(--p-primary-700, #047857);
+}
+
+.kemp-is-meals-toolbar__week--active .kemp-is-meals-toolbar__week-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.kemp-is-meals-toolbar__week-range {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.1;
+  opacity: 0.7;
+}
+
+.kemp-is-meals-toolbar__week--active .kemp-is-meals-toolbar__week-range {
+  opacity: 0.85;
+}
+
+.kemp-is-meals-toolbar__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--p-surface-200, #e4e4e7);
+}
+
+.kemp-is-meals-toolbar__counts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kemp-is-meals-toolbar__counts-label {
+  font-size: 0.75rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-meals-toolbar__counts-value {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-meals-toolbar__counts-sep {
+  color: var(--p-surface-200, #e4e4e7);
+}
+
+.kemp-is-meals-toolbar__spacer {
+  flex: 1;
+}

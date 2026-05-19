@@ -1,0 +1,309 @@
+<div class="kemp-is-rp__toolbar">
+  <div class="kemp-is-rp__title">
+    <div class="kemp-is-rp__title-eyebrow">Rezervace</div>
+    <div class="kemp-is-rp__title-main">Ubytovací plán</div>
+  </div>
+
+  <div
+    class="kemp-is-rp__view-tabs"
+    role="tablist"
+    aria-label="Režim zobrazení"
+  >
+    @for (v of views(); track v.id) {
+      <button
+        type="button"
+        role="tab"
+        class="kemp-is-rp__view-tab"
+        [class.kemp-is-rp__view-tab--active]="view() === v.id"
+        [attr.aria-selected]="view() === v.id"
+        (click)="setView(v.id)"
+      >
+        <i
+          class="pi"
+          [class]="v.icon"
+          aria-hidden="true"
+        ></i>
+        <span>{{ v.label }}</span>
+        @if (v.badge) {
+          <span class="kemp-is-rp__view-tab-badge">{{ v.badge }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <div class="kemp-is-rp__spacer"></div>
+
+  <p-iconfield
+    iconPosition="left"
+    class="kemp-is-rp__search"
+  >
+    <p-inputicon class="pi pi-search" />
+    <input
+      pInputText
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Host, ID rezervace, telefon…"
+    />
+  </p-iconfield>
+
+  <p-button
+    size="small"
+    ariaLabel="Vytvořit nový záznam"
+    (onClick)="createMenu.toggle($event)"
+  >
+    <i
+      class="pi pi-plus"
+      aria-hidden="true"
+    ></i>
+    <span>Nový</span>
+    <i
+      class="pi pi-chevron-down kemp-is-rp__create-caret"
+      aria-hidden="true"
+    ></i>
+  </p-button>
+  <p-menu
+    #createMenu
+    [model]="createMenuItems()"
+    [popup]="true"
+    appendTo="body"
+  />
+</div>
+
+@if (view() === "plachta") {
+  <div class="kemp-is-rp__legend">
+    <span class="kemp-is-rp__legend-label">Stav rezervace</span>
+    @for (k of statusLegend; track k.label) {
+      <span class="kemp-is-rp__legend-item">
+        <span
+          class="kemp-is-rp__legend-swatch"
+          [style.background]="k.bg"
+          [style.border]="'1px solid ' + k.accent"
+          [style.border-left-width.px]="3"
+        ></span>
+        {{ k.label }}
+      </span>
+    }
+
+    <span
+      class="kemp-is-rp__legend-divider"
+      aria-hidden="true"
+    ></span>
+
+    <span class="kemp-is-rp__legend-label">Stav chaty</span>
+    @for (item of cottageStatusLegend; track item.config.id) {
+      <span class="kemp-is-rp__legend-item">
+        <i
+          class="pi"
+          [class]="item.config.icon"
+          [style.color]="item.config.dot"
+          [style.font-size.rem]="0.625"
+        ></i>
+        {{ item.config.label }}
+      </span>
+    }
+  </div>
+} @else if (
+  view() === "tabulka" || view() === "skupinove" || view() === "cekaci"
+) {
+  <div class="kemp-is-rp__legend">
+    <span class="kemp-is-rp__legend-label">Stav rezervace</span>
+    @for (k of statusLegend; track k.label) {
+      <span class="kemp-is-rp__legend-item">
+        <span
+          class="kemp-is-rp__legend-swatch"
+          [style.background]="k.bg"
+          [style.border]="'1px solid ' + k.accent"
+          [style.border-left-width.px]="3"
+        ></span>
+        {{ k.label }}
+      </span>
+    }
+  </div>
+}
+
+<div class="kemp-is-rp__main">
+  @if (view() === "plachta") {
+    @if (loadError(); as err) {
+      <div class="kemp-is-rp__empty kemp-is-rp__empty--error">
+        <i
+          class="pi pi-exclamation-triangle"
+          aria-hidden="true"
+        ></i>
+        <div class="kemp-is-rp__empty-title">{{ err }}</div>
+      </div>
+    } @else {
+      <kemp-is-plan-grid
+        [year]="year()"
+        [monthIdx]="monthIdx()"
+        [spotGroups]="spotGroupsValue()"
+        [spots]="spotsValue()"
+        [spotStates]="spotStatesValue()"
+        [reservations]="filteredReservations()"
+        [groupReservations]="filteredGroupReservations()"
+        [outOfOrders]="outOfOrdersValue()"
+        [events]="eventsValue()"
+        [rowHeight]="rowHeight"
+        [todayDay]="todayDay()"
+        [contextOpenId]="selectedReservationId()"
+        (blockClick)="onBlockClick($event)"
+        (eventClick)="onEventBandClick($event)"
+        (oooClick)="onOOOBandClick($event)"
+        (groupReservationClick)="onGroupBlockClick($event)"
+      />
+    }
+  } @else if (loadError(); as err) {
+    <div class="kemp-is-rp__empty kemp-is-rp__empty--error">
+      <i
+        class="pi pi-exclamation-triangle"
+        aria-hidden="true"
+      ></i>
+      <div class="kemp-is-rp__empty-title">{{ err }}</div>
+    </div>
+  } @else if (view() === "tabulka") {
+    <kemp-is-reservations-table
+      [rows]="activeReservationRows()"
+      [loading]="tableLoading()"
+      emptyMessage="Žádné rezervace v zobrazeném období"
+      totalLabel="rezervací"
+      (rowClicked)="onRowClicked($event)"
+    />
+  } @else if (view() === "zrusene") {
+    <kemp-is-reservations-table
+      [rows]="cancelledReservationRows()"
+      [loading]="tableLoading()"
+      [showStateColumn]="false"
+      emptyMessage="Žádné zrušené rezervace v zobrazeném období"
+      totalLabel="zrušených"
+      (rowClicked)="onRowClicked($event)"
+    />
+  } @else if (view() === "skupinove") {
+    <kemp-is-reservations-table
+      [rows]="groupReservationRows()"
+      [loading]="tableLoading()"
+      emptyMessage="Žádné skupinové rezervace v zobrazeném období"
+      totalLabel="skupin"
+      (rowClicked)="onGroupRowClicked($event)"
+    />
+  } @else if (view() === "cekaci") {
+    <kemp-is-reservations-table
+      [rows]="pendingReservationRows()"
+      [loading]="tableLoading()"
+      emptyMessage="Žádné rezervace čekající na potvrzení"
+      totalLabel="rezervací"
+      (rowClicked)="onRowClicked($event)"
+    />
+  }
+</div>
+
+@if (view() !== "cekaci") {
+  <div class="kemp-is-rp__monthstrip">
+    <div class="kemp-is-rp__year">
+      <p-button
+        [text]="true"
+        severity="secondary"
+        size="small"
+        ariaLabel="Předchozí rok"
+        (onClick)="prevYear()"
+      >
+        <i
+          class="pi pi-chevron-left"
+          aria-hidden="true"
+        ></i>
+      </p-button>
+      <div class="kemp-is-rp__year-num">{{ year() }}</div>
+      <p-button
+        [text]="true"
+        severity="secondary"
+        size="small"
+        ariaLabel="Další rok"
+        (onClick)="nextYear()"
+      >
+        <i
+          class="pi pi-chevron-right"
+          aria-hidden="true"
+        ></i>
+      </p-button>
+    </div>
+
+    <div class="kemp-is-rp__months">
+      @for (m of months(); track m.idx) {
+        <button
+          type="button"
+          class="kemp-is-rp__month"
+          [class.kemp-is-rp__month--active]="monthIdx() === m.idx"
+          (click)="setMonth(m.idx)"
+        >
+          <span class="kemp-is-rp__month-row">
+            <span class="kemp-is-rp__month-label">{{ m.label }}</span>
+            @if (m.count !== null) {
+              <span
+                class="kemp-is-rp__month-count"
+                [class.kemp-is-rp__month-count--active]="monthIdx() === m.idx"
+              >
+                {{ m.count }}
+              </span>
+            }
+          </span>
+        </button>
+      }
+    </div>
+  </div>
+}
+
+<p-popover
+  #summary
+  appendTo="body"
+  [dismissable]="true"
+  styleClass="kemp-is-rp__summary-popover"
+  (onShow)="onSummaryShow()"
+  (onHide)="onSummaryHide()"
+>
+  <kemp-is-reservation-summary
+    [reservationId]="selectedReservationId()"
+    (editClicked)="onEditReservation()"
+  />
+</p-popover>
+
+<p-popover
+  #groupSummary
+  appendTo="body"
+  [dismissable]="true"
+  styleClass="kemp-is-rp__summary-popover"
+  (onShow)="onGroupSummaryShow()"
+  (onHide)="onGroupSummaryHide()"
+>
+  <kemp-is-group-reservation-summary
+    [groupReservationId]="selectedGroupReservationId()"
+    [spotId]="selectedGroupSpotId()"
+    (editClicked)="onEditGroupFromSummary($event)"
+    (createReservationClicked)="onCreateReservationForGroup($event)"
+  />
+</p-popover>
+
+<kemp-is-event-create-dialog
+  [(visible)]="eventDialogOpen"
+  [spotGroups]="spotGroupsValue()"
+  [event]="eventToEdit()"
+  [viewOnly]="!isManager()"
+  (created)="onEventMutated()"
+  (updated)="onEventMutated()"
+  (deleted)="onEventMutated()"
+/>
+
+<kemp-is-group-reservation-form-dialog
+  [(visible)]="groupDialogOpen"
+  [groupReservationId]="groupToEdit()"
+  [spotGroups]="spotGroupsValue()"
+  [spots]="spotsValue()"
+  (mutated)="onGroupReservationMutated($event)"
+/>
+
+<kemp-is-out-of-order-form-dialog
+  [(visible)]="oooDialogOpen"
+  [outOfOrder]="oooToEdit()"
+  [spotGroups]="spotGroupsValue()"
+  [spots]="spotsValue()"
+  (mutated)="onOOOMutated($event)"
+/>
+
+<p-toast />

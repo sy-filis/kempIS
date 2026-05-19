@@ -1,0 +1,417 @@
+<header class="kemp-is-bill-step__header">
+  <div>
+    <h2 class="kemp-is-bill-step__title">Vozidla, karavany a stany</h2>
+    <p class="kemp-is-bill-step__subtitle">
+      Zaevidujte vozidla, karavany a stany hosta.
+    </p>
+  </div>
+</header>
+
+<div class="kemp-is-bill__step2-grid">
+  @if (unassignedRows().length > 0) {
+    <div class="kemp-is-bc kemp-is-bc--banner">
+      <div class="kemp-is-bc__head">
+        <h3 class="kemp-is-bc__title">
+          <span class="kemp-is-bc__title-icon kemp-is-bc__title-icon--warn">
+            <i
+              class="pi pi-exclamation-circle"
+              aria-hidden="true"
+            ></i>
+          </span>
+          Neznámá vozidla
+        </h3>
+      </div>
+      <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+        @for (v of unassignedRows(); track v.id) {
+          <div class="kemp-is-bill__unassigned-row">
+            <div class="kemp-is-bill__unassigned-field">
+              <div class="kemp-is-bill__field-label">RZ</div>
+              <input
+                pInputText
+                class="kemp-mono"
+                placeholder="5AB 1234"
+                [ngModel]="v.plate"
+                (ngModelChange)="updateVehicleField(v.id, 'plate', $event)"
+              />
+            </div>
+            <div
+              class="kemp-is-bill__unassigned-field kemp-is-bill__unassigned-field--grow"
+            >
+              <div class="kemp-is-bill__field-label">Přiřadit službu</div>
+              <p-select
+                [options]="allVehicleTypes()"
+                optionLabel="label"
+                optionValue="id"
+                [ngModel]="null"
+                (ngModelChange)="changeVehicleType(v.id, $event)"
+                placeholder="Vyberte službu"
+                appendTo="body"
+                styleClass="kemp-is-bill__unassigned-select"
+              />
+            </div>
+            <div class="kemp-is-bill__unassigned-action">
+              <p-button
+                [text]="true"
+                severity="secondary"
+                size="small"
+                ariaLabel="Smazat vozidlo"
+                (onClick)="deleteVehicle(v.id)"
+              >
+                <i
+                  class="pi pi-trash"
+                  aria-hidden="true"
+                ></i>
+              </p-button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="kemp-is-bc">
+    <div class="kemp-is-bc__head">
+      <h3 class="kemp-is-bc__title">
+        <span class="kemp-is-bc__title-icon">
+          <i
+            class="pi pi-car"
+            aria-hidden="true"
+          ></i>
+        </span>
+        Vozidla
+      </h3>
+      <span>
+        <p-button
+          size="small"
+          ariaLabel="Přidat vozidlo"
+          (onClick)="vehicleAddMenu.toggle($event)"
+        >
+          <i
+            class="pi pi-plus"
+            aria-hidden="true"
+          ></i>
+        </p-button>
+        <p-menu
+          #vehicleAddMenu
+          [model]="vehicleMenuItems()"
+          [popup]="true"
+          appendTo="body"
+        />
+      </span>
+    </div>
+    <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+      @if (vehicleRows().length === 0) {
+        <div class="kemp-is-bill__empty">Žádné vozidlo zaevidováno</div>
+      }
+      @for (row of vehicleRows(); track row.v.id) {
+        @if (editingId() === row.v.id) {
+          <div class="kemp-is-bill__vehicle-edit">
+            <div class="kemp-is-bill__vehicle-edit-grid">
+              <div>
+                <div class="kemp-is-bill__field-label">SPZ</div>
+                <input
+                  pInputText
+                  class="kemp-mono"
+                  placeholder="5AB 1234"
+                  [ngModel]="row.v.plate"
+                  (ngModelChange)="
+                    updateVehicleField(row.v.id, 'plate', $event)
+                  "
+                />
+              </div>
+              <div>
+                <div class="kemp-is-bill__field-label">Typ vozidla</div>
+                <p-select
+                  [options]="vehicleTypes()"
+                  optionLabel="label"
+                  optionValue="id"
+                  [ngModel]="row.v.serviceId"
+                  (ngModelChange)="changeVehicleType(row.v.id, $event)"
+                />
+              </div>
+            </div>
+            <div class="kemp-is-bill__vehicle-edit-actions">
+              <p-button
+                [text]="true"
+                severity="secondary"
+                size="small"
+                ariaLabel="Smazat vozidlo"
+                (onClick)="deleteVehicle(row.v.id)"
+              >
+                <i
+                  class="pi pi-trash"
+                  aria-hidden="true"
+                ></i>
+              </p-button>
+              <p-button
+                size="small"
+                ariaLabel="Hotovo"
+                (onClick)="stopEdit()"
+              >
+                <i
+                  class="pi pi-check"
+                  aria-hidden="true"
+                ></i>
+                <span>Hotovo</span>
+              </p-button>
+            </div>
+          </div>
+        } @else {
+          <div
+            class="kemp-is-bill__vehicle-row kemp-is-bill__vehicle-row--clickable"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'Upravit vozidlo ' + row.v.plate"
+            (click)="startEdit(row.v.id)"
+            (keydown.enter)="startEdit(row.v.id)"
+            (keydown.space)="$event.preventDefault(); startEdit(row.v.id)"
+          >
+            <span class="kemp-is-bill__plate">
+              <span>{{ row.v.plate || "— — —" }}</span>
+            </span>
+            <div class="kemp-is-bill__vehicle-info">
+              <div class="kemp-is-bill__vehicle-type">{{ row.v.type }}</div>
+              <div class="kemp-is-bill__vehicle-meta kemp-mono">
+                {{ row.v.nights }}N × {{ row.v.ratePerNight }} Kč =
+                <b>{{ formatNumber(row.total) }} Kč</b>
+              </div>
+            </div>
+            <div class="kemp-is-bill__vehicle-actions">
+              <p-button
+                [text]="true"
+                severity="secondary"
+                size="small"
+                ariaLabel="Smazat vozidlo"
+                (onClick)="$event.stopPropagation(); deleteVehicle(row.v.id)"
+              >
+                <i
+                  class="pi pi-trash"
+                  aria-hidden="true"
+                ></i>
+              </p-button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="kemp-is-bc">
+    <div class="kemp-is-bc__head">
+      <h3 class="kemp-is-bc__title">
+        <span class="kemp-is-bc__title-icon kemp-is-bc__title-icon--amber">
+          <i
+            class="pi pi-truck"
+            aria-hidden="true"
+          ></i>
+        </span>
+        Karavany
+      </h3>
+      <span>
+        <p-button
+          size="small"
+          ariaLabel="Přidat karavan"
+          (onClick)="caravanAddMenu.toggle($event)"
+        >
+          <i
+            class="pi pi-plus"
+            aria-hidden="true"
+          ></i>
+        </p-button>
+        <p-menu
+          #caravanAddMenu
+          [model]="caravanMenuItems()"
+          [popup]="true"
+          appendTo="body"
+        />
+      </span>
+    </div>
+    <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+      @if (caravanRows().length === 0) {
+        <div class="kemp-is-bill__empty">Žádný karavan zaevidován</div>
+      }
+      @for (row of caravanRows(); track row.v.id) {
+        @if (editingId() === row.v.id) {
+          <div class="kemp-is-bill__vehicle-edit">
+            <div class="kemp-is-bill__vehicle-edit-grid">
+              <div>
+                <div class="kemp-is-bill__field-label">SPZ</div>
+                <input
+                  pInputText
+                  class="kemp-mono"
+                  placeholder="5AB 1234"
+                  [ngModel]="row.v.plate"
+                  (ngModelChange)="
+                    updateVehicleField(row.v.id, 'plate', $event)
+                  "
+                />
+              </div>
+              <div>
+                <div class="kemp-is-bill__field-label">Typ karavanu</div>
+                <p-select
+                  [options]="caravanTypes()"
+                  optionLabel="label"
+                  optionValue="id"
+                  [ngModel]="row.v.serviceId"
+                  (ngModelChange)="changeVehicleType(row.v.id, $event)"
+                />
+              </div>
+            </div>
+            <div class="kemp-is-bill__vehicle-edit-actions">
+              <p-button
+                [text]="true"
+                severity="secondary"
+                size="small"
+                ariaLabel="Smazat karavan"
+                (onClick)="deleteCaravan(row.v.id)"
+              >
+                <i
+                  class="pi pi-trash"
+                  aria-hidden="true"
+                ></i>
+              </p-button>
+              <p-button
+                size="small"
+                ariaLabel="Hotovo"
+                (onClick)="stopEdit()"
+              >
+                <i
+                  class="pi pi-check"
+                  aria-hidden="true"
+                ></i>
+                <span>Hotovo</span>
+              </p-button>
+            </div>
+          </div>
+        } @else {
+          <div
+            class="kemp-is-bill__vehicle-row kemp-is-bill__vehicle-row--clickable"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'Upravit karavan ' + row.v.plate"
+            (click)="startEdit(row.v.id)"
+            (keydown.enter)="startEdit(row.v.id)"
+            (keydown.space)="$event.preventDefault(); startEdit(row.v.id)"
+          >
+            <span class="kemp-is-bill__plate">
+              <span>{{ row.v.plate || "— — —" }}</span>
+            </span>
+            <div class="kemp-is-bill__vehicle-info">
+              <div class="kemp-is-bill__vehicle-type">{{ row.v.type }}</div>
+              <div class="kemp-is-bill__vehicle-meta kemp-mono">
+                {{ row.v.nights }}N × {{ row.v.ratePerNight }} Kč =
+                <b>{{ formatNumber(row.total) }} Kč</b>
+              </div>
+            </div>
+            <div class="kemp-is-bill__vehicle-actions">
+              <p-button
+                [text]="true"
+                severity="secondary"
+                size="small"
+                ariaLabel="Smazat karavan"
+                (onClick)="$event.stopPropagation(); deleteCaravan(row.v.id)"
+              >
+                <i
+                  class="pi pi-trash"
+                  aria-hidden="true"
+                ></i>
+              </p-button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="kemp-is-bc">
+    <div class="kemp-is-bc__head">
+      <h3 class="kemp-is-bc__title">
+        <span class="kemp-is-bc__title-icon kemp-is-bc__title-icon--mint">
+          <i
+            class="pi pi-flag"
+            aria-hidden="true"
+          ></i>
+        </span>
+        Stany
+      </h3>
+      <span class="kemp-is-bc__head-meta">
+        {{ tentTotalQty() }} ks · {{ nights() }} nocí
+      </span>
+    </div>
+    <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+      <div class="kemp-is-bill__row-head kemp-is-bill__tents-grid">
+        <span>Typ stanu</span>
+        <span class="kemp-is-bill__cell-center">Počet</span>
+        <span class="kemp-is-bill__cell-right">Celkem</span>
+      </div>
+      @for (t of tents(); track t.id) {
+        <div
+          class="kemp-is-bill__row kemp-is-bill__tents-grid"
+          [class.kemp-is-bill__tent-row--active]="t.qty > 0"
+        >
+          <div>
+            <div
+              class="kemp-is-bill__tent-name"
+              [class.kemp-is-bill__tent-name--active]="t.qty > 0"
+            >
+              {{ t.label }}
+            </div>
+            <div class="kemp-is-bill__tent-rate kemp-mono">
+              {{ t.ratePerNight }} Kč / noc
+            </div>
+          </div>
+          <div class="kemp-is-bill__cell-center kemp-is-bill__numstepper-cell">
+            <p-inputnumber
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              [min]="0"
+              [ngModel]="t.qty"
+              (ngModelChange)="updateTentQty(t.id, $event)"
+              styleClass="kemp-is-bill__numstepper"
+              decrementButtonClass="p-button-secondary p-button-text"
+              incrementButtonClass="p-button-secondary p-button-text"
+              [inputStyle]="{ width: '2.5rem' }"
+            />
+          </div>
+          <div
+            class="kemp-is-bill__cell-right kemp-is-bill__tent-total kemp-mono"
+            [class.kemp-is-bill__tent-total--zero]="t.qty === 0"
+          >
+            @if (tentLineTotal(t) > 0) {
+              {{ formatNumber(tentLineTotal(t)) }} Kč
+            } @else {
+              —
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<div class="kemp-is-bill__totals-strip">
+  <div class="kemp-is-bill__totals-cell">
+    <div class="kemp-is-bill__totals-cell-label">Vozidla</div>
+    <div class="kemp-is-bill__totals-cell-value kemp-mono">
+      {{ formatNumber(carsTotal()) }} Kč
+    </div>
+  </div>
+  <div class="kemp-is-bill__totals-cell">
+    <div class="kemp-is-bill__totals-cell-label">Karavany</div>
+    <div class="kemp-is-bill__totals-cell-value kemp-mono">
+      {{ formatNumber(caravansTotal()) }} Kč
+    </div>
+  </div>
+  <div class="kemp-is-bill__totals-cell">
+    <div class="kemp-is-bill__totals-cell-label">Stany</div>
+    <div class="kemp-is-bill__totals-cell-value kemp-mono">
+      {{ formatNumber(tentsTotal()) }} Kč
+    </div>
+  </div>
+  <div class="kemp-is-bill__totals-grand">
+    <div class="kemp-is-bill__totals-grand-label">Mezisoučet kroku</div>
+    <div class="kemp-is-bill__totals-grand-value kemp-mono">
+      {{ formatNumber(grandTotal()) }} Kč
+    </div>
+  </div>
+</div>

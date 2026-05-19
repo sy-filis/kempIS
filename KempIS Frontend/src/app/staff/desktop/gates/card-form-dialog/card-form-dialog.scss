@@ -1,0 +1,31 @@
+.kemp-is-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    p-inputnumber,
+    textarea {
+      width: 100%;
+    }
+
+    textarea {
+      resize: vertical;
+      font-family: inherit;
+    }
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--p-text-color, #3f3f46);
+  }
+
+  &__error {
+    margin-top: 0.25rem;
+  }
+}

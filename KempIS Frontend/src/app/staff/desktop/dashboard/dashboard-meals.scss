@@ -1,0 +1,70 @@
+@use "./dash-shared" as *;
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.kemp-is-dash__meals {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+.kemp-is-dash__meal {
+  padding: 10px 14px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  }
+
+  &--next {
+    background: var(--p-primary-50, #ecfdf5);
+  }
+}
+
+.kemp-is-dash__meal-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.kemp-is-dash__meal-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-dash__meal-body {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.kemp-is-dash__meal-count {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-dash__meal-time {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--p-text-color-secondary, #71717a);
+}
+
+.kemp-is-dash__meals-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--p-text-color-secondary, #71717a);
+  text-align: center;
+}

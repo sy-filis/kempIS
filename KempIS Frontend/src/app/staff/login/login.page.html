@@ -1,0 +1,29 @@
+<div class="kemp-is-staff-login">
+  <header class="kemp-is-staff-login__toolbar">
+    <kemp-is-locale-switcher />
+  </header>
+
+  <main class="kemp-is-staff-login__content">
+    <p-card>
+      <h1 class="kemp-is-staff-login__title">{{ title }}</h1>
+
+      <div class="kemp-is-staff-login__body">
+        <p-button
+          [label]="buttonLabel"
+          icon="pi pi-key"
+          [loading]="pending()"
+          [disabled]="pending()"
+          (onClick)="onSignIn()"
+        />
+
+        @if (error(); as msg) {
+          <p-message
+            severity="error"
+            [text]="msg"
+            [closable]="false"
+          />
+        }
+      </div>
+    </p-card>
+  </main>
+</div>

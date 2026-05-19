@@ -1,0 +1,14 @@
+:host {
+  display: inline-block;
+}
+
+.kemp-is-qr-render {
+  display: block;
+  line-height: 0;
+}
+
+.kemp-is-qr-render svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}

@@ -1,0 +1,118 @@
+<div class="kemp-is-bc">
+  <div class="kemp-is-bc__head">
+    <h3 class="kemp-is-bc__title">
+      <span class="kemp-is-bc__title-icon">
+        <i
+          class="pi pi-id-card"
+          aria-hidden="true"
+        ></i>
+      </span>
+      Vydané přístupové karty
+    </h3>
+    <span class="kemp-is-bc__head-meta kemp-mono">
+      Záloha celkem {{ formatNumber(depositTotal()) }} Kč
+    </span>
+  </div>
+  <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+    <div class="kemp-is-bill__row-head kemp-is-bill__access-card-grid">
+      <span>UID karty</span>
+      <span class="kemp-is-bill__cell-right">Záloha</span>
+      <span>Platnost do</span>
+      <span>Poznámka</span>
+      <span></span>
+    </div>
+
+    @for (c of cards(); track c.id) {
+      <div class="kemp-is-bill__row kemp-is-bill__access-card-grid">
+        <input
+          pInputText
+          class="kemp-mono"
+          placeholder="04A5B6C7D8E9"
+          [ngModel]="c.uid"
+          (ngModelChange)="updateUid(c.id, $event)"
+        />
+        <p-inputnumber
+          [ngModel]="c.deposit"
+          (ngModelChange)="updateDeposit(c.id, $event)"
+          [min]="0"
+          [maxFractionDigits]="0"
+          suffix=" Kč"
+          [inputStyle]="{ width: '7rem', textAlign: 'right' }"
+        />
+        <p-datepicker
+          [ngModel]="validUntilDate(c.validUntil)"
+          (ngModelChange)="updateValidUntil(c.id, $event)"
+          dateFormat="dd. mm. yy"
+          [showIcon]="true"
+          appendTo="body"
+        />
+        <input
+          pInputText
+          placeholder="Poznámka"
+          [ngModel]="c.note"
+          (ngModelChange)="updateNote(c.id, $event)"
+        />
+        <p-button
+          [text]="true"
+          severity="secondary"
+          size="small"
+          ariaLabel="Odebrat kartu"
+          (onClick)="removeCard(c.id)"
+        >
+          <i
+            class="pi pi-trash"
+            aria-hidden="true"
+          ></i>
+        </p-button>
+      </div>
+    } @empty {
+      <div class="kemp-is-bill__empty">Žádná karta vydána</div>
+    }
+
+    <div
+      class="kemp-is-bill__row kemp-is-bill__access-card-grid kemp-is-bill__row--add"
+    >
+      <input
+        pInputText
+        class="kemp-mono"
+        placeholder="Naskenujte kartu"
+        [ngModel]="draftUid()"
+        (ngModelChange)="draftUid.set($event)"
+        (keydown.enter)="addCard()"
+      />
+      <p-inputnumber
+        [ngModel]="draftDeposit()"
+        (ngModelChange)="draftDeposit.set($event)"
+        [min]="0"
+        [maxFractionDigits]="0"
+        suffix=" Kč"
+        [inputStyle]="{ width: '7rem', textAlign: 'right' }"
+      />
+      <p-datepicker
+        [ngModel]="draftValidUntil()"
+        (ngModelChange)="draftValidUntil.set($event)"
+        dateFormat="dd. mm. yy"
+        [showIcon]="true"
+        appendTo="body"
+      />
+      <input
+        pInputText
+        placeholder="Poznámka"
+        [ngModel]="draftNote()"
+        (ngModelChange)="draftNote.set($event)"
+        (keydown.enter)="addCard()"
+      />
+      <p-button
+        size="small"
+        ariaLabel="Přidat kartu"
+        [disabled]="!draftValid()"
+        (onClick)="addCard()"
+      >
+        <i
+          class="pi pi-check"
+          aria-hidden="true"
+        ></i>
+      </p-button>
+    </div>
+  </div>
+</div>

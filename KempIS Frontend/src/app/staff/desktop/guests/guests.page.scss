@@ -1,0 +1,136 @@
+.kemp-is-guests {
+  display: flex;
+  flex-direction: column;
+
+  &__row {
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--p-surface-50, #fafafa);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--p-primary-color, #10b981);
+      outline-offset: -2px;
+    }
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0 1.25rem;
+    height: 64px;
+    flex-shrink: 0;
+    background: var(--p-surface-0, #fff);
+    border-bottom: 1px solid var(--p-content-border-color, #e4e4e7);
+  }
+
+  &__title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__title-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--p-text-muted-color, #71717a);
+    text-transform: uppercase;
+  }
+
+  &__title-main {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--p-text-color-emphasis, #27272a);
+    line-height: 1.1;
+  }
+
+  &__filters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+  }
+
+  &__field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--p-text-color, #3f3f46);
+  }
+
+  &__field-label {
+    font-weight: 500;
+  }
+
+  &__search {
+    width: 22rem;
+
+    input {
+      width: 100%;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+  }
+
+  &__caption {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__caption-spacer {
+    flex: 1;
+  }
+
+  &__totals {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--p-text-color, #3f3f46);
+
+    strong {
+      color: var(--p-text-color-emphasis, #27272a);
+      font-weight: 600;
+    }
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  &__doc {
+    .kemp-mono {
+      margin-left: 0.25rem;
+    }
+  }
+
+  &__signature-col,
+  &__signature-cell {
+    text-align: center;
+    width: 5rem;
+  }
+
+  &__muted {
+    color: var(--p-text-muted-color, #6b7280);
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--p-text-muted-color, #6b7280);
+  }
+}

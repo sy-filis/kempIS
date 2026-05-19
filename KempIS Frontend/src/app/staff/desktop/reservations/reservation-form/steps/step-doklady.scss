@@ -1,0 +1,115 @@
+.kemp-is-doklady__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.kemp-is-doklady__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.kemp-is-doklady__title-block {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.kemp-is-doklady__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--p-text-muted-color, #71717a);
+  text-transform: uppercase;
+}
+
+.kemp-is-doklady__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-doklady__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.25rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--p-surface-100, #f4f4f5);
+  color: var(--p-text-color, #3f3f46);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.kemp-is-doklady__table {
+  font-size: 0.875rem;
+
+  th {
+    background: var(--p-surface-50, #fafafa);
+    color: var(--p-text-muted-color, #71717a);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+.kemp-is-doklady__col-number {
+  width: 9rem;
+}
+
+.kemp-is-doklady__col-status {
+  width: 8rem;
+}
+
+.kemp-is-doklady__col-link {
+  width: 5rem;
+  text-align: center;
+}
+
+.kemp-is-doklady__col-amount {
+  width: 9rem;
+  text-align: right;
+}
+
+.kemp-is-doklady__cell-center {
+  text-align: center;
+}
+
+.kemp-is-doklady__cell-amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--p-text-color-emphasis, #27272a);
+  font-weight: 600;
+}
+
+.kemp-is-doklady__empty {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--p-text-muted-color, #6b7280);
+  font-style: italic;
+}
+
+.kemp-is-doklady__muted {
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-doklady__row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--p-surface-50, #fafafa);
+  }
+}

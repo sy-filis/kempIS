@@ -1,0 +1,24 @@
+<header class="kemp-is-shell__header">
+  <a
+    routerLink="/public"
+    class="kemp-is-shell__brand"
+  >
+    <span>{{ camp.name }}</span>
+  </a>
+  <kemp-is-locale-switcher />
+</header>
+
+<main class="kemp-is-shell__main">
+  <router-outlet />
+</main>
+
+<footer class="kemp-is-shell__footer">
+  <address class="kemp-is-shell__address">
+    {{ camp.name }}<br />
+    {{ camp.address.street }}, {{ camp.address.zip }} {{ camp.address.city
+    }}<br />
+    <a [href]="'tel:' + camp.phoneTel">{{ camp.phoneDisplay }}</a> ·
+    <a [href]="'mailto:' + camp.email">{{ camp.email }}</a>
+  </address>
+  <small i18n="@@shell.footer.copyright">© {{ year }} {{ camp.name }}</small>
+</footer>

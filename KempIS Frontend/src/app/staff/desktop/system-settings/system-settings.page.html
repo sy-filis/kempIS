@@ -1,0 +1,22 @@
+<div class="kemp-is-system-settings">
+  <header class="kemp-is-system-settings__header">
+    <h1>Nastavení systému</h1>
+  </header>
+
+  <p-tabs [value]="activeTab()">
+    <p-tablist>
+      @for (tab of tabs; track tab.value) {
+        <p-tab
+          [value]="tab.value"
+          [routerLink]="[tab.value]"
+        >
+          {{ tab.label }}
+        </p-tab>
+      }
+    </p-tablist>
+  </p-tabs>
+
+  <div class="kemp-is-system-settings__outlet">
+    <router-outlet />
+  </div>
+</div>

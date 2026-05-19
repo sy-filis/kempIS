@@ -1,0 +1,56 @@
+<section
+  class="kemp-is-dash__card"
+  data-color="meals"
+>
+  <header class="kemp-is-dash__card-head">
+    <span
+      class="kemp-is-dash__card-accent"
+      aria-hidden="true"
+    ></span>
+    <span class="kemp-is-dash__card-title">Strava</span>
+  </header>
+  <div class="kemp-is-dash__meals">
+    @if (!hasMeals()) {
+      <div class="kemp-is-dash__meals-empty">Žádná strava na dnešní den</div>
+    } @else {
+      @for (m of meals(); track m.meal) {
+        <div
+          class="kemp-is-dash__meal"
+          [class.kemp-is-dash__meal--next]="m.status === 'next'"
+        >
+          <div class="kemp-is-dash__meal-head">
+            <span class="kemp-is-dash__meal-name">{{ m.meal }}</span>
+            @if (m.time; as time) {
+              <span class="kemp-is-dash__meal-time kemp-mono">{{ time }}</span>
+            }
+            <div class="kemp-is-dash__card-spacer"></div>
+            @if (m.status === "done") {
+              <p-tag
+                severity="success"
+                value="Hotovo"
+                [rounded]="true"
+              />
+            } @else if (m.status === "next") {
+              <p-tag
+                severity="info"
+                value="Další"
+                [rounded]="true"
+              />
+            } @else {
+              <p-tag
+                severity="secondary"
+                value="Plán"
+                [rounded]="true"
+              />
+            }
+          </div>
+          <div class="kemp-is-dash__meal-body">
+            <span class="kemp-is-dash__meal-count kemp-mono">
+              {{ m.status === "done" ? m.served : m.count }}
+            </span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>

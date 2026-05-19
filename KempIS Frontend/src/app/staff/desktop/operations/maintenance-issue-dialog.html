@@ -1,0 +1,102 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [style]="{ width: '36rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-ops-issue-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-ops-issue-form__field">
+      <label for="kemp-is-ops-issue-title">Závada</label>
+      <input
+        id="kemp-is-ops-issue-title"
+        pInputText
+        type="text"
+        autocomplete="off"
+        [ngModel]="problemDescription()"
+        (ngModelChange)="problemDescription.set($event)"
+        name="problemDescription"
+        required
+        [disabled]="submitting()"
+        placeholder="Stručný popis závady"
+      />
+    </div>
+
+    @if (mode() === "create") {
+      <div class="kemp-is-ops-issue-form__field">
+        <label for="kemp-is-ops-issue-spot">Místo</label>
+        <p-select
+          inputId="kemp-is-ops-issue-spot"
+          [options]="spotOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="spotId()"
+          (ngModelChange)="spotId.set($event)"
+          name="spotId"
+          [disabled]="submitting()"
+          [filter]="true"
+          filterBy="label"
+          placeholder="Bez místa"
+          appendTo="body"
+        />
+      </div>
+    }
+
+    <div class="kemp-is-ops-issue-form__field">
+      <label for="kemp-is-ops-issue-note">Popis</label>
+      <textarea
+        id="kemp-is-ops-issue-note"
+        pTextarea
+        rows="4"
+        [ngModel]="note()"
+        (ngModelChange)="note.set($event)"
+        name="note"
+        [disabled]="submitting()"
+        placeholder="Doplňující informace, kontext, kroky k reprodukci…"
+      ></textarea>
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    @if (mode() === "edit") {
+      <p-button
+        label="Smazat"
+        icon="pi pi-trash"
+        severity="danger"
+        [text]="true"
+        [disabled]="submitting()"
+        (onClick)="onDelete()"
+      />
+    }
+    <span class="kemp-is-ops-issue-form__footer-spacer"></span>
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog />

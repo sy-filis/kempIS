@@ -1,0 +1,74 @@
+<p-panel header="eDoklady — virtuální přepážka">
+  @if (counter(); as c) {
+    <dl class="kemp-is-edoklady-settings__list">
+      <dt>Identifikátor</dt>
+      <dd>
+        <code>{{ c.id }}</code>
+      </dd>
+
+      <dt>Platnost QR do</dt>
+      <dd>{{ validToLabel() }}</dd>
+
+      <dt>Data QR kódu</dt>
+      <dd>
+        <textarea
+          pTextarea
+          rows="3"
+          readonly
+          class="kemp-is-edoklady-settings__qr"
+          [value]="c.qrCode.data"
+        ></textarea>
+      </dd>
+    </dl>
+  } @else {
+    <p class="kemp-is-edoklady-settings__empty">
+      Vyrovnávací paměť prázdná, vytvoří se při prvním použití.
+    </p>
+  }
+
+  <div class="kemp-is-edoklady-settings__actions">
+    @if (counter()) {
+      <p-button
+        size="small"
+        severity="secondary"
+        ariaLabel="Obnovit virtuální přepážku"
+        [disabled]="ensuring()"
+        (onClick)="refresh()"
+      >
+        <i
+          class="pi pi-refresh"
+          aria-hidden="true"
+        ></i>
+        <span>Obnovit</span>
+      </p-button>
+      <p-button
+        size="small"
+        severity="danger"
+        [text]="true"
+        [disabled]="ensuring()"
+        (onClick)="resetAndRecreate()"
+      >
+        Zrušit a vytvořit nový
+      </p-button>
+    } @else {
+      <p-button
+        size="small"
+        [disabled]="ensuring()"
+        (onClick)="refresh()"
+      >
+        Vytvořit nyní
+      </p-button>
+    }
+  </div>
+
+  @if (errorMessage(); as msg) {
+    <p-message
+      severity="warn"
+      [closable]="true"
+      (onClose)="dismissError()"
+      styleClass="kemp-is-edoklady-settings__error"
+    >
+      {{ msg }}
+    </p-message>
+  }
+</p-panel>

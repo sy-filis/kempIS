@@ -1,0 +1,25 @@
+<div class="kemp-is-ops">
+  <p-toast />
+  <kemp-is-ops-cleaning-toolbar
+    [selectedDate]="selectedDate()"
+    [done]="cleaningTotals().done"
+    [total]="cleaningTotals().total"
+    [lastUpdatedLabel]="lastUpdatedLabel()"
+    [prefilling]="prefilling()"
+    (dateChange)="onDateChange($event)"
+    (prefill)="onPrefill()"
+  />
+
+  <div class="kemp-is-ops__body">
+    <kemp-is-ops-cleaning-table
+      [rows]="cleaningRows()"
+      [shouldCleanCount]="cleaningTotals().total"
+      [selectedDate]="selectedDate()"
+      [disabledShouldClean]="disabledShouldClean()"
+      (shouldCleanChange)="onShouldCleanChange($event.spotId, $event.value)"
+      (noteCommit)="onNoteCommit($event.cleanInfoId, $event.value)"
+    />
+
+    <kemp-is-ops-maintenance-section />
+  </div>
+</div>

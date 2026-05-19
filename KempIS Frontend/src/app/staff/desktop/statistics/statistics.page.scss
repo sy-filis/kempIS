@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  padding: 1.5rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.kemp-is-statistics {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.kemp-is-statistics__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.kemp-is-statistics__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-statistics__range {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kemp-is-statistics__range-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+}

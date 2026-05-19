@@ -1,0 +1,72 @@
+<section class="kemp-is-stats-panel">
+  @if (totals(); as t) {
+    <p class="kemp-is-stats-panel__summary">
+      {{ t.totalBillCount }} účtů · {{ formatCzk(t.totalGross) }}
+    </p>
+  }
+
+  @if (rangeTooLarge()) {
+    <p-message
+      severity="warn"
+      text="Rozsah nesmí přesáhnout 366 dní"
+    />
+  }
+
+  @if (errorMessage(); as msg) {
+    <p-message
+      severity="error"
+      [text]="msg"
+    />
+  }
+
+  <p-table
+    [value]="rows()"
+    [loading]="resource.isLoading()"
+    sortField="gross"
+    [sortOrder]="-1"
+    dataKey="paymentType"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="paymentType">
+          Způsob úhrady
+          <p-sortIcon field="paymentType" />
+        </th>
+        <th
+          pSortableColumn="billCount"
+          class="kemp-is-stats-cell--num"
+        >
+          Počet účtů
+          <p-sortIcon field="billCount" />
+        </th>
+        <th
+          pSortableColumn="gross"
+          class="kemp-is-stats-cell--num"
+        >
+          Celkem
+          <p-sortIcon field="gross" />
+        </th>
+        <th class="kemp-is-stats-cell--num">Podíl</th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-row
+    >
+      <tr>
+        <td>{{ paymentTypeLabel(row.paymentType) }}</td>
+        <td class="kemp-is-stats-cell--num">{{ row.billCount }}</td>
+        <td class="kemp-is-stats-cell--num">{{ formatCzk(row.gross) }}</td>
+        <td class="kemp-is-stats-cell--num">
+          {{ formatPercent(row.sharePercent) }}
+          <div class="kemp-is-stats-progress">
+            <div
+              class="kemp-is-stats-progress__bar"
+              [style.width]="barWidth(row.sharePercent)"
+            ></div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

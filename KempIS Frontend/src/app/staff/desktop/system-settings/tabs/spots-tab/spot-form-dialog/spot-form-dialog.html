@@ -1,0 +1,98 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [dismissableMask]="!submitting()"
+  [style]="{ width: '32rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-spot-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-spot-form__field">
+      <label for="kemp-is-spot-form-group">Skupina míst</label>
+      <p-select
+        inputId="kemp-is-spot-form-group"
+        [options]="spotGroupOptions()"
+        optionLabel="name"
+        optionValue="id"
+        [ngModel]="spotGroupId()"
+        (ngModelChange)="spotGroupId.set($event)"
+        name="spotGroupId"
+        [disabled]="submitting()"
+        appendTo="body"
+        placeholder="Vyberte skupinu"
+        [filter]="true"
+      />
+    </div>
+
+    <div class="kemp-is-spot-form__field">
+      <label for="kemp-is-spot-form-name">Název</label>
+      <input
+        id="kemp-is-spot-form-name"
+        pInputText
+        type="text"
+        autocomplete="off"
+        maxlength="255"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div class="kemp-is-spot-form__field">
+      <label for="kemp-is-spot-form-description">Popis</label>
+      <textarea
+        id="kemp-is-spot-form-description"
+        pTextarea
+        rows="3"
+        maxlength="1000"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        name="description"
+        [disabled]="submitting()"
+      ></textarea>
+    </div>
+
+    <div class="kemp-is-spot-form__field kemp-is-spot-form__field--inline">
+      <label for="kemp-is-spot-form-active">Aktivní</label>
+      <p-toggleswitch
+        inputId="kemp-is-spot-form-active"
+        [ngModel]="isActive()"
+        (ngModelChange)="isActive.set($event)"
+        name="isActive"
+        [disabled]="submitting()"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>

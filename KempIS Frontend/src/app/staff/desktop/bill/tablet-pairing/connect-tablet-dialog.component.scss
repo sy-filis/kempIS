@@ -1,0 +1,41 @@
+:host {
+  display: contents;
+}
+
+.kemp-is-connect-tablet-dialog__lead {
+  margin: 0 0 1rem;
+  color: var(--p-text-muted-color);
+}
+
+.kemp-is-connect-tablet-dialog__qr {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.kemp-is-connect-tablet-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.kemp-is-connect-tablet-dialog__pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+}
+
+.kemp-is-connect-tablet-dialog__spinner {
+  width: 3rem;
+  height: 3rem;
+}
+
+.kemp-is-connect-tablet-dialog__expiry {
+  margin: 0 0 1rem;
+  text-align: center;
+  color: var(--p-text-muted-color);
+  font-size: 0.875rem;
+}

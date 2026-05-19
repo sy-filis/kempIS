@@ -1,0 +1,67 @@
+.kemp-is-event-dialog__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.kemp-is-event-dialog__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--p-text-muted-color, #71717a);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.kemp-is-event-dialog__row-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.kemp-is-event-dialog__hint {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-event-dialog__hint--error {
+  color: var(--p-red-700, #b91c1c);
+}
+
+.kemp-is-event-dialog__footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.kemp-is-event-dialog__footer-spacer {
+  flex: 1;
+}
+
+.kemp-is-event-dialog__error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: var(--p-red-50, #fef2f2);
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.8125rem;
+
+  > i {
+    font-size: 0.875rem;
+  }
+}
+
+:host ::ng-deep .kemp-is-event-dialog input,
+:host ::ng-deep .kemp-is-event-dialog textarea,
+:host ::ng-deep .kemp-is-event-dialog .p-datepicker,
+:host ::ng-deep .kemp-is-event-dialog .p-multiselect {
+  width: 100%;
+}

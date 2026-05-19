@@ -1,0 +1,68 @@
+<header class="kemp-is-grs__head">
+  <div class="kemp-is-grs__title">
+    <div class="kemp-is-grs__eyebrow">Skupinová rezervace</div>
+    <div class="kemp-is-grs__name">
+      {{ detail.hasValue() ? detail.value().organizerName : "" }}
+    </div>
+  </div>
+</header>
+
+@if (detail.isLoading()) {
+  <div class="kemp-is-grs__status">Načítá se…</div>
+} @else if (detail.error()) {
+  <div class="kemp-is-grs__status kemp-is-grs__status--error">
+    Nepodařilo se načíst detail rezervace.
+  </div>
+} @else if (detail.hasValue()) {
+  <dl class="kemp-is-grs__body">
+    <div class="kemp-is-grs__row">
+      <dt class="kemp-is-grs__label">Termín</dt>
+      <dd class="kemp-is-grs__value">{{ formattedRange() }}</dd>
+    </div>
+    <div class="kemp-is-grs__row">
+      <dt class="kemp-is-grs__label">Stav</dt>
+      <dd class="kemp-is-grs__value">{{ stateLabel() }}</dd>
+    </div>
+    <div class="kemp-is-grs__row">
+      <dt class="kemp-is-grs__label">Chaty</dt>
+      <dd class="kemp-is-grs__value">{{ spotsLabel() }}</dd>
+    </div>
+    <div class="kemp-is-grs__row">
+      <dt class="kemp-is-grs__label">Telefon</dt>
+      <dd class="kemp-is-grs__value kemp-mono">
+        {{ detail.value().organizerPhone }}
+      </dd>
+    </div>
+    <div class="kemp-is-grs__row">
+      <dt class="kemp-is-grs__label">E-mail</dt>
+      <dd class="kemp-is-grs__value">
+        {{ detail.value().organizerEmail }}
+      </dd>
+    </div>
+    @if (detail.value().note; as note) {
+      <div class="kemp-is-grs__row kemp-is-grs__row--note">
+        <dt class="kemp-is-grs__label">Poznámka</dt>
+        <dd class="kemp-is-grs__value">{{ note }}</dd>
+      </div>
+    }
+  </dl>
+
+  <div class="kemp-is-grs__actions">
+    <p-button
+      label="Upravit"
+      icon="pi pi-pencil"
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      (onClick)="onEdit()"
+    />
+    <span class="kemp-is-grs__actions-spacer"></span>
+    <p-button
+      label="Vytvořit rezervaci"
+      icon="pi pi-plus"
+      size="small"
+      [disabled]="!canCreateReservation()"
+      (onClick)="onCreateReservation()"
+    />
+  </div>
+}

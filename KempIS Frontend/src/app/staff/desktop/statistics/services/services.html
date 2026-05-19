@@ -1,0 +1,198 @@
+<section class="kemp-is-stats-panel">
+  @if (totals(); as t) {
+    <p class="kemp-is-stats-panel__summary">
+      Bez DPH {{ formatCzk(t.totalNet) }} · DPH {{ formatCzk(t.totalVat) }} ·
+      Celkem {{ formatCzk(t.totalGross) }}
+    </p>
+  }
+
+  @if (rangeTooLarge()) {
+    <p-message
+      severity="warn"
+      text="Rozsah nesmí přesáhnout 366 dní"
+    />
+  }
+
+  @if (errorMessage(); as msg) {
+    <p-message
+      severity="error"
+      [text]="msg"
+    />
+  }
+
+  <p-table
+    [value]="groups()"
+    [loading]="resource.isLoading()"
+    dataKey="serviceGroup"
+    sortField="groupGross"
+    [sortOrder]="-1"
+    [expandedRowKeys]="expandedRows()"
+    (expandedRowKeysChange)="expandedRows.set($any($event))"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem"></th>
+        <th pSortableColumn="serviceGroup">
+          Skupina
+          <p-sortIcon field="serviceGroup" />
+        </th>
+        <th
+          pSortableColumn="groupNet"
+          class="kemp-is-stats-cell--num"
+        >
+          Bez DPH
+          <p-sortIcon field="groupNet" />
+        </th>
+        <th
+          pSortableColumn="groupVat"
+          class="kemp-is-stats-cell--num"
+        >
+          DPH
+          <p-sortIcon field="groupVat" />
+        </th>
+        <th
+          pSortableColumn="groupGross"
+          class="kemp-is-stats-cell--num"
+        >
+          Celkem
+          <p-sortIcon field="groupGross" />
+        </th>
+        <th class="kemp-is-stats-cell--num">Podíl</th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-group
+      let-expanded="expanded"
+    >
+      <tr>
+        <td>
+          <p-button
+            type="button"
+            [text]="true"
+            [rounded]="true"
+            size="small"
+            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+            [pRowToggler]="group"
+          />
+        </td>
+        <td>{{ serviceGroupLabel(group.serviceGroup) }}</td>
+        <td class="kemp-is-stats-cell--num">
+          {{ formatCzk(group.groupNet) }}
+        </td>
+        <td class="kemp-is-stats-cell--num">
+          {{ formatCzk(group.groupVat) }}
+        </td>
+        <td class="kemp-is-stats-cell--num">
+          {{ formatCzk(group.groupGross) }}
+        </td>
+        <td class="kemp-is-stats-cell--num">
+          @if (totals(); as t) {
+            @if (t.totalGross > 0) {
+              {{ formatPercent((group.groupGross / t.totalGross) * 100) }}
+            } @else {
+              —
+            }
+          } @else {
+            —
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="rowexpansion"
+      let-group
+    >
+      <tr>
+        <td colspan="6">
+          <p-table
+            [value]="[...group.services]"
+            sortField="gross"
+            [sortOrder]="-1"
+            dataKey="serviceId"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="serviceName">
+                  Služba
+                  <p-sortIcon field="serviceName" />
+                </th>
+                <th
+                  pSortableColumn="vatRatePercentage"
+                  class="kemp-is-stats-cell--num"
+                >
+                  Sazba DPH
+                  <p-sortIcon field="vatRatePercentage" />
+                </th>
+                <th
+                  pSortableColumn="quantity"
+                  class="kemp-is-stats-cell--num"
+                >
+                  Množství
+                  <p-sortIcon field="quantity" />
+                </th>
+                <th
+                  pSortableColumn="net"
+                  class="kemp-is-stats-cell--num"
+                >
+                  Bez DPH
+                  <p-sortIcon field="net" />
+                </th>
+                <th
+                  pSortableColumn="vat"
+                  class="kemp-is-stats-cell--num"
+                >
+                  DPH
+                  <p-sortIcon field="vat" />
+                </th>
+                <th
+                  pSortableColumn="gross"
+                  class="kemp-is-stats-cell--num"
+                >
+                  Celkem
+                  <p-sortIcon field="gross" />
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template
+              pTemplate="body"
+              let-row
+            >
+              <tr>
+                <td>
+                  {{ row.serviceName }}
+                  @if (!row.isActive) {
+                    <span class="kemp-is-stats-inactive">(neaktivní)</span>
+                  }
+                </td>
+                <td class="kemp-is-stats-cell--num">
+                  {{ row.vatRatePercentage }} %
+                </td>
+                <td class="kemp-is-stats-cell--num">{{ row.quantity }}</td>
+                <td class="kemp-is-stats-cell--num">
+                  {{ formatCzk(row.net) }}
+                </td>
+                <td class="kemp-is-stats-cell--num">
+                  {{ formatCzk(row.vat) }}
+                </td>
+                <td class="kemp-is-stats-cell--num">
+                  {{ formatCzk(row.gross) }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="6"
+          class="kemp-is-stats-empty"
+        >
+          Žádné tržby v tomto rozsahu.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

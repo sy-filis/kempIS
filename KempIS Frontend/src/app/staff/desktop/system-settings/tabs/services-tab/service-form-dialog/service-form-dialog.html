@@ -1,0 +1,133 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [dismissableMask]="!submitting()"
+  [style]="{ width: '36rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-service-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-service-form__field">
+      <label for="kemp-is-service-form-group">Skupina služeb</label>
+      <p-select
+        inputId="kemp-is-service-form-group"
+        [options]="serviceGroupOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="serviceGroup()"
+        (ngModelChange)="serviceGroup.set($event)"
+        name="serviceGroup"
+        [disabled]="submitting()"
+        appendTo="body"
+      />
+    </div>
+
+    <div class="kemp-is-service-form__field">
+      <label for="kemp-is-service-form-type">Typ služby</label>
+      <p-select
+        inputId="kemp-is-service-form-type"
+        [options]="serviceTypeOptions()"
+        optionLabel="name"
+        optionValue="id"
+        [ngModel]="serviceTypeId()"
+        (ngModelChange)="serviceTypeId.set($event)"
+        name="serviceTypeId"
+        [disabled]="submitting()"
+        appendTo="body"
+        [filter]="true"
+        placeholder="Vyberte typ"
+      />
+    </div>
+
+    <div class="kemp-is-service-form__field">
+      <label for="kemp-is-service-form-vat">Sazba DPH</label>
+      <p-select
+        inputId="kemp-is-service-form-vat"
+        [options]="vatRateOptions()"
+        optionLabel="name"
+        optionValue="id"
+        [ngModel]="vatRateId()"
+        (ngModelChange)="vatRateId.set($event)"
+        name="vatRateId"
+        [disabled]="submitting()"
+        appendTo="body"
+        placeholder="Vyberte sazbu"
+      />
+    </div>
+
+    <div class="kemp-is-service-form__field">
+      <label for="kemp-is-service-form-name">Název</label>
+      <input
+        id="kemp-is-service-form-name"
+        pInputText
+        type="text"
+        autocomplete="off"
+        maxlength="255"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div class="kemp-is-service-form__field">
+      <label for="kemp-is-service-form-price">Základní cena</label>
+      <p-inputnumber
+        inputId="kemp-is-service-form-price"
+        [ngModel]="basePrice()"
+        (ngModelChange)="basePrice.set($event)"
+        name="basePrice"
+        mode="currency"
+        currency="CZK"
+        locale="cs-CZ"
+        [min]="0"
+        [maxFractionDigits]="2"
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div
+      class="kemp-is-service-form__field kemp-is-service-form__field--inline"
+    >
+      <label for="kemp-is-service-form-active">Aktivní</label>
+      <p-toggleswitch
+        inputId="kemp-is-service-form-active"
+        [ngModel]="isActive()"
+        (ngModelChange)="isActive.set($event)"
+        name="isActive"
+        [disabled]="submitting()"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>

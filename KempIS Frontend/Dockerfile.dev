@@ -1,0 +1,18 @@
+ARG NODE_VERSION=24.15.0
+
+FROM node:${NODE_VERSION}-alpine
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+EXPOSE 4201
+
+CMD ["npx", "ng", "serve", \
+     "--configuration=en", \
+     "--host", "0.0.0.0", \
+     "--port", "4201", \
+     "--allowed-hosts", \
+     "--poll", "2000"]

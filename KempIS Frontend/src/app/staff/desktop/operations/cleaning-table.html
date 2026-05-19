@@ -1,0 +1,97 @@
+<section class="kemp-is-ops-clean">
+  <header class="kemp-is-ops-clean__head">
+    <span
+      class="kemp-is-ops-clean__head-icon"
+      aria-hidden="true"
+    >
+      <i class="pi pi-sparkles"></i>
+    </span>
+    <span class="kemp-is-ops-clean__head-title">{{ heading() }}</span>
+    <span class="kemp-is-ops-clean__head-spacer"></span>
+    <span class="kemp-is-ops-clean__head-meta">
+      {{ rows().length }} chat · {{ shouldCleanCount() }} k úklidu
+    </span>
+  </header>
+
+  <div class="kemp-is-ops-clean__columns">
+    @for (column of [leftColumn(), rightColumn()]; track $index) {
+      <div class="kemp-is-ops-clean__column">
+        <div
+          class="kemp-is-ops-clean__col-head"
+          role="row"
+        >
+          <span></span>
+          <span>Chata</span>
+          <span class="kemp-is-ops-clean__col-head-center">Uklízet</span>
+          <span class="kemp-is-ops-clean__col-head-center">Hotovo</span>
+          <span>Poznámka</span>
+        </div>
+
+        @for (g of column; track g.id) {
+          <div class="kemp-is-ops-clean__group">
+            <div
+              class="kemp-is-ops-clean__group-label"
+              [attr.aria-label]="g.name"
+            >
+              <span class="kemp-is-ops-clean__group-label-text">
+                {{ g.name }}
+              </span>
+            </div>
+
+            <div class="kemp-is-ops-clean__group-rows">
+              @for (r of g.rows; track r.spotId; let last = $last) {
+                <div
+                  class="kemp-is-ops-clean__row"
+                  [class.kemp-is-ops-clean__row--dimmed]="!r.shouldClean"
+                  [class.kemp-is-ops-clean__row--last-in-group]="last"
+                >
+                  <div class="kemp-is-ops-clean__spot">
+                    <span class="kemp-is-ops-clean__spot-name kemp-mono">
+                      {{ r.spotName }}
+                    </span>
+                  </div>
+
+                  <div class="kemp-is-ops-clean__check">
+                    <p-checkbox
+                      [binary]="true"
+                      [ngModel]="r.shouldClean"
+                      [disabled]="isShouldCleanDisabled(r.spotId)"
+                      (onChange)="onShouldClean(r.spotId, $event)"
+                      [ariaLabel]="'Uklízet ' + r.spotName"
+                    />
+                  </div>
+
+                  <div class="kemp-is-ops-clean__check">
+                    <p-checkbox
+                      [binary]="true"
+                      class="kemp-is-ops-clean__check--done"
+                      [ngModel]="r.done"
+                      [disabled]="true"
+                      [ariaLabel]="'Hotovo ' + r.spotName"
+                    />
+                  </div>
+
+                  <div class="kemp-is-ops-clean__note">
+                    <input
+                      type="text"
+                      pInputText
+                      class="kemp-is-ops-clean__note-input"
+                      [ngModel]="noteValue(r)"
+                      (ngModelChange)="onNoteInput(r, $event)"
+                      (blur)="onNoteBlur(r)"
+                      [disabled]="r.cleanInfoId === null"
+                      placeholder="Přidat poznámku…"
+                      [attr.aria-label]="'Poznámka pro ' + r.spotName"
+                    />
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="kemp-is-ops-clean__empty">Žádné chaty k zobrazení.</div>
+        }
+      </div>
+    }
+  </div>
+</section>

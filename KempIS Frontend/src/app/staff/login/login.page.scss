@@ -1,0 +1,40 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.kemp-is-staff-login {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.kemp-is-staff-login__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
+.kemp-is-staff-login__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.kemp-is-staff-login__title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.kemp-is-staff-login__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: 18rem;
+  text-align: center;
+}

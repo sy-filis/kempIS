@@ -1,0 +1,104 @@
+<section class="kemp-is-rsvc">
+  <header
+    class="kemp-is-rsvc__header"
+    [class.kemp-is-rsvc__header--actions-only]="!showTitle()"
+  >
+    @if (showTitle()) {
+      <div>
+        <h2 class="kemp-is-rsvc__title">Ostatní služby</h2>
+        <p class="kemp-is-rsvc__subtitle">
+          Vše mimo ubytování, vozidla, stany a stravování — pobytové poplatky,
+          půjčovna, prádelna, wellness a další položky účtované po pobytu.
+          Zadejte počet pro každou položku.
+        </p>
+      </div>
+    }
+    @if (showSubtotal()) {
+      <div class="kemp-is-rsvc__totals-pill">
+        <span class="kemp-is-rsvc__totals-pill-label">Mezisoučet</span>
+        <span class="kemp-is-rsvc__totals-pill-value">
+          {{ formatNumber(grandTotal()) }} Kč
+        </span>
+      </div>
+    }
+  </header>
+
+  @for (gv of groupViews(); track gv.group) {
+    <div class="kemp-is-rsvc__card">
+      <header class="kemp-is-rsvc__card-head">
+        <h3 class="kemp-is-rsvc__card-title">{{ gv.label }}</h3>
+        <span class="kemp-is-rsvc__card-meta kemp-mono">
+          @if (gv.subtotal > 0) {
+            {{ formatNumber(gv.subtotal) }} Kč
+          } @else {
+            —
+          }
+        </span>
+      </header>
+
+      <div class="kemp-is-rsvc__head">
+        <span>Služba</span>
+        <span class="kemp-is-rsvc__cell-right">Cena / kus</span>
+        <span class="kemp-is-rsvc__cell-center">Počet</span>
+        <span class="kemp-is-rsvc__cell-right">Mezisoučet</span>
+      </div>
+
+      @for (row of gv.rows; track row.service.id) {
+        <div
+          class="kemp-is-rsvc__row"
+          [class.kemp-is-rsvc__row--active]="row.qty > 0"
+        >
+          <div class="kemp-is-rsvc__name">{{ row.service.name }}</div>
+          <div class="kemp-is-rsvc__cell-right kemp-mono">
+            {{ formatNumber(row.service.basePrice) }} Kč
+          </div>
+          <div class="kemp-is-rsvc__cell-center">
+            <p-inputnumber
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+              [min]="0"
+              [ngModel]="row.qty"
+              (ngModelChange)="updateQty(row.service.id, $event)"
+              styleClass="kemp-is-rsvc__stepper"
+              decrementButtonClass="p-button-secondary p-button-text"
+              incrementButtonClass="p-button-secondary p-button-text"
+              [inputStyle]="{ width: '2.5rem' }"
+            />
+          </div>
+          <div
+            class="kemp-is-rsvc__cell-right kemp-mono kemp-is-rsvc__line-total"
+            [class.kemp-is-rsvc__line-total--zero]="row.lineTotal === 0"
+          >
+            @if (row.lineTotal > 0) {
+              {{ formatNumber(row.lineTotal) }} Kč
+            } @else {
+              —
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (groupViews().length === 0) {
+    <div class="kemp-is-rsvc__empty">
+      <i
+        class="pi pi-info-circle"
+        aria-hidden="true"
+      ></i>
+      <span>
+        V katalogu zatím nejsou žádné ostatní služby. Doplňte je v nastavení
+        aplikace, sekce Služby.
+      </span>
+    </div>
+  } @else {
+    <footer class="kemp-is-rsvc__grand">
+      <span class="kemp-is-rsvc__grand-label">Celkem za ostatní služby</span>
+      <span class="kemp-is-rsvc__grand-value kemp-mono">
+        {{ formatNumber(grandTotal()) }} Kč
+      </span>
+    </footer>
+  }
+</section>

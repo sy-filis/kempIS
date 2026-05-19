@@ -1,0 +1,84 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [style]="{ width: '32rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-user-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-user-form__field">
+      <label for="kemp-is-user-form-name">Jméno</label>
+      <input
+        id="kemp-is-user-form-name"
+        pInputText
+        type="text"
+        autocomplete="off"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div class="kemp-is-user-form__field">
+      <label for="kemp-is-user-form-username">Uživatelské jméno</label>
+      <input
+        id="kemp-is-user-form-username"
+        pInputText
+        type="text"
+        autocomplete="off"
+        [ngModel]="username()"
+        (ngModelChange)="username.set($event)"
+        name="username"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div class="kemp-is-user-form__field">
+      <label for="kemp-is-user-form-role">Role</label>
+      <p-select
+        inputId="kemp-is-user-form-role"
+        [options]="roleOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="role()"
+        (ngModelChange)="role.set($event)"
+        name="role"
+        [disabled]="submitting()"
+        appendTo="body"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>

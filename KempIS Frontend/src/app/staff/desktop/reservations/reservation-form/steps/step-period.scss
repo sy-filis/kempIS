@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.kemp-is-rsp__section {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: var(--p-content-background, #fff);
+  border: 1px solid var(--p-content-border-color, #e4e4e7);
+  border-radius: 6px;
+}
+
+.kemp-is-rsp__heading {
+  margin: 0 0 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-rsp__grid {
+  display: grid;
+  gap: 0.75rem 1rem;
+}
+
+.kemp-is-rsp__grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.kemp-is-rsp__grid--period {
+  grid-template-columns: 1fr 6rem 1fr;
+}
+
+.kemp-is-rsp__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.kemp-is-rsp__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--p-text-muted-color, #71717a);
+  text-transform: uppercase;
+}
+
+.kemp-is-rsp__required {
+  color: var(--p-red-500, #ef4444);
+  margin-left: 2px;
+}
+
+.kemp-is-rsp__section--info {
+  background: var(--p-surface-50, #fafafa);
+}
+
+.kemp-is-rsp__display-name {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.kemp-is-rsp__note {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+}

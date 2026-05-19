@@ -1,0 +1,89 @@
+<section class="kemp-is-stats-panel">
+  @if (totals(); as t) {
+    <p class="kemp-is-stats-panel__summary">
+      Celkem {{ t.totalGuests }} hostů · {{ t.totalPersonNights }} osob/noc
+    </p>
+  }
+
+  @if (rangeTooLarge()) {
+    <p-message
+      severity="warn"
+      text="Rozsah nesmí přesáhnout 366 dní"
+    />
+  }
+
+  @if (errorMessage(); as msg) {
+    <p-message
+      severity="error"
+      [text]="msg"
+    />
+  }
+
+  <p-table
+    [value]="rows()"
+    [loading]="resource.isLoading()"
+    sortField="personNights"
+    [sortOrder]="-1"
+    dataKey="nationalityId"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="name">
+          Země
+          <p-sortIcon field="name" />
+        </th>
+        <th
+          pSortableColumn="guestCount"
+          class="kemp-is-stats-cell--num"
+        >
+          Počet hostů
+          <p-sortIcon field="guestCount" />
+        </th>
+        <th
+          pSortableColumn="personNights"
+          class="kemp-is-stats-cell--num"
+        >
+          Osob/noc
+          <p-sortIcon field="personNights" />
+        </th>
+        <th class="kemp-is-stats-cell--num">Podíl</th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-row
+    >
+      <tr>
+        <td>
+          {{ row.name }}
+          <small class="kemp-is-stats-country__code">{{ row.alpha3 }}</small>
+        </td>
+        <td class="kemp-is-stats-cell--num">{{ row.guestCount }}</td>
+        <td class="kemp-is-stats-cell--num">{{ row.personNights }}</td>
+        <td class="kemp-is-stats-cell--num">
+          @if (totals(); as t) {
+            @if (t.totalPersonNights > 0) {
+              {{
+                formatPercent((row.personNights / t.totalPersonNights) * 100)
+              }}
+            } @else {
+              —
+            }
+          } @else {
+            —
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          colspan="4"
+          class="kemp-is-stats-empty"
+        >
+          Žádní hosté v tomto rozsahu.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

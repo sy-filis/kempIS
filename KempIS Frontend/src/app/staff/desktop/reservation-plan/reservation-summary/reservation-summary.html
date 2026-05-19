@@ -1,0 +1,113 @@
+<header class="kemp-is-rs__head">
+  <div class="kemp-is-rs__title">
+    <div class="kemp-is-rs__number kemp-mono">
+      {{ detail.hasValue() ? detail.value().number : "" }}
+    </div>
+    <div class="kemp-is-rs__name">{{ guestName() }}</div>
+  </div>
+  @if (canCreateBill()) {
+    <p-button
+      icon="pi pi-receipt"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
+      size="small"
+      ariaLabel="Nová účtenka"
+      (onClick)="onCreateBill()"
+    />
+  }
+  <p-button
+    icon="pi pi-pencil"
+    severity="secondary"
+    [text]="true"
+    [rounded]="true"
+    size="small"
+    ariaLabel="Upravit rezervaci"
+    (onClick)="onEdit()"
+  />
+</header>
+
+@if (detail.isLoading()) {
+  <div class="kemp-is-rs__status">Načítá se…</div>
+} @else if (detail.error()) {
+  <div class="kemp-is-rs__status kemp-is-rs__status--error">
+    Nepodařilo se načíst detail rezervace.
+  </div>
+} @else if (detail.hasValue()) {
+  <dl class="kemp-is-rs__body">
+    <div class="kemp-is-rs__row">
+      <dt class="kemp-is-rs__label">Termín</dt>
+      <dd class="kemp-is-rs__value">{{ formattedRange() }}</dd>
+    </div>
+    <div class="kemp-is-rs__row">
+      <dt class="kemp-is-rs__label">Telefon</dt>
+      <dd class="kemp-is-rs__value kemp-mono">
+        {{ detail.value().reservationMakerPhone }}
+      </dd>
+    </div>
+    <div class="kemp-is-rs__row">
+      <dt class="kemp-is-rs__label">E-mail</dt>
+      <dd class="kemp-is-rs__value">
+        {{ detail.value().reservationMakerEmail }}
+      </dd>
+    </div>
+    @if (detail.value().groupReservationId) {
+      <div class="kemp-is-rs__row">
+        <dt class="kemp-is-rs__label">Skupina</dt>
+        <dd class="kemp-is-rs__value">Ano</dd>
+      </div>
+    }
+    @if (detail.value().note; as note) {
+      <div class="kemp-is-rs__row kemp-is-rs__row--note">
+        <dt class="kemp-is-rs__label">Poznámka</dt>
+        <dd class="kemp-is-rs__value">{{ note }}</dd>
+      </div>
+    }
+    @if (showKeySection()) {
+      <div class="kemp-is-rs__row kemp-is-rs__row--keys">
+        <dt class="kemp-is-rs__label">Klíče</dt>
+        <dd class="kemp-is-rs__value">
+          <ul class="kemp-is-rs__keys">
+            @for (row of keyRows(); track row.id) {
+              <li class="kemp-is-rs__keys-row">
+                <span class="kemp-is-rs__keys-spot">{{ row.spotLabel }}</span>
+                @if (row.hasGivenKey) {
+                  <p-tag
+                    severity="success"
+                    icon="pi pi-key"
+                    value="Klíč předán"
+                    [rounded]="true"
+                  />
+                } @else {
+                  <p-button
+                    size="small"
+                    severity="secondary"
+                    label="Předat klíč"
+                    icon="pi pi-key"
+                    [loading]="isKeyPending(row.id)"
+                    [disabled]="isKeyPending(row.id)"
+                    (onClick)="onGiveKey(row.id)"
+                  />
+                }
+              </li>
+            }
+          </ul>
+        </dd>
+      </div>
+    }
+  </dl>
+  @if (canCheckIn()) {
+    <div class="kemp-is-rs__checkin">
+      <p-button
+        severity="success"
+        label="Kompletně zaplaceno"
+        icon="pi pi-sign-in"
+        [loading]="isCheckingIn()"
+        [disabled]="isCheckingIn()"
+        (onClick)="onCheckIn()"
+      />
+    </div>
+  }
+}
+
+<p-toast />

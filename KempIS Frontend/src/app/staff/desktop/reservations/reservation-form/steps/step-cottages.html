@@ -1,0 +1,306 @@
+<section class="kemp-is-rcs">
+  @if (requestSummary(); as summary) {
+    @let allOk = summary.totalAssigned === summary.totalRequested;
+    @let totalShort = summary.totalAssigned < summary.totalRequested;
+    <div
+      class="kemp-is-rcs__request"
+      [class.kemp-is-rcs__request--ok]="allOk"
+      [class.kemp-is-rcs__request--low]="totalShort"
+      [class.kemp-is-rcs__request--high]="
+        !allOk && summary.totalAssigned > summary.totalRequested
+      "
+      role="status"
+    >
+      <i
+        class="pi"
+        [class.pi-check-circle]="allOk"
+        [class.pi-exclamation-triangle]="!allOk"
+        aria-hidden="true"
+      ></i>
+      <div class="kemp-is-rcs__request-body">
+        <div class="kemp-is-rcs__request-line">
+          @if (allOk) {
+            Online objednávka:
+            <strong
+              >{{ summary.totalAssigned }} z
+              {{ summary.totalRequested }}</strong
+            >
+            chat přiřazeno — vše sedí.
+          } @else {
+            Online objednávka:
+            <strong
+              >{{ summary.totalAssigned }} z
+              {{ summary.totalRequested }}</strong
+            >
+            chat přiřazeno.
+          }
+        </div>
+        <ul class="kemp-is-rcs__request-groups">
+          @for (entry of summary.groups; track entry.group.id) {
+            <li
+              class="kemp-is-rcs__request-group"
+              [class.kemp-is-rcs__request-group--ok]="entry.mismatch === 0"
+              [class.kemp-is-rcs__request-group--low]="entry.mismatch < 0"
+              [class.kemp-is-rcs__request-group--high]="entry.mismatch > 0"
+            >
+              <span class="kemp-is-rcs__request-group-name">
+                {{ entry.group.name }}
+              </span>
+              <span class="kemp-is-rcs__request-group-count">
+                {{ entry.assigned }} / {{ entry.requested }}
+              </span>
+              @if (entry.mismatch < 0) {
+                <span class="kemp-is-rcs__request-group-tag">
+                  chybí {{ -entry.mismatch }}
+                </span>
+              } @else if (entry.mismatch > 0) {
+                <span class="kemp-is-rcs__request-group-tag">
+                  navíc {{ entry.mismatch }}
+                </span>
+              } @else {
+                <i
+                  class="pi pi-check"
+                  aria-hidden="true"
+                ></i>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+
+  <header class="kemp-is-rcs__summary">
+    <div class="kemp-is-rcs__summary-text">
+      <h3 class="kemp-is-rcs__title">Vybrané chaty</h3>
+      <span class="kemp-is-rcs__summary-meta">
+        @if (selectedView().length === 0) {
+          Zatím nic nevybráno
+        } @else {
+          {{ selectedView().length }}
+          @switch (selectedView().length) {
+            @case (1) {
+              chata
+            }
+            @default {
+              @if (selectedView().length < 5) {
+                chaty
+              } @else {
+                chat
+              }
+            }
+          }
+          ·
+          {{ totalCapacity() }}
+          @switch (totalCapacity()) {
+            @case (1) {
+              osoba
+            }
+            @default {
+              @if (totalCapacity() < 5) {
+                osoby
+              } @else {
+                osob
+              }
+            }
+          }
+        }
+      </span>
+    </div>
+  </header>
+
+  <div class="kemp-is-rcs__selected">
+    @if (selectedView().length === 0) {
+      <div class="kemp-is-rcs__empty">
+        <i
+          class="pi pi-home"
+          aria-hidden="true"
+        ></i>
+        <span>Klikněte na volnou chatu níže.</span>
+      </div>
+    } @else {
+      @for (s of selectedView(); track s.row.id) {
+        <div class="kemp-is-rcs__chip">
+          <span
+            class="kemp-is-rcs__chip-thumb"
+            [class.kemp-is-rcs__chip-thumb--placeholder]="!s.group?.imageUrl"
+          >
+            @if (s.group?.imageUrl) {
+              <img
+                [src]="s.group?.imageUrl"
+                [alt]="s.group?.name ?? ''"
+              />
+            } @else {
+              <i
+                class="pi pi-home"
+                aria-hidden="true"
+              ></i>
+            }
+          </span>
+          <div class="kemp-is-rcs__chip-text">
+            <div class="kemp-is-rcs__chip-name">
+              {{ s.spot?.name ?? "—" }}
+            </div>
+            <div class="kemp-is-rcs__chip-meta">
+              {{ s.group?.name ?? "Bez skupiny" }} ·
+              {{ s.group?.capacity ?? 0 }} osob
+              <span
+                class="kemp-is-rcs__chip-key kemp-is-rcs__chip-key--{{
+                  s.keyState
+                }}"
+              >
+                <i
+                  class="pi pi-key"
+                  aria-hidden="true"
+                ></i>
+                @switch (s.keyState) {
+                  @case ("out") {
+                    Klíče vydány
+                  }
+                  @case ("returned") {
+                    Klíče vráceny
+                  }
+                  @default {
+                    Klíče nevydány
+                  }
+                }
+              </span>
+            </div>
+          </div>
+          <p-button
+            [text]="true"
+            severity="secondary"
+            size="small"
+            ariaLabel="Odstranit chatu"
+            (onClick)="removeSpotRow(s.row.id)"
+          >
+            <i
+              class="pi pi-times"
+              aria-hidden="true"
+            ></i>
+          </p-button>
+        </div>
+      }
+    }
+  </div>
+
+  <h3 class="kemp-is-rcs__title kemp-is-rcs__title--bottom">Dostupné chaty</h3>
+
+  <div class="kemp-is-rcs__groups">
+    @for (gv of groupsView(); track gv.group.id) {
+      <article
+        class="kemp-is-rcs__group"
+        [class.kemp-is-rcs__group--has-selection]="gv.selectedCount > 0"
+        [class.kemp-is-rcs__group--short]="
+          gv.requestedCount > 0 && gv.mismatch < 0
+        "
+        [class.kemp-is-rcs__group--over]="
+          gv.requestedCount > 0 && gv.mismatch > 0
+        "
+        [class.kemp-is-rcs__group--ok]="
+          gv.requestedCount > 0 && gv.mismatch === 0
+        "
+      >
+        <header class="kemp-is-rcs__group-head">
+          <span
+            class="kemp-is-rcs__group-thumb"
+            [class.kemp-is-rcs__group-thumb--placeholder]="!gv.group.imageUrl"
+          >
+            @if (gv.group.imageUrl) {
+              <img
+                [src]="gv.group.imageUrl"
+                [alt]="gv.group.name"
+              />
+            } @else {
+              <i
+                class="pi pi-home"
+                aria-hidden="true"
+              ></i>
+            }
+          </span>
+          <div class="kemp-is-rcs__group-info">
+            <h4 class="kemp-is-rcs__group-name">{{ gv.group.name }}</h4>
+            <div class="kemp-is-rcs__group-meta">
+              <span class="kemp-is-rcs__group-capacity">
+                {{ gv.group.capacity }} osob/chata
+              </span>
+              <span class="kemp-is-rcs__group-counter">
+                <i
+                  class="pi pi-check-circle"
+                  aria-hidden="true"
+                ></i>
+                {{ gv.availableCount }} z {{ gv.spots.length }} volných
+              </span>
+              @if (gv.selectedCount > 0) {
+                <span
+                  class="kemp-is-rcs__group-counter kemp-is-rcs__group-counter--picked"
+                >
+                  Vybráno: {{ gv.selectedCount }}
+                </span>
+              }
+              @if (gv.requestedCount > 0) {
+                <span
+                  class="kemp-is-rcs__group-request"
+                  [class.kemp-is-rcs__group-request--ok]="gv.mismatch === 0"
+                  [class.kemp-is-rcs__group-request--low]="gv.mismatch < 0"
+                  [class.kemp-is-rcs__group-request--high]="gv.mismatch > 0"
+                >
+                  Požadováno {{ gv.requestedCount }}
+                  @if (gv.mismatch < 0) {
+                    · chybí {{ -gv.mismatch }}
+                  } @else if (gv.mismatch > 0) {
+                    · navíc {{ gv.mismatch }}
+                  } @else {
+                    · ✓
+                  }
+                </span>
+              }
+            </div>
+            @if (gv.group.description) {
+              <p class="kemp-is-rcs__group-desc">{{ gv.group.description }}</p>
+            }
+          </div>
+        </header>
+        <div class="kemp-is-rcs__spots">
+          @for (sv of gv.spots; track sv.spot.id) {
+            <button
+              type="button"
+              class="kemp-is-rcs__spot"
+              [class.kemp-is-rcs__spot--selected]="sv.selected"
+              [attr.aria-pressed]="sv.selected"
+              [attr.aria-label]="
+                (sv.selected ? 'Odebrat ' : 'Vybrat ') +
+                gv.group.name +
+                ' ' +
+                sv.spot.name
+              "
+              (click)="toggleSpot(sv)"
+            >
+              @if (sv.selected) {
+                <i
+                  class="pi pi-check"
+                  aria-hidden="true"
+                ></i>
+              }
+              <span>{{ sv.spot.name }}</span>
+            </button>
+          }
+          @if (gv.spots.length === 0) {
+            <div class="kemp-is-rcs__group-empty">
+              Žádná aktivní chata v této skupině.
+            </div>
+          }
+        </div>
+      </article>
+    }
+    @if (groupsView().length === 0) {
+      <div class="kemp-is-rcs__empty kemp-is-rcs__empty--block">
+        <i
+          class="pi pi-info-circle"
+          aria-hidden="true"
+        ></i>
+        <span>Načítám katalog chat…</span>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,592 @@
+<section class="kemp-is-rsp-guests">
+  <div class="kemp-is-bc kemp-is-bill__registry-card">
+    <div class="kemp-is-bc__head">
+      <h3 class="kemp-is-bc__title">Kniha hostů — povinné údaje</h3>
+      <div class="kemp-is-bill-step__actions">
+        <p-button
+          size="small"
+          ariaLabel="Přidat hosta"
+          (onClick)="openNewRegistryEditor()"
+        >
+          <i
+            class="pi pi-user-plus"
+            aria-hidden="true"
+          ></i>
+          <span>Přidat hosta</span>
+        </p-button>
+      </div>
+    </div>
+    <div class="kemp-is-bc__body kemp-is-bc__body--flush">
+      <div
+        class="kemp-is-bill__scanner kemp-is-bill__scanner--inline kemp-is-bill__scanner--row"
+      >
+        <div class="kemp-is-bill__scanner-col">
+          <div class="kemp-is-bill__field-label">
+            <i
+              class="pi pi-id-card"
+              aria-hidden="true"
+            ></i>
+            Skener dokladu — Access Reader
+          </div>
+          <input
+            pInputText
+            class="kemp-mono"
+            placeholder="Naskenujte občanský průkaz nebo cestovní pas…"
+            [ngModel]="tableScanInput()"
+            (ngModelChange)="onTableScanInputChange($event)"
+            (keydown)="onTableScanKeyDown($event)"
+            (blur)="onTableScanBlur()"
+            autocomplete="off"
+          />
+          @if (tableScanError(); as err) {
+            <div class="kemp-is-bill__scanner-error">{{ err }}</div>
+          }
+        </div>
+
+        <div
+          class="kemp-is-bill__scanner-col kemp-is-bill__scanner-col--edoklady"
+        >
+          <div class="kemp-is-bill__field-label">
+            <i
+              class="pi pi-mobile"
+              aria-hidden="true"
+            ></i>
+            eDoklady
+          </div>
+          <kemp-is-edoklady-trigger (presented)="onEdokladyPresented($event)" />
+        </div>
+      </div>
+
+      <div
+        class="kemp-is-bill__registry-head"
+        [class.kemp-is-bill__registry-head--fee]="showsFeeColumn()"
+      >
+        <span>Příjmení</span>
+        <span>Jméno</span>
+        <span>Občanství</span>
+        <span>Číslo dokladu</span>
+        <span>Datum nar.</span>
+        <span>Adresa trvalého pobytu</span>
+        @if (showsFeeColumn()) {
+          <span
+            title="Platí rekreační poplatek"
+            aria-label="Platí rekreační poplatek"
+          >
+            RP
+          </span>
+        }
+        <span></span>
+      </div>
+      @for (g of registryGuests(); track g.id) {
+        <div
+          class="kemp-is-bill__registry-row"
+          [class.kemp-is-bill__registry-row--fee]="showsFeeColumn()"
+        >
+          <span>{{ g.lastName }}</span>
+          <span>{{ g.firstName }}</span>
+          <span class="kemp-mono">
+            {{ nationalityAlpha3(g.nationalityId) }}
+          </span>
+          <span class="kemp-mono">{{ g.documentNumber || "—" }}</span>
+          <span class="kemp-mono">{{ g.birth }}</span>
+          <span class="kemp-is-bill__registry-text">
+            {{ addressLine(g.address) || "—" }}
+          </span>
+          @if (showsFeeColumn()) {
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="feePaying(g.id)"
+              (ngModelChange)="toggleFeePaying(g.id)"
+              ariaLabel="Platí rekreační poplatek"
+            />
+          }
+          <div class="kemp-is-bill__registry-actions">
+            <p-button
+              [text]="true"
+              severity="secondary"
+              size="small"
+              ariaLabel="Upravit hosta"
+              (onClick)="openRegistryEditor(g)"
+            >
+              <i
+                class="pi pi-pencil"
+                aria-hidden="true"
+              ></i>
+            </p-button>
+            <p-button
+              [text]="true"
+              severity="secondary"
+              size="small"
+              ariaLabel="Duplikovat hosta"
+              (onClick)="duplicateGuest(g)"
+            >
+              <i
+                class="pi pi-clone"
+                aria-hidden="true"
+              ></i>
+            </p-button>
+            <p-button
+              [text]="true"
+              severity="secondary"
+              size="small"
+              ariaLabel="Smazat hosta"
+              (onClick)="removeRegistryGuest(g.id)"
+            >
+              <i
+                class="pi pi-trash"
+                aria-hidden="true"
+              ></i>
+            </p-button>
+          </div>
+        </div>
+      }
+      <div
+        class="kemp-is-bill__registry-row kemp-is-bill__registry-row--add"
+        [class.kemp-is-bill__registry-row--fee]="showsFeeColumn()"
+        title="Rychlé přidání: Čech s občanským průkazem. Adresu doplňte úpravou."
+      >
+        <input
+          pInputText
+          placeholder="Příjmení"
+          class="kemp-is-bill__registry-input"
+          [ngModel]="quickAdd().lastName"
+          (ngModelChange)="updateQuickAdd('lastName', $event)"
+          (keydown.enter)="submitQuickAdd()"
+        />
+        <input
+          pInputText
+          placeholder="Jméno"
+          class="kemp-is-bill__registry-input"
+          [ngModel]="quickAdd().firstName"
+          (ngModelChange)="updateQuickAdd('firstName', $event)"
+          (keydown.enter)="submitQuickAdd()"
+        />
+        <span class="kemp-mono kemp-is-bill__quick-add-default">CZE</span>
+        <input
+          pInputText
+          placeholder="Číslo OP"
+          class="kemp-is-bill__registry-input kemp-mono"
+          [ngModel]="quickAdd().documentNumber"
+          (ngModelChange)="updateQuickAdd('documentNumber', $event)"
+          (keydown.enter)="submitQuickAdd()"
+        />
+        <p-datepicker
+          class="kemp-is-bill__registry-datepicker"
+          [ngModel]="quickAdd().birth"
+          (ngModelChange)="updateQuickAdd('birth', $event)"
+          dateFormat="dd. mm. yy"
+          placeholder="DD. MM. RRRR"
+          appendTo="body"
+          (onShow)="onOverlayShow()"
+        />
+        <p-autocomplete
+          class="kemp-is-bill__registry-whisperer"
+          [ngModel]="quickAddAddressInput()"
+          (ngModelChange)="onQuickAddAddressTyping($any($event))"
+          [suggestions]="addressSuggestions()"
+          (completeMethod)="onQuickAddAddressQuery($event)"
+          (onSelect)="onQuickAddAddressPick($event)"
+          (onClear)="onQuickAddAddressClear()"
+          [delay]="300"
+          [minLength]="8"
+          [forceSelection]="false"
+          [showClear]="true"
+          appendTo="body"
+          (onShow)="onOverlayShow()"
+          [placeholder]="quickAddAddressPlaceholder()"
+        >
+          <ng-template
+            let-s
+            #item
+          >
+            <div class="kemp-is-bill__address-suggestion">
+              <div class="kemp-is-bill__address-suggestion-line">
+                <strong>{{ s.street }}</strong>
+                @if (s.houseNumber) {
+                  <span>&nbsp;{{ s.houseNumber }}</span>
+                }
+              </div>
+              <small class="kemp-is-bill__address-suggestion-meta">
+                @if (s.zipCode) {
+                  <span class="kemp-mono">{{ s.zipCode }}</span>
+                }
+                {{ s.city }} · {{ s.countryCode }}
+              </small>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+        @if (showsFeeColumn()) {
+          <span></span>
+        }
+        <div class="kemp-is-bill__registry-actions">
+          <p-button
+            size="small"
+            ariaLabel="Přidat hosta"
+            [disabled]="!quickAddValid()"
+            (onClick)="submitQuickAdd()"
+          >
+            <i
+              class="pi pi-check"
+              aria-hidden="true"
+            ></i>
+          </p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p-dialog
+    [header]="editingRegistryId() === null ? 'Přidat hosta' : 'Upravit hosta'"
+    [visible]="registryEditorOpen()"
+    (visibleChange)="onRegistryDialogVisibleChange($event)"
+    (onShow)="onRegistryDialogShown()"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    [dismissableMask]="true"
+    [focusOnShow]="false"
+    [style]="{ width: '720px' }"
+    styleClass="kemp-is-bill__guest-dialog"
+  >
+    <div class="kemp-is-bill__guest-editor">
+      <section class="kemp-is-bill__guest-editor-section">
+        <div class="kemp-is-bill__scanner">
+          <div class="kemp-is-bill__field-label">
+            <i
+              class="pi pi-id-card"
+              aria-hidden="true"
+            ></i>
+            Skener dokladu
+          </div>
+          <input
+            pInputText
+            class="kemp-mono"
+            placeholder="Naskenujte občanský průkaz nebo zde vložte řádek ze skeneru…"
+            [ngModel]="scanInput()"
+            (ngModelChange)="onScanInputChange($event)"
+            (keydown)="onScanKeyDown($event)"
+            (blur)="onScanBlur()"
+            autocomplete="off"
+          />
+          @if (scanError(); as err) {
+            <div class="kemp-is-bill__scanner-error">{{ err }}</div>
+          }
+        </div>
+      </section>
+
+      <section class="kemp-is-bill__guest-editor-section">
+        <h4 class="kemp-is-bill__guest-editor-section-title">Osobní údaje</h4>
+        <div class="kemp-is-bill__guest-editor-grid">
+          <div>
+            <div class="kemp-is-bill__field-label">Příjmení</div>
+            <input
+              #lastNameInput
+              pInputText
+              placeholder="Příjmení"
+              [ngModel]="registryDraft().lastName"
+              (ngModelChange)="updateRegistryDraft('lastName', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Jméno</div>
+            <input
+              pInputText
+              placeholder="Jméno"
+              [ngModel]="registryDraft().firstName"
+              (ngModelChange)="updateRegistryDraft('firstName', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Datum narození</div>
+            <p-datepicker
+              [ngModel]="registryDraft().birth"
+              (ngModelChange)="updateRegistryDraft('birth', $event)"
+              dateFormat="dd. mm. yy"
+              [showIcon]="true"
+              [iconDisplay]="'input'"
+              appendTo="body"
+              (onShow)="onOverlayShow()"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Občanství</div>
+            <p-select
+              [options]="nationalities()"
+              optionLabel="name"
+              optionValue="id"
+              [filter]="true"
+              filterBy="name,alpha2,alpha3"
+              [ngModel]="registryDraft().nationalityId"
+              (ngModelChange)="updateNationalityId($event)"
+              appendTo="body"
+              (onShow)="onOverlayShow()"
+              placeholder="Vyberte občanství"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="kemp-is-bill__guest-editor-section">
+        <h4 class="kemp-is-bill__guest-editor-section-title">
+          Adresa trvalého pobytu
+        </h4>
+        <div class="kemp-is-bill__guest-editor-grid">
+          <div>
+            <div class="kemp-is-bill__field-label">Ulice</div>
+            <p-autocomplete
+              [ngModel]="registryDraft().address.street"
+              (ngModelChange)="updateRegistryAddress('street', $any($event))"
+              [suggestions]="addressSuggestions()"
+              (completeMethod)="onAddressQuery($event)"
+              (onSelect)="onAddressPick($event)"
+              field="street"
+              [delay]="300"
+              [minLength]="8"
+              [forceSelection]="false"
+              appendTo="body"
+              (onShow)="onOverlayShow()"
+              placeholder="Ulice"
+              styleClass="kemp-is-bill__address-whisperer"
+            >
+              <ng-template
+                let-s
+                #item
+              >
+                <div class="kemp-is-bill__address-suggestion">
+                  <div class="kemp-is-bill__address-suggestion-line">
+                    <strong>{{ s.street }}</strong>
+                    @if (s.houseNumber) {
+                      <span>&nbsp;{{ s.houseNumber }}</span>
+                    }
+                  </div>
+                  <small class="kemp-is-bill__address-suggestion-meta">
+                    @if (s.zipCode) {
+                      <span class="kemp-mono">{{ s.zipCode }}</span>
+                    }
+                    {{ s.city }} · {{ s.countryCode }}
+                  </small>
+                </div>
+              </ng-template>
+            </p-autocomplete>
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Č. p.</div>
+            <input
+              pInputText
+              placeholder="Č. p."
+              [ngModel]="registryDraft().address.houseNumber"
+              (ngModelChange)="updateRegistryAddress('houseNumber', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">PSČ</div>
+            <input
+              pInputText
+              class="kemp-mono"
+              placeholder="000 00"
+              [ngModel]="registryDraft().address.zipCode"
+              (ngModelChange)="updateRegistryAddress('zipCode', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-bill__field-label">Město</div>
+            <input
+              pInputText
+              placeholder="Město"
+              [ngModel]="registryDraft().address.city"
+              (ngModelChange)="updateRegistryAddress('city', $event)"
+            />
+          </div>
+          <div class="kemp-is-bill__guest-editor-wide">
+            <div class="kemp-is-bill__field-label">Země</div>
+            <p-select
+              [options]="nationalities()"
+              optionLabel="name"
+              optionValue="alpha2"
+              [filter]="true"
+              filterBy="name,alpha2,alpha3"
+              [ngModel]="registryDraft().address.countryCode"
+              (ngModelChange)="updateRegistryAddress('countryCode', $event)"
+              appendTo="body"
+              (onShow)="onOverlayShow()"
+              placeholder="Vyberte zemi"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="kemp-is-bill__guest-editor-section">
+        <h4 class="kemp-is-bill__guest-editor-section-title">
+          Doklad totožnosti
+        </h4>
+        @if (!showDocumentPicker()) {
+          <div class="kemp-is-bill__guest-editor-hint">
+            Nejprve vyberte občanství.
+          </div>
+        } @else if (documentOptional()) {
+          <div class="kemp-is-bill__guest-editor-hint">
+            Dítě do {{ adultAgeYears }} let s českým občanstvím — doklad není
+            povinný.
+          </div>
+          <div class="kemp-is-bill__guest-editor-grid">
+            <div>
+              <div class="kemp-is-bill__field-label">Typ dokladu</div>
+              <p-select
+                [options]="documentTypeOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [showClear]="true"
+                [ngModel]="registryDraft().documentType"
+                (ngModelChange)="updateDocumentType($event)"
+                appendTo="body"
+                (onShow)="onOverlayShow()"
+                placeholder="Vyberte typ dokladu (volitelné)"
+              />
+            </div>
+            @if (registryDraft().documentType !== null) {
+              <div>
+                <div class="kemp-is-bill__field-label">
+                  {{ documentNumberLabel() }}
+                </div>
+                <input
+                  pInputText
+                  class="kemp-mono"
+                  placeholder="123 456 789"
+                  [ngModel]="registryDraft().documentNumber"
+                  (ngModelChange)="
+                    updateRegistryDraft('documentNumber', $event)
+                  "
+                />
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="kemp-is-bill__guest-editor-grid">
+            <div>
+              <div class="kemp-is-bill__field-label">Typ dokladu</div>
+              <p-select
+                [options]="documentTypeOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [showClear]="false"
+                [ngModel]="registryDraft().documentType"
+                (ngModelChange)="updateDocumentType($event)"
+                appendTo="body"
+                (onShow)="onOverlayShow()"
+                placeholder="Vyberte typ dokladu"
+              />
+            </div>
+            @if (registryDraft().documentType !== null) {
+              <div>
+                <div class="kemp-is-bill__field-label">
+                  {{ documentNumberLabel() }}
+                </div>
+                <input
+                  pInputText
+                  class="kemp-mono"
+                  placeholder="123 456 789"
+                  [ngModel]="registryDraft().documentNumber"
+                  (ngModelChange)="
+                    updateRegistryDraft('documentNumber', $event)
+                  "
+                />
+              </div>
+            }
+          </div>
+        }
+
+        @if (showBiometric()) {
+          <div class="kemp-is-bill__passport-type">
+            <div class="kemp-is-bill__field-label">Typ pasu</div>
+            <div class="kemp-is-bill__passport-type-options">
+              <label
+                class="kemp-is-bill__passport-type-option"
+                [class.kemp-is-bill__passport-type-option--active]="
+                  registryDraft().biometric
+                "
+              >
+                <input
+                  type="radio"
+                  name="passport-type"
+                  [checked]="registryDraft().biometric"
+                  (change)="updateRegistryDraft('biometric', true)"
+                />
+                <span>
+                  <strong>Biometrický pas</strong>
+                  <small>Pas se symbolem čipu — vízum se neeviduje.</small>
+                </span>
+              </label>
+              <label
+                class="kemp-is-bill__passport-type-option"
+                [class.kemp-is-bill__passport-type-option--active]="
+                  !registryDraft().biometric
+                "
+              >
+                <input
+                  type="radio"
+                  name="passport-type"
+                  [checked]="!registryDraft().biometric"
+                  (change)="updateRegistryDraft('biometric', false)"
+                />
+                <span>
+                  <strong>Pas s vízem</strong>
+                  <small>
+                    Pas bez biometrických údajů — uveďte schengenské / EU vízum.
+                  </small>
+                </span>
+              </label>
+            </div>
+          </div>
+        }
+
+        @if (requiresVisa()) {
+          <div>
+            <div class="kemp-is-bill__field-label">Číslo víza</div>
+            <input
+              pInputText
+              class="kemp-mono"
+              placeholder="např. AB1234567"
+              [ngModel]="registryDraft().visaNumber"
+              (ngModelChange)="updateRegistryDraft('visaNumber', $event)"
+            />
+          </div>
+        }
+      </section>
+
+      <section class="kemp-is-bill__guest-editor-section">
+        <h4 class="kemp-is-bill__guest-editor-section-title">Poznámka</h4>
+        <textarea
+          pTextarea
+          rows="2"
+          placeholder="Volitelná poznámka"
+          [ngModel]="registryDraft().note"
+          (ngModelChange)="updateRegistryDraft('note', $event)"
+          maxlength="500"
+        ></textarea>
+      </section>
+    </div>
+
+    <ng-template #footer>
+      <div class="kemp-is-bill__guest-editor-actions">
+        <p-button
+          [text]="true"
+          severity="secondary"
+          (onClick)="cancelRegistryEdit()"
+        >
+          <span>Zrušit</span>
+        </p-button>
+        <p-button
+          [disabled]="!registryDraftValid()"
+          (onClick)="saveRegistryEdit()"
+        >
+          <i
+            class="pi pi-check"
+            aria-hidden="true"
+          ></i>
+          <span>Uložit</span>
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</section>

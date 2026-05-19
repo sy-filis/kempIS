@@ -1,0 +1,243 @@
+<div class="kemp-is-leftnav__brand">
+  <div
+    class="kemp-is-leftnav__logo"
+    aria-hidden="true"
+  >
+    K
+  </div>
+  <div class="kemp-is-leftnav__brand-text">
+    <div class="kemp-is-leftnav__brand-name">{{ brand }}</div>
+    <div class="kemp-is-leftnav__brand-sub">{{ brandSubtitle }}</div>
+  </div>
+</div>
+
+<nav
+  class="kemp-is-leftnav__nav"
+  aria-label="Hlavní navigace"
+>
+  @for (item of items(); track item.id) {
+    <a
+      class="kemp-is-leftnav__item"
+      [routerLink]="item.link"
+      routerLinkActive="kemp-is-leftnav__item--active"
+      #rla="routerLinkActive"
+    >
+      <i
+        class="pi kemp-is-leftnav__item-icon"
+        [class]="item.icon"
+        aria-hidden="true"
+      ></i>
+      <span class="kemp-is-leftnav__item-label">{{ item.label }}</span>
+      @if (item.badge) {
+        <span
+          class="kemp-is-leftnav__badge"
+          [class.kemp-is-leftnav__badge--active]="rla.isActive"
+        >
+          {{ item.badge }}
+        </span>
+      }
+      @if (rla.isActive) {
+        <span
+          class="kemp-is-leftnav__rail"
+          aria-hidden="true"
+        ></span>
+      }
+    </a>
+  }
+
+  <div class="kemp-is-leftnav__spacer"></div>
+
+  <button
+    type="button"
+    class="kemp-is-leftnav__refresh"
+    (click)="onRefresh()"
+  >
+    <i
+      class="pi pi-refresh"
+      aria-hidden="true"
+    ></i>
+    <span>{{ refreshAgo() }}</span>
+  </button>
+
+  <button
+    type="button"
+    class="kemp-is-leftnav__cancel-shift"
+    (click)="openCancelShift()"
+  >
+    <i
+      class="pi pi-power-off"
+      aria-hidden="true"
+    ></i>
+    <span>Ukončit směnu</span>
+  </button>
+
+  <div class="kemp-is-leftnav__user">
+    <div
+      class="kemp-is-leftnav__avatar"
+      aria-hidden="true"
+    >
+      {{ userInitials() }}
+    </div>
+    <div class="kemp-is-leftnav__user-text">
+      <div class="kemp-is-leftnav__user-name">{{ userName() }}</div>
+      <div class="kemp-is-leftnav__user-role">{{ userRole() }}</div>
+      @if (remainingTime()) {
+        <div class="kemp-is-leftnav__user-timer kemp-mono">
+          {{ remainingTime() }}
+        </div>
+      }
+    </div>
+    <button
+      type="button"
+      class="kemp-is-leftnav__logout"
+      aria-label="Odhlásit"
+      (click)="onLogout()"
+    >
+      <i
+        class="pi pi-sign-out"
+        aria-hidden="true"
+      ></i>
+    </button>
+  </div>
+</nav>
+
+<p-dialog
+  header="Ukončit směnu"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!shiftRunning()"
+  [style]="{ width: '26rem' }"
+  [visible]="cancelShiftDialogVisible()"
+  (visibleChange)="cancelShiftDialogVisible.set($event)"
+>
+  @if (policeState() === "idle" && closingState().kind === "idle") {
+    <p class="kemp-is-leftnav__shift-text">
+      Odeslat hlášení hostů na policii a uzavřít účetní závěrku?
+    </p>
+    <ul class="kemp-is-leftnav__shift-list">
+      <li>
+        <i
+          class="pi pi-shield"
+          aria-hidden="true"
+        ></i>
+        <span>Hlášení nenahlášených hostů do registru Ubyport</span>
+      </li>
+      <li>
+        <i
+          class="pi pi-book"
+          aria-hidden="true"
+        ></i>
+        <span>Uzavření všech otevřených účtenek do nové závěrky</span>
+      </li>
+    </ul>
+  } @else {
+    <ul class="kemp-is-leftnav__shift-results">
+      <li>
+        <i
+          class="pi pi-shield"
+          aria-hidden="true"
+        ></i>
+        @switch (policeState()) {
+          @case ("pending") {
+            <span>Odesílám hlášení hostů…</span>
+            <i
+              class="pi pi-spin pi-spinner kemp-is-leftnav__shift-spinner"
+              aria-hidden="true"
+            ></i>
+          }
+          @case ("ok") {
+            <span>Hosté nahlášeni.</span>
+            <i
+              class="pi pi-check kemp-is-leftnav__shift-ok"
+              aria-hidden="true"
+            ></i>
+          }
+          @case ("error") {
+            <span>Hlášení hostů selhalo.</span>
+            <i
+              class="pi pi-times kemp-is-leftnav__shift-err"
+              aria-hidden="true"
+            ></i>
+          }
+        }
+      </li>
+      <li>
+        <i
+          class="pi pi-book"
+          aria-hidden="true"
+        ></i>
+        @switch (closingState().kind) {
+          @case ("pending") {
+            <span>Vytvářím účetní závěrku…</span>
+            <i
+              class="pi pi-spin pi-spinner kemp-is-leftnav__shift-spinner"
+              aria-hidden="true"
+            ></i>
+          }
+          @case ("ok") {
+            @let ok = closingState();
+            @if (ok.kind === "ok") {
+              <span>
+                Uzavřeno {{ ok.billCount }} účtenek, celkem
+                {{ formatCzk(ok.totalAmount) }}.
+              </span>
+              <i
+                class="pi pi-check kemp-is-leftnav__shift-ok"
+                aria-hidden="true"
+              ></i>
+            }
+          }
+          @case ("empty") {
+            <span>Žádné účtenky k uzavření.</span>
+            <i
+              class="pi pi-info-circle kemp-is-leftnav__shift-info"
+              aria-hidden="true"
+            ></i>
+          }
+          @case ("error") {
+            <span>Závěrku se nepodařilo vytvořit.</span>
+            <i
+              class="pi pi-times kemp-is-leftnav__shift-err"
+              aria-hidden="true"
+            ></i>
+          }
+        }
+      </li>
+    </ul>
+  }
+
+  <ng-template #footer>
+    @if (policeState() === "idle" && closingState().kind === "idle") {
+      <p-button
+        severity="secondary"
+        [text]="true"
+        (onClick)="closeCancelShift()"
+      >
+        Zrušit
+      </p-button>
+      <p-button (onClick)="runEndOfShift()">Ukončit směnu</p-button>
+    } @else if (shiftRunning()) {
+      <p-button
+        [disabled]="true"
+        [loading]="true"
+      >
+        Pracuje se…
+      </p-button>
+    } @else {
+      @let okClosing = closingState();
+      @if (okClosing.kind === "ok") {
+        <p-button (onClick)="onOpenClosing()">Otevřít závěrku</p-button>
+      }
+      <p-button
+        severity="secondary"
+        [text]="true"
+        (onClick)="closeCancelShift()"
+      >
+        Zavřít
+      </p-button>
+    }
+  </ng-template>
+</p-dialog>
+
+<p-toast />

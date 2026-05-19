@@ -1,0 +1,233 @@
+<div
+  class="kemp-is-plan-grid__header"
+  [style.height.px]="56"
+>
+  <div
+    class="kemp-is-plan-grid__header-corner"
+    [style.width.px]="leftHeaderW"
+  >
+    Skupina · Chata · Stav
+  </div>
+  <div class="kemp-is-plan-grid__header-days">
+    @for (cell of days(); track cell.day) {
+      <div
+        class="kemp-is-plan-grid__day-head"
+        [class.kemp-is-plan-grid__day-head--weekend]="
+          cell.weekend && !cell.today
+        "
+        [class.kemp-is-plan-grid__day-head--today]="cell.today"
+        [style.width.px]="dayWidth()"
+      >
+        <div class="kemp-is-plan-grid__day-dow">{{ cell.dowLabel }}</div>
+        <div class="kemp-is-plan-grid__day-num">{{ cell.day }}</div>
+        @if (cell.today) {
+          <span
+            class="kemp-is-plan-grid__day-dot"
+            aria-hidden="true"
+          ></span>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<div class="kemp-is-plan-grid__body">
+  <div
+    class="kemp-is-plan-grid__canvas"
+    [style.width.px]="totalGridWidth()"
+    [style.height.px]="totalGridHeight()"
+  >
+    @if (todayLineVisible()) {
+      <div
+        class="kemp-is-plan-grid__today-line"
+        aria-hidden="true"
+        [style.left.px]="todayLineLeft()"
+        [style.width.px]="dayWidth()"
+      ></div>
+    }
+
+    @for (band of groupBands(); track band.id) {
+      <div
+        class="kemp-is-plan-grid__group-band"
+        [style.top.px]="band.top"
+        [style.height.px]="band.height"
+        [style.width.px]="labelColW"
+      >
+        <span class="kemp-is-plan-grid__group-band-label">
+          {{ band.name }}
+        </span>
+      </div>
+      @if (band.eventStripHeight > 0) {
+        <div
+          class="kemp-is-plan-grid__event-strip-fill"
+          [style.top.px]="band.top"
+          [style.left.px]="labelColW"
+          [style.width.px]="leftHeaderW - labelColW"
+          [style.height.px]="band.eventStripHeight"
+          aria-hidden="true"
+        ></div>
+      }
+    }
+
+    @for (e of eventBands(); track e.id) {
+      <button
+        type="button"
+        class="kemp-is-plan-grid__event"
+        [style.top.px]="e.top"
+        [style.left.px]="e.left"
+        [style.width.px]="e.width"
+        [style.height.px]="e.height"
+        [title]="e.tooltip"
+        [attr.aria-label]="'Detail akce ' + e.name"
+        (click)="onEventBandClick(e.eventId, $event)"
+      >
+        <i
+          class="pi pi-megaphone kemp-is-plan-grid__event-icon"
+          aria-hidden="true"
+        ></i>
+        <span class="kemp-is-plan-grid__event-name">{{ e.name }}</span>
+      </button>
+    }
+
+    @for (row of cottages(); track row.id) {
+      <div
+        class="kemp-is-plan-grid__row"
+        [class.kemp-is-plan-grid__row--group-end]="row.groupEnd"
+        [style.top.px]="row.top"
+        [style.height.px]="rowHeight()"
+      >
+        <div
+          class="kemp-is-plan-grid__row-group"
+          [style.width.px]="labelColW"
+          aria-hidden="true"
+        ></div>
+        <div
+          class="kemp-is-plan-grid__row-num"
+          [style.width.px]="numColW"
+          [title]="row.name"
+        >
+          {{ row.name }}
+        </div>
+        <div
+          class="kemp-is-plan-grid__row-status"
+          [style.width.px]="stateColW"
+        >
+          <i
+            class="pi"
+            [class]="row.statusConfig.icon"
+            [style.color]="row.statusConfig.dot"
+            [attr.aria-label]="row.statusConfig.label"
+          ></i>
+        </div>
+
+        <div class="kemp-is-plan-grid__row-days">
+          @for (cell of days(); track cell.day) {
+            <div
+              class="kemp-is-plan-grid__cell"
+              [class.kemp-is-plan-grid__cell--weekend]="cell.weekend"
+              [style.width.px]="dayWidth()"
+            >
+              <svg
+                class="kemp-is-plan-grid__cell-divider"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <line
+                  x1="0"
+                  y1="100%"
+                  x2="100%"
+                  y2="0"
+                  stroke="var(--p-surface-200)"
+                  stroke-width="1"
+                  stroke-dasharray="2 2"
+                />
+              </svg>
+            </div>
+          }
+
+          @for (band of oooFor(row); track band.id) {
+            @if (band.fullMonth) {
+              <button
+                type="button"
+                class="kemp-is-plan-grid__maintenance"
+                [title]="band.reason"
+                [attr.aria-label]="'Detail záznamu mimo provoz: ' + band.reason"
+                (click)="onOOOBandClick(band, $event)"
+              >
+                ÚDRŽBA · {{ band.reason }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="kemp-is-plan-grid__ooo-band"
+                [style.left.px]="band.left"
+                [style.width.px]="band.width"
+                [title]="band.reason"
+                [attr.aria-label]="'Detail záznamu mimo provoz: ' + band.reason"
+                (click)="onOOOBandClick(band, $event)"
+              >
+                <span class="kemp-is-plan-grid__ooo-label">
+                  {{ band.reason }}
+                </span>
+              </button>
+            }
+          }
+
+          @for (block of blocksFor(row); track block.id) {
+            <button
+              type="button"
+              class="kemp-is-plan-grid__block"
+              [class.kemp-is-plan-grid__block--context-open]="block.contextOpen"
+              [attr.data-res-id]="block.id"
+              [attr.aria-label]="'Detail rezervace ' + block.guest"
+              [style.left.px]="block.left"
+              [style.width.px]="block.width"
+              [style.background]="block.contextOpen ? '#fef3c7' : block.bg"
+              [style.border]="
+                block.contextOpen
+                  ? '2px solid #f59e0b'
+                  : '1px solid ' + block.border
+              "
+              [style.border-left]="
+                block.contextOpen
+                  ? '6px solid #f59e0b'
+                  : '3px solid ' + block.accent
+              "
+              [style.color]="block.text"
+              [style.clip-path]="block.clipPath"
+              [style.padding]="block.padding"
+              (click)="onBlockClick(block, $event)"
+            >
+              @if (block.isGroup) {
+                <i
+                  class="pi pi-users kemp-is-plan-grid__block-icon"
+                  [style.color]="block.accent"
+                  aria-hidden="true"
+                ></i>
+              }
+              @if (block.hasGivenKey) {
+                <i
+                  class="pi pi-key kemp-is-plan-grid__block-icon"
+                  [style.color]="block.accent"
+                  title="Klíče vydány"
+                  aria-label="Klíče vydány"
+                ></i>
+              }
+              <span class="kemp-is-plan-grid__block-guest">
+                {{ block.guest }}
+              </span>
+              @if (block.showPhone) {
+                <span
+                  class="kemp-is-plan-grid__block-phone"
+                  [style.color]="block.phoneColor"
+                >
+                  {{ block.phone }}
+                </span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

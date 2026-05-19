@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.kemp-is-service-types {
+  padding: 1rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+  flex: 1;
+}
+
+.kemp-is-service-types__toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.kemp-is-service-types__actions-col {
+  text-align: right;
+}
+
+.kemp-is-service-types__actions-cell {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.kemp-is-service-types__empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--p-text-muted-color, #71717a);
+}

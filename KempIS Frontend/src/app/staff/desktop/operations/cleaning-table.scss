@@ -1,0 +1,206 @@
+:host {
+  display: block;
+  flex: 1;
+  min-height: 0;
+}
+
+$label-w: 32px;
+$col-tmpl: 90px 70px 70px minmax(0, 1fr);
+
+.kemp-is-ops-clean {
+  flex: 1;
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.kemp-is-ops-clean__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  flex-shrink: 0;
+}
+
+.kemp-is-ops-clean__head-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: var(--p-primary-50, #eef2ff);
+  color: var(--p-primary-700, #4338ca);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  > i {
+    font-size: 0.6875rem;
+  }
+}
+
+.kemp-is-ops-clean__head-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-ops-clean__head-spacer {
+  flex: 1;
+}
+
+.kemp-is-ops-clean__head-meta {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-ops-clean__columns {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.kemp-is-ops-clean__column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid var(--p-surface-100, #f4f4f5);
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.kemp-is-ops-clean__col-head {
+  display: grid;
+  grid-template-columns: $label-w $col-tmpl;
+  padding: 8px 12px 8px 0;
+  background: var(--p-surface-50, #fafafa);
+  border-bottom: 1px solid var(--p-surface-200, #e4e4e7);
+  font-size: 0.59375rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.kemp-is-ops-clean__col-head-center {
+  text-align: center;
+}
+
+.kemp-is-ops-clean__group {
+  display: grid;
+  grid-template-columns: $label-w 1fr;
+  border-bottom: 2px solid var(--p-surface-200, #e4e4e7);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.kemp-is-ops-clean__group-label {
+  background: var(--p-surface-50, #fafafa);
+  border-right: 1px solid var(--p-surface-200, #e4e4e7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.kemp-is-ops-clean__group-label-text {
+  display: inline-block;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-ops-clean__group-rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kemp-is-ops-clean__row {
+  display: grid;
+  grid-template-columns: $col-tmpl;
+  align-items: center;
+  padding: 0 12px 0 0;
+  min-height: 44px;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  background: var(--p-surface-0, #fff);
+  transition:
+    background-color 120ms ease,
+    opacity 120ms ease;
+
+  &--dimmed {
+    background: var(--p-surface-50, #fafafa);
+    opacity: 0.65;
+  }
+
+  &--last-in-group {
+    border-bottom: none;
+  }
+}
+
+.kemp-is-ops-clean__spot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+}
+
+.kemp-is-ops-clean__spot-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-ops-clean__check {
+  display: flex;
+  justify-content: center;
+}
+
+.kemp-is-ops-clean__note {
+  display: block;
+  min-width: 0;
+}
+
+.kemp-is-ops-clean__note-input {
+  width: 100%;
+  background: transparent;
+  border-color: transparent;
+  font-size: 0.78125rem;
+  padding: 6px 10px;
+
+  &:hover:not(:focus) {
+    background: var(--p-surface-50, #fafafa);
+    border-color: var(--p-surface-200, #e4e4e7);
+  }
+}
+
+.kemp-is-ops-clean__empty {
+  padding: 24px 14px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--p-text-muted-color, #71717a);
+  grid-column: 1 / -1;
+}
+
+::ng-deep .kemp-is-ops-clean__check--done .p-checkbox-checked .p-checkbox-box {
+  background: #10b981;
+  border-color: #10b981;
+}

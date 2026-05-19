@@ -1,0 +1,90 @@
+<section
+  class="kemp-is-dash__card"
+  data-color="arr"
+>
+  <header class="kemp-is-dash__card-head">
+    <span
+      class="kemp-is-dash__card-accent"
+      aria-hidden="true"
+    ></span>
+    <span class="kemp-is-dash__card-title">Příjezdy &amp; odjezdy dnes</span>
+    <span class="kemp-is-dash__card-count kemp-mono">
+      {{ arrivals().length + departures().length }}
+    </span>
+  </header>
+  <div class="kemp-is-dash__ad-grid">
+    <div class="kemp-is-dash__ad-col">
+      <div class="kemp-is-dash__ad-colhead">
+        <i
+          class="pi pi-sign-in"
+          style="color: var(--kemp-dash-arr)"
+          aria-hidden="true"
+        ></i>
+      </div>
+      @for (a of arrivals(); track a.ref) {
+        <button
+          type="button"
+          class="kemp-is-dash__ad-row"
+          [class.kemp-is-dash__ad-row--arrived]="a.status === 'arrived'"
+          (click)="onOpen(a.id)"
+        >
+          <div class="kemp-is-dash__ad-body">
+            <div class="kemp-is-dash__ad-name">{{ a.name }}</div>
+            <span class="kemp-mono kemp-is-dash__ad-unit">{{ a.unit }}</span>
+          </div>
+          @if (a.status === "arrived") {
+            <p-tag
+              severity="success"
+              icon="pi pi-check"
+              value="Přijat"
+              [rounded]="true"
+            />
+          } @else {
+            <p-tag
+              severity="info"
+              value="Čeká"
+              [rounded]="true"
+            />
+          }
+        </button>
+      }
+    </div>
+
+    <div class="kemp-is-dash__ad-col">
+      <div class="kemp-is-dash__ad-colhead">
+        <i
+          class="pi pi-sign-out"
+          style="color: var(--kemp-dash-dep)"
+          aria-hidden="true"
+        ></i>
+      </div>
+      @for (d of departures(); track d.ref) {
+        <button
+          type="button"
+          class="kemp-is-dash__ad-row"
+          [class.kemp-is-dash__ad-row--done]="d.status === 'done'"
+          (click)="onOpen(d.id)"
+        >
+          <div class="kemp-is-dash__ad-body">
+            <div class="kemp-is-dash__ad-name">{{ d.name }}</div>
+            <span class="kemp-mono kemp-is-dash__ad-unit">{{ d.unit }}</span>
+          </div>
+          @if (d.status === "done") {
+            <p-tag
+              severity="success"
+              icon="pi pi-check"
+              value="Odjel"
+              [rounded]="true"
+            />
+          } @else {
+            <p-tag
+              severity="warn"
+              value="Odjíždí"
+              [rounded]="true"
+            />
+          }
+        </button>
+      }
+    </div>
+  </div>
+</section>

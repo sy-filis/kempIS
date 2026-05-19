@@ -1,0 +1,58 @@
+.kemp-is-nationality-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kemp-is-nationality-form__row {
+  display: grid;
+  gap: 1rem;
+}
+
+.kemp-is-nationality-form__row--two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.kemp-is-nationality-form__row--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.kemp-is-nationality-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  > label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--p-text-color-emphasis, #27272a);
+  }
+
+  > input,
+  > p-select {
+    width: 100%;
+  }
+}
+
+.kemp-is-nationality-form__code {
+  font-family: var(--kemp-font-mono, monospace);
+}
+
+.kemp-is-nationality-form__flags {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.kemp-is-nationality-form__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  > label {
+    font-size: 0.875rem;
+    color: var(--p-text-color, #3f3f46);
+    cursor: pointer;
+  }
+}

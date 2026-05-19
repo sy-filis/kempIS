@@ -1,0 +1,195 @@
+<div class="kemp-is-bill__header">
+  <div class="kemp-is-bill__title-block">
+    <div class="kemp-is-bill__eyebrow">Účet</div>
+    <div class="kemp-is-bill__title">{{ titleText() }}</div>
+  </div>
+
+  @if (linkedReservationSummary(); as r) {
+    <span
+      class="kemp-is-bill__header-divider"
+      aria-hidden="true"
+    ></span>
+    <div class="kemp-is-bill__context">
+      <i
+        class="pi pi-receipt"
+        aria-hidden="true"
+      ></i>
+      <span class="kemp-is-bill__context-ref kemp-mono">{{ r.number }}</span>
+      <span class="kemp-is-bill__context-dot">·</span>
+      <span class="kemp-is-bill__context-name">{{ r.maker }}</span>
+    </div>
+  }
+
+  <span class="kemp-is-bill__spacer"></span>
+
+  @if (mode() === "edit") {
+    <p-tag
+      severity="secondary"
+      value="Otevřený"
+    />
+  }
+
+  @if (pairingTag(); as t) {
+    <p-tag
+      [value]="t.label"
+      [severity]="t.severity"
+      icon="pi pi-tablet"
+    />
+  }
+  <p-button
+    size="small"
+    icon="pi pi-tablet"
+    [label]="pairingButtonLabel()"
+    [severity]="pairingButtonSeverity()"
+    [outlined]="paired()"
+    (onClick)="onPairingButtonClick()"
+  />
+</div>
+
+<kemp-is-connect-tablet-dialog [(visible)]="tabletDialogVisible" />
+
+<div class="kemp-is-bill__stepper">
+  @for (s of steps(); track s.step.id) {
+    <button
+      type="button"
+      class="kemp-is-bill__step kemp-is-bill__step--{{ s.state }}"
+      [attr.aria-current]="s.state === 'current' ? 'step' : null"
+      (click)="setStep(s.index)"
+    >
+      <span class="kemp-is-bill__step-circle">
+        @if (s.state === "done") {
+          <i
+            class="pi pi-check"
+            aria-hidden="true"
+          ></i>
+        } @else {
+          {{ s.index + 1 }}
+        }
+      </span>
+      <span class="kemp-is-bill__step-label">{{ s.step.label }}</span>
+    </button>
+    @if (!$last) {
+      <span
+        class="kemp-is-bill__step-line"
+        [class.kemp-is-bill__step-line--done]="s.state === 'done'"
+        aria-hidden="true"
+      ></span>
+    }
+  }
+</div>
+
+<div class="kemp-is-bill__body">
+  <div class="kemp-is-bill__inner">
+    @switch (active()) {
+      @case ("period") {
+        <kemp-is-bill-step1-period [periodEditable]="periodEditable()" />
+      }
+      @case ("vehicles") {
+        <kemp-is-bill-step2-vehicles
+          [reservationId]="linkedReservationId()"
+          [billId]="billId()"
+        />
+      }
+      @case ("cottages") {
+        <kemp-is-bill-step3-cottages />
+      }
+      @case ("meals") {
+        <kemp-is-bill-step4-meals />
+      }
+      @case ("invoices") {
+        <kemp-is-bill-step5-invoices />
+      }
+      @case ("other") {
+        <kemp-is-bill-step6-other [hasReservation]="hasReservation()" />
+      }
+      @case ("recap") {
+        <kemp-is-bill-step7-recap />
+      }
+      @case ("accessCards") {
+        <kemp-is-bill-step-access-cards />
+      }
+      @case ("payment") {
+        <kemp-is-bill-step8-payment />
+      }
+    }
+  </div>
+</div>
+
+<div class="kemp-is-bill__footer">
+  <div class="kemp-is-bill__totals">
+    <div>
+      <div class="kemp-is-bill__totals-label">Mezisoučet</div>
+      <div class="kemp-is-bill__totals-value kemp-mono">
+        {{ formatNumber(currentTotals().total) }}
+        <span class="kemp-is-bill__totals-currency">Kč</span>
+      </div>
+    </div>
+  </div>
+
+  <span class="kemp-is-bill__spacer"></span>
+
+  <p-button
+    [text]="true"
+    severity="danger"
+    size="small"
+    (onClick)="onCancel()"
+  >
+    <i
+      class="pi pi-times"
+      aria-hidden="true"
+    ></i>
+    <span>Zrušit</span>
+  </p-button>
+
+  @if (!isFirst()) {
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="onPrev()"
+    >
+      <i
+        class="pi pi-arrow-left"
+        aria-hidden="true"
+      ></i>
+      <span>Předchozí</span>
+    </p-button>
+  }
+
+  @if (!isLast()) {
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="onNext()"
+    >
+      <span>Další</span>
+      <i
+        class="pi pi-arrow-right"
+        aria-hidden="true"
+      ></i>
+    </p-button>
+  }
+
+  @if (isLast()) {
+    <p-button
+      [disabled]="submitting()"
+      (onClick)="onSubmit()"
+    >
+      <i
+        class="pi pi-check"
+        aria-hidden="true"
+      ></i>
+      <span>Vystavit účet</span>
+    </p-button>
+  } @else {
+    <p-button (onClick)="onNext()">
+      <i
+        class="pi pi-check"
+        aria-hidden="true"
+      ></i>
+      <span>{{ currentTotals().label }}</span>
+    </p-button>
+  }
+</div>
+
+<p-toast />
+<p-confirmDialog [dismissableMask]="true" />

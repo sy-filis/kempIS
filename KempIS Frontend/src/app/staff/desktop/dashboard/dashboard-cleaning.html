@@ -1,0 +1,47 @@
+<section
+  class="kemp-is-dash__card"
+  data-color="clean"
+>
+  <header class="kemp-is-dash__card-head">
+    <span
+      class="kemp-is-dash__card-accent"
+      aria-hidden="true"
+    ></span>
+    <span class="kemp-is-dash__card-title">Úklid · stav chatek</span>
+    <span class="kemp-is-dash__card-count kemp-mono">
+      {{ cleaning().done }}/{{ cleaning().total }}
+    </span>
+  </header>
+  <div class="kemp-is-dash__cleaning">
+    <div class="kemp-is-dash__cleaning-summary">
+      <span class="kemp-is-dash__cleaning-pct kemp-mono">
+        {{ cleaningPct() }}%
+      </span>
+    </div>
+    <div class="kemp-is-dash__cleaning-grid">
+      @for (t of cleaning().tiles; track $index) {
+        <div
+          class="kemp-is-dash__cleaning-tile"
+          [class.kemp-is-dash__cleaning-tile--done]="t.done"
+          [attr.aria-label]="t.id + (t.done ? ' uklizeno' : ' k úklidu')"
+        >
+          @if (t.done) {
+            <i
+              class="pi pi-check"
+              aria-hidden="true"
+            ></i>
+          }
+        </div>
+      }
+    </div>
+
+    @for (r of cleaning().rush.slice(0, 3); track r.id) {
+      <div
+        class="kemp-is-dash__rush"
+        [class.kemp-is-dash__rush--high]="r.priority === 'high'"
+      >
+        <span class="kemp-is-dash__rush-id kemp-mono">{{ r.id }}</span>
+      </div>
+    }
+  </div>
+</section>

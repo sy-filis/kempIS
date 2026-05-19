@@ -1,0 +1,238 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closeOnEscape]="true"
+  [dismissableMask]="true"
+  header="Host"
+  [style]="{ width: '720px' }"
+>
+  @if (guest(); as g) {
+    @let d = draft();
+    <div class="kemp-is-guest-editor">
+      @if (detailLoading()) {
+        <p-message
+          severity="info"
+          text="Načítám aktuální data hosta…"
+        />
+      }
+      @if (detailError(); as err) {
+        <p-message
+          severity="error"
+          [text]="err"
+        />
+      }
+      <section class="kemp-is-guest-editor__section">
+        <h4>Osobní údaje</h4>
+        <div class="kemp-is-guest-editor__grid">
+          <div>
+            <div class="kemp-is-guest-editor__label">Jméno *</div>
+            <input
+              pInputText
+              [ngModel]="d.firstName"
+              (ngModelChange)="updateDraft('firstName', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Příjmení *</div>
+            <input
+              pInputText
+              [ngModel]="d.lastName"
+              (ngModelChange)="updateDraft('lastName', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Datum narození *</div>
+            <p-datepicker
+              [ngModel]="d.birth"
+              (ngModelChange)="updateDraft('birth', $event)"
+              dateFormat="dd. mm. yy"
+              [showIcon]="true"
+              appendTo="body"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Občanství</div>
+            <p-select
+              [options]="nationalityOptions()"
+              optionLabel="name"
+              optionValue="id"
+              [filter]="true"
+              filterBy="name"
+              [ngModel]="d.nationalityId"
+              (ngModelChange)="updateDraft('nationalityId', $event)"
+              appendTo="body"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="kemp-is-guest-editor__section">
+        <h4>Doklad</h4>
+        <div class="kemp-is-guest-editor__grid">
+          <div>
+            <div class="kemp-is-guest-editor__label">Typ dokladu</div>
+            <p-select
+              [options]="documentTypeOptions"
+              optionLabel="name"
+              optionValue="id"
+              [ngModel]="d.documentType"
+              (ngModelChange)="updateDraft('documentType', $event)"
+              appendTo="body"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Číslo dokladu</div>
+            <input
+              pInputText
+              class="kemp-mono"
+              [ngModel]="d.documentNumber"
+              (ngModelChange)="updateDraft('documentNumber', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Číslo víza</div>
+            <input
+              pInputText
+              class="kemp-mono"
+              [ngModel]="d.visaNumber"
+              (ngModelChange)="updateDraft('visaNumber', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Účel pobytu</div>
+            <input
+              pInputText
+              [ngModel]="d.reasonOfStay"
+              (ngModelChange)="updateDraft('reasonOfStay', $event)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="kemp-is-guest-editor__section">
+        <h4>Adresa trvalého bydliště</h4>
+        <div class="kemp-is-guest-editor__grid">
+          <div class="kemp-is-guest-editor__wide">
+            <div class="kemp-is-guest-editor__label">Ulice</div>
+            <p-autocomplete
+              styleClass="kemp-is-guest-editor__whisperer"
+              [ngModel]="d.street"
+              (ngModelChange)="onStreetType($event)"
+              [suggestions]="addressSuggestions()"
+              (completeMethod)="onAddressQuery($event)"
+              (onSelect)="onAddressPick($event)"
+              field="street"
+              [delay]="300"
+              [minLength]="minAddressChars"
+              [forceSelection]="false"
+              appendTo="body"
+              placeholder="Začněte psát ulici…"
+            >
+              <ng-template
+                let-s
+                #item
+              >
+                <div class="kemp-is-guest-editor__suggestion">
+                  <div>
+                    <strong>{{ s.street }}</strong>
+                    @if (s.houseNumber) {
+                      <span>&nbsp;{{ s.houseNumber }}</span>
+                    }
+                  </div>
+                  <small class="kemp-is-guest-editor__suggestion-meta">
+                    @if (s.zipCode) {
+                      <span class="kemp-mono">{{ s.zipCode }}</span>
+                    }
+                    {{ s.city }} · {{ s.countryCode }}
+                  </small>
+                </div>
+              </ng-template>
+            </p-autocomplete>
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Č. p.</div>
+            <input
+              pInputText
+              [ngModel]="d.houseNumber"
+              (ngModelChange)="updateDraft('houseNumber', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">PSČ</div>
+            <input
+              pInputText
+              class="kemp-mono"
+              [ngModel]="d.zipCode"
+              (ngModelChange)="updateDraft('zipCode', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Město</div>
+            <input
+              pInputText
+              [ngModel]="d.city"
+              (ngModelChange)="updateDraft('city', $event)"
+            />
+          </div>
+          <div>
+            <div class="kemp-is-guest-editor__label">Země</div>
+            <p-select
+              [options]="nationalityOptions()"
+              optionLabel="name"
+              optionValue="id"
+              [filter]="true"
+              filterBy="name"
+              [ngModel]="d.countryId"
+              (ngModelChange)="updateDraft('countryId', $event)"
+              appendTo="body"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="kemp-is-guest-editor__section">
+        <h4>Ostatní</h4>
+        <label
+          class="kemp-is-guest-editor__checkbox"
+          for="guest-editor-pays-rp"
+        >
+          <p-checkbox
+            inputId="guest-editor-pays-rp"
+            [binary]="true"
+            [ngModel]="d.paysRecreationFee"
+            (ngModelChange)="updateDraft('paysRecreationFee', $event)"
+          />
+          <span>Platí rekreační poplatek</span>
+        </label>
+        <div>
+          <div class="kemp-is-guest-editor__label">Poznámka</div>
+          <textarea
+            pTextarea
+            rows="2"
+            [ngModel]="d.note"
+            (ngModelChange)="updateDraft('note', $event)"
+          ></textarea>
+        </div>
+      </section>
+    </div>
+
+    <ng-template #footer>
+      <p-button
+        [text]="true"
+        severity="secondary"
+        label="Zavřít"
+        (onClick)="onVisibleChange(false)"
+      />
+      <p-button
+        icon="pi pi-check"
+        label="Uložit"
+        [loading]="saving()"
+        [disabled]="saving()"
+        (onClick)="save()"
+      />
+    </ng-template>
+  }
+</p-dialog>

@@ -1,0 +1,501 @@
+<article class="kemp-is-checkin">
+  <header class="kemp-is-checkin__head">
+    <div class="kemp-is-checkin__brand">
+      <span
+        class="kemp-is-checkin__brand-mark"
+        aria-hidden="true"
+      >
+        <i class="pi pi-sun"></i>
+      </span>
+      <span
+        class="kemp-is-checkin__brand-name"
+        i18n="@@checkin.brand"
+        >KempIS</span
+      >
+      <span class="kemp-is-checkin__brand-sep">·</span>
+      <span
+        class="kemp-is-checkin__brand-sub"
+        i18n="@@checkin.title"
+        >Online check-in</span
+      >
+    </div>
+  </header>
+
+  <div class="kemp-is-checkin__body">
+    @if (submitOutcome().kind === "success") {
+      <div
+        class="kemp-is-checkin__success"
+        role="status"
+        aria-live="polite"
+      >
+        <span
+          class="kemp-is-checkin__success-mark"
+          aria-hidden="true"
+        >
+          <i class="pi pi-check"></i>
+        </span>
+        <h2
+          class="kemp-is-checkin__title"
+          i18n="@@checkin.success.heading"
+        >
+          Check-in odeslán
+        </h2>
+        <p
+          class="kemp-is-checkin__lead kemp-is-text-muted"
+          i18n="@@checkin.success.lead"
+        >
+          Děkujeme! Vaše údaje jsme zaznamenali. Při příjezdu už nebudete muset
+          nic vyplňovat.
+        </p>
+      </div>
+    } @else {
+      <h2
+        class="kemp-is-checkin__title"
+        i18n="@@checkin.heading"
+      >
+        Online check-in
+      </h2>
+      <p
+        class="kemp-is-checkin__lead kemp-is-text-muted"
+        i18n="@@checkin.lead"
+      >
+        Vyplňte před příjezdem, ať se nezdržujete papírováním na recepci.
+      </p>
+
+      <form
+        class="kemp-is-checkin__form"
+        (submit)="$event.preventDefault(); onSubmit()"
+      >
+        <!-- Personal information -->
+        <section class="kemp-is-checkin__section">
+          <h3
+            class="kemp-is-checkin__section-eyebrow"
+            i18n="@@checkin.section.personal"
+          >
+            Osobní údaje
+          </h3>
+          <div class="kemp-is-checkin__grid kemp-is-checkin__grid--two">
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="checkin-first-name"
+                [formField]="form.firstName"
+              />
+              <label
+                for="checkin-first-name"
+                i18n="@@checkin.first-name"
+                >Jméno</label
+              >
+            </p-floatlabel>
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="checkin-surname"
+                [formField]="form.lastName"
+              />
+              <label
+                for="checkin-surname"
+                i18n="@@checkin.surname"
+                >Příjmení</label
+              >
+            </p-floatlabel>
+            <p-floatlabel variant="in">
+              <p-datepicker
+                inputId="checkin-birth-date"
+                [(ngModel)]="birthDateValue"
+                [ngModelOptions]="{ standalone: true }"
+                [showIcon]="true"
+                [maxDate]="today"
+                dateFormat="dd. mm. yy"
+                [readonlyInput]="false"
+                appendTo="body"
+              />
+              <label
+                for="checkin-birth-date"
+                i18n="@@checkin.birth-date"
+                >Datum narození</label
+              >
+            </p-floatlabel>
+          </div>
+        </section>
+
+        <!-- Address -->
+        <section class="kemp-is-checkin__section">
+          <h3
+            class="kemp-is-checkin__section-eyebrow"
+            i18n="@@checkin.section.address"
+          >
+            Adresa trvalého bydliště
+          </h3>
+          <div class="kemp-is-checkin__grid kemp-is-checkin__grid--street">
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="checkin-street"
+                [formField]="form.street"
+              />
+              <label
+                for="checkin-street"
+                i18n="@@checkin.street"
+                >Ulice</label
+              >
+            </p-floatlabel>
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="checkin-house-number"
+                [formField]="form.houseNumber"
+              />
+              <label
+                for="checkin-house-number"
+                i18n="@@checkin.house-number"
+                >Č.p.</label
+              >
+            </p-floatlabel>
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="checkin-zip"
+                [formField]="form.zipCode"
+              />
+              <label
+                for="checkin-zip"
+                i18n="@@checkin.zip"
+                >PSČ</label
+              >
+            </p-floatlabel>
+          </div>
+          <div class="kemp-is-checkin__grid kemp-is-checkin__grid--two">
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="checkin-city"
+                [formField]="form.city"
+              />
+              <label
+                for="checkin-city"
+                i18n="@@checkin.city"
+                >Město</label
+              >
+            </p-floatlabel>
+            <p-floatlabel variant="in">
+              <p-select
+                inputId="checkin-country"
+                [options]="nationalityOptions()"
+                optionLabel="name"
+                optionValue="id"
+                [filter]="true"
+                filterBy="name,alpha2,alpha3"
+                [showClear]="false"
+                appendTo="body"
+                [formField]="$any(form.countryId)"
+              />
+              <label
+                for="checkin-country"
+                i18n="@@checkin.country"
+                >Země</label
+              >
+            </p-floatlabel>
+          </div>
+        </section>
+
+        <!-- Citizenship & identification -->
+        <section class="kemp-is-checkin__section">
+          <h3
+            class="kemp-is-checkin__section-eyebrow"
+            i18n="@@checkin.section.citizenship"
+          >
+            Doklad totožnosti
+          </h3>
+          <div class="kemp-is-checkin__grid kemp-is-checkin__grid--two">
+            <p-floatlabel variant="in">
+              <p-select
+                inputId="checkin-nationality"
+                [options]="nationalityOptions()"
+                optionLabel="name"
+                optionValue="id"
+                [filter]="true"
+                filterBy="name,alpha2,alpha3"
+                [showClear]="false"
+                appendTo="body"
+                [formField]="$any(form.nationalityId)"
+              />
+              <label
+                for="checkin-nationality"
+                i18n="@@checkin.nationality"
+                >Občanství</label
+              >
+            </p-floatlabel>
+            @if (showDocumentPicker()) {
+              <p-floatlabel variant="in">
+                <p-select
+                  inputId="checkin-doc-type"
+                  [options]="documentTypeOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  appendTo="body"
+                  [formField]="$any(form.documentType)"
+                />
+                <label
+                  for="checkin-doc-type"
+                  i18n="@@checkin.document-type"
+                  >Typ dokladu</label
+                >
+              </p-floatlabel>
+            }
+          </div>
+
+          @if (showDocumentPicker() && model().documentType !== null) {
+            <div class="kemp-is-checkin__grid">
+              <p-floatlabel variant="in">
+                <input
+                  pInputText
+                  id="checkin-doc-number"
+                  [formField]="form.documentNumber"
+                />
+                <label for="checkin-doc-number">
+                  {{ documentNumberLabel() }}
+                </label>
+              </p-floatlabel>
+            </div>
+          }
+
+          @if (showBiometric()) {
+            <fieldset
+              class="kemp-is-checkin__choice-group"
+              role="radiogroup"
+            >
+              <legend class="kemp-is-checkin__choice-legend">
+                {{ passportTypeLegend }}
+              </legend>
+              <label
+                class="kemp-is-checkin__choice"
+                [class.is-on]="model().biometric"
+                for="passport-biometric"
+              >
+                <p-radiobutton
+                  name="passport-type"
+                  [value]="true"
+                  inputId="passport-biometric"
+                  [ngModel]="model().biometric"
+                  (ngModelChange)="setBiometric($event)"
+                />
+                <span class="kemp-is-checkin__choice-text">
+                  <strong>
+                    <i
+                      class="pi pi-verified"
+                      aria-hidden="true"
+                    ></i>
+                    <span i18n="@@checkin.biometric.label"
+                      >Biometrický pas</span
+                    >
+                  </strong>
+                  <small
+                    class="kemp-is-text-muted"
+                    i18n="@@checkin.biometric.hint"
+                  >
+                    Pas se symbolem čipu na obálce — vízum se neeviduje.
+                  </small>
+                </span>
+              </label>
+              <label
+                class="kemp-is-checkin__choice"
+                [class.is-on]="!model().biometric"
+                for="passport-visa"
+              >
+                <p-radiobutton
+                  name="passport-type"
+                  [value]="false"
+                  inputId="passport-visa"
+                  [ngModel]="model().biometric"
+                  (ngModelChange)="setBiometric($event)"
+                />
+                <span class="kemp-is-checkin__choice-text">
+                  <strong>
+                    <i
+                      class="pi pi-shield"
+                      aria-hidden="true"
+                    ></i>
+                    <span i18n="@@checkin.visa-option.label">
+                      Pas s vízem
+                    </span>
+                  </strong>
+                  <small
+                    class="kemp-is-text-muted"
+                    i18n="@@checkin.visa-option.hint"
+                  >
+                    Pas bez biometrických údajů — uveďte schengenské / EU vízum.
+                  </small>
+                </span>
+              </label>
+            </fieldset>
+          }
+
+          @if (requiresVisa()) {
+            <div
+              class="kemp-is-checkin__visa"
+              [class.kemp-is-checkin__visa--inline]="showBiometric()"
+            >
+              @if (!showBiometric()) {
+                <header class="kemp-is-checkin__visa-head">
+                  <i
+                    class="pi pi-shield"
+                    aria-hidden="true"
+                  ></i>
+                  <strong i18n="@@checkin.visa.heading"
+                    >Vízum vyžadováno</strong
+                  >
+                  <p-tag
+                    severity="warn"
+                    [value]="visaTagLabel"
+                  />
+                </header>
+                <p
+                  class="kemp-is-text-muted kemp-is-checkin__visa-lead"
+                  i18n="@@checkin.visa.lead"
+                >
+                  Pas je vydaný mimo EU, pro registraci ubytování je nutné uvést
+                  schengenské / EU vízum.
+                </p>
+              }
+              <div class="kemp-is-checkin__grid">
+                <p-floatlabel variant="in">
+                  <input
+                    pInputText
+                    id="checkin-visa-number"
+                    [formField]="form.visaNumber"
+                  />
+                  <label
+                    for="checkin-visa-number"
+                    i18n="@@checkin.visa.number"
+                    >Číslo víza</label
+                  >
+                </p-floatlabel>
+              </div>
+            </div>
+          }
+        </section>
+
+        <!-- Vehicles -->
+        <section class="kemp-is-checkin__section">
+          <header class="kemp-is-checkin__section-head">
+            <h3
+              class="kemp-is-checkin__section-eyebrow"
+              i18n="@@checkin.section.vehicles"
+            >
+              Vozidla a přívěsy
+            </h3>
+          </header>
+          <ul class="kemp-is-checkin__plates">
+            @for (plate of model().plates; track $index) {
+              <li class="kemp-is-checkin__plate">
+                <i
+                  class="pi pi-car"
+                  aria-hidden="true"
+                ></i>
+                <input
+                  pInputText
+                  class="kemp-mono kemp-is-checkin__plate-input"
+                  [ngModel]="plate"
+                  (ngModelChange)="updatePlate($index, $event)"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="např. 5AB1234"
+                  i18n-placeholder="@@checkin.plate.placeholder"
+                  maxlength="12"
+                />
+                <p-button
+                  severity="secondary"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  icon="pi pi-trash"
+                  [ariaLabel]="removePlateLabel"
+                  [disabled]="model().plates.length === 1 && plate === ''"
+                  (onClick)="removePlate($index)"
+                />
+              </li>
+            }
+          </ul>
+          <p-button
+            severity="secondary"
+            [text]="true"
+            size="small"
+            icon="pi pi-plus"
+            [label]="addPlateLabel"
+            (onClick)="addPlate()"
+          />
+        </section>
+
+        @if (requiresSignature()) {
+          <section class="kemp-is-checkin__section">
+            <h3
+              class="kemp-is-checkin__section-eyebrow"
+              i18n="@@checkin.section.signature"
+            >
+              Podpis hosta
+            </h3>
+            <p
+              class="kemp-is-text-muted"
+              i18n="@@checkin.signature.lead"
+            >
+              Cizinci se musí podepsat na přihlašovací list — vyžaduje to zákon
+              o pobytu cizinců.
+            </p>
+            <kemp-is-signature-pad
+              [value]="model().signaturePngBase64"
+              (valueChange)="onSignatureChange($event)"
+            />
+          </section>
+        }
+
+        <!-- Consent -->
+        <label
+          class="kemp-is-checkin__consent"
+          for="checkin-consent"
+        >
+          <p-checkbox
+            [formField]="form.consent"
+            [binary]="true"
+            inputId="checkin-consent"
+          />
+          <span i18n="@@checkin.consent">
+            Potvrzuji správnost zadaných údajů.
+          </span>
+        </label>
+
+        @if (submitOutcome(); as outcome) {
+          @if (outcome.kind === "error") {
+            <div
+              class="kemp-is-checkin__error"
+              role="alert"
+            >
+              <i
+                class="pi pi-exclamation-triangle"
+                aria-hidden="true"
+              ></i>
+              <span>{{ outcome.message }}</span>
+            </div>
+          }
+        }
+
+        <!-- Actions -->
+        <div class="kemp-is-checkin__actions">
+          <p-button
+            severity="secondary"
+            [text]="true"
+            [label]="saveDraftLabel"
+            (onClick)="onSaveDraft()"
+          />
+          <p-button
+            type="submit"
+            icon="pi pi-check"
+            iconPos="right"
+            [label]="submitLabel"
+            [disabled]="formInvalid() || submitting()"
+            [loading]="submitting()"
+          />
+        </div>
+      </form>
+    }
+  </div>
+</article>

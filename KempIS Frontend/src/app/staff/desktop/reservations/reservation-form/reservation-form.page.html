@@ -1,0 +1,294 @@
+<div class="kemp-is-rf__header">
+  <div class="kemp-is-rf__title-block">
+    <div class="kemp-is-rf__eyebrow">Rezervace</div>
+    @if (mode() === "create") {
+      <div class="kemp-is-rf__title">Nová rezervace</div>
+    } @else if (detail.hasValue()) {
+      <div class="kemp-is-rf__title">
+        Rezervace #{{ detail.value().number }} –
+        {{ detail.value().reservationMakerName }}
+        {{ detail.value().reservationMakerSurname }}
+      </div>
+    } @else {
+      <div class="kemp-is-rf__title">Rezervace</div>
+    }
+  </div>
+
+  <span class="kemp-is-rf__spacer"></span>
+
+  @if (mode() === "edit" && detail.hasValue()) {
+    <p-tag
+      severity="secondary"
+      [value]="stateLabel()"
+    />
+  }
+
+  @if (mode() === "edit" && detail.hasValue()) {
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      ariaLabel="Kopírovat veřejný odkaz pro hosta"
+      (onClick)="onCopyGuestLink()"
+    >
+      <i
+        class="pi pi-link"
+        aria-hidden="true"
+      ></i>
+      <span>Odkaz pro hosta</span>
+    </p-button>
+
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      ariaLabel="Vytvořit kopii rezervace"
+      (onClick)="onDuplicate()"
+    >
+      <i
+        class="pi pi-copy"
+        aria-hidden="true"
+      ></i>
+      <span>Duplikovat</span>
+    </p-button>
+  }
+
+  @if (mode() === "edit" && canCreateBill()) {
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      ariaLabel="Nová účtenka pro rezervaci"
+      (onClick)="onCreateBill()"
+    >
+      <i
+        class="pi pi-receipt"
+        aria-hidden="true"
+      ></i>
+      <span>Nová účtenka</span>
+    </p-button>
+  }
+</div>
+
+<div class="kemp-is-rf__stepper">
+  @for (s of visibleSteps(); track s.key; let i = $index) {
+    <button
+      type="button"
+      class="kemp-is-rf__step"
+      [class.kemp-is-rf__step--current]="i === activeStepIndex()"
+      [class.kemp-is-rf__step--done]="i < activeStepIndex()"
+      [class.kemp-is-rf__step--disabled]="isStepDisabled(s)"
+      [disabled]="isStepDisabled(s)"
+      [attr.aria-current]="i === activeStepIndex() ? 'step' : null"
+      (click)="setActiveIndex(i)"
+    >
+      <span class="kemp-is-rf__step-circle">
+        @if (i < activeStepIndex()) {
+          <i
+            class="pi pi-check"
+            aria-hidden="true"
+          ></i>
+        } @else {
+          {{ i + 1 }}
+        }
+      </span>
+      <span class="kemp-is-rf__step-label">{{ s.label }}</span>
+    </button>
+    @if (!$last) {
+      <span
+        class="kemp-is-rf__step-line"
+        [class.kemp-is-rf__step-line--done]="i < activeStepIndex()"
+        aria-hidden="true"
+      ></span>
+    }
+  }
+</div>
+
+<div class="kemp-is-rf__body">
+  @if (mode() === "edit" && detail.isLoading() && !detail.hasValue()) {
+    <div class="kemp-is-rf__center">
+      <i
+        class="pi pi-spinner pi-spin kemp-is-rf__spinner"
+        aria-hidden="true"
+      ></i>
+    </div>
+  } @else if (mode() === "edit" && detail.error() && !detail.hasValue()) {
+    <div class="kemp-is-rf__empty">
+      <i
+        class="pi pi-exclamation-triangle"
+        aria-hidden="true"
+      ></i>
+      <div class="kemp-is-rf__empty-title">Rezervace nenalezena</div>
+      <div class="kemp-is-rf__empty-sub">
+        Možná byla smazána nebo nikdy neexistovala.
+      </div>
+      <p-button
+        severity="secondary"
+        size="small"
+        (onClick)="onCancelNavigate()"
+      >
+        <i
+          class="pi pi-arrow-left"
+          aria-hidden="true"
+        ></i>
+        <span>Zpět na ubytovací plán</span>
+      </p-button>
+    </div>
+  } @else {
+    <div class="kemp-is-rf__inner">
+      @switch (activeStep().key) {
+        @case ("period") {
+          <kemp-is-reservation-step-period
+            [(from)]="fromDate"
+            [(to)]="toDate"
+            [(name)]="name"
+            [(surname)]="surname"
+            [(phone)]="phone"
+            [(email)]="email"
+            [(displayName)]="displayName"
+            [(note)]="note"
+            [groupReservationId]="groupReservationId()"
+            [groupOrganizerName]="groupOrganizerName()"
+            [showGuests]="mode() === 'edit'"
+            [reservationId]="reservationId()"
+            [guests]="reservationGuests()"
+            (guestsMutated)="onGuestsMutated()"
+          />
+        }
+        @case ("vehicles") {
+          <kemp-is-reservation-step-vehicles
+            [nights]="nights()"
+            [reservationId]="reservationId()"
+            [(vehicles)]="editableVehicles"
+            [(tentQtys)]="editableServiceQuantities"
+          />
+        }
+        @case ("cottages") {
+          <kemp-is-reservation-step-cottages
+            [spots]="spots()"
+            [spotGroups]="spotGroups()"
+            [(spotRows)]="spotRows"
+            [requestedByGroup]="requestedSpotsByGroup()"
+          />
+        }
+        @case ("meals") {
+          <kemp-is-reservation-step-meals
+            [reservationId]="reservationId()"
+            [reservationFrom]="fromDate()"
+            [reservationTo]="toDate()"
+            [serverMeals]="reservationMeals()"
+            (mutated)="onMealsMutated()"
+          />
+        }
+        @case ("doklady") {
+          <kemp-is-reservation-step-doklady
+            [reservationId]="reservationId()"
+            [invoices]="reservationInvoices()"
+            [bills]="reservationBills()"
+          />
+        }
+        @case ("services") {
+          <kemp-is-reservation-step-services
+            [(quantities)]="editableServiceQuantities"
+          />
+        }
+      }
+    </div>
+  }
+</div>
+
+@if (errorMessage()) {
+  <div class="kemp-is-rf__alert">
+    <p-message
+      severity="error"
+      [text]="errorMessage()!"
+    />
+  </div>
+}
+@if (validationErrors().length > 0) {
+  <div class="kemp-is-rf__alert">
+    <p-message severity="warn">
+      <ul class="kemp-is-rf__validation-list">
+        @for (e of validationErrors(); track e) {
+          <li>{{ e }}</li>
+        }
+      </ul>
+    </p-message>
+  </div>
+}
+
+<div class="kemp-is-rf__footer">
+  @if (canCancel()) {
+    <p-button
+      severity="danger"
+      [outlined]="true"
+      size="small"
+      (onClick)="onCancelReservation()"
+    >
+      <i
+        class="pi pi-times-circle"
+        aria-hidden="true"
+      ></i>
+      <span>Zrušit rezervaci</span>
+    </p-button>
+  }
+
+  @if (canCheckIn()) {
+    <p-button
+      size="small"
+      [disabled]="submitting()"
+      [loading]="submitting()"
+      (onClick)="onCheckIn()"
+    >
+      <i
+        class="pi pi-sign-in"
+        aria-hidden="true"
+      ></i>
+      <span>Kompletně zaplaceno</span>
+    </p-button>
+  }
+
+  <span class="kemp-is-rf__spacer"></span>
+
+  @if (hasPrevEnabled()) {
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="onPrev()"
+    >
+      <i
+        class="pi pi-arrow-left"
+        aria-hidden="true"
+      ></i>
+      <span>Předchozí</span>
+    </p-button>
+  }
+  @if (hasNextEnabled()) {
+    <p-button
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="onNext()"
+    >
+      <span>Další</span>
+      <i
+        class="pi pi-arrow-right"
+        aria-hidden="true"
+      ></i>
+    </p-button>
+  }
+
+  <p-button
+    [disabled]="!canSubmit()"
+    [loading]="submitting()"
+    (onClick)="onSubmit()"
+  >
+    <i
+      class="pi pi-check"
+      aria-hidden="true"
+    ></i>
+    <span>{{ submitLabel() }}</span>
+  </p-button>
+</div>
+
+<p-toast />
+<p-confirmDialog [dismissableMask]="true" />

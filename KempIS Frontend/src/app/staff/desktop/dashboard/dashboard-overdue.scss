@@ -1,0 +1,51 @@
+@use "./dash-shared" as *;
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.kemp-is-dash__overdue {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+.kemp-is-dash__overdue-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.625rem;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+}
+
+.kemp-is-dash__overdue-name {
+  font-size: 0.78125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kemp-is-dash__overdue-amount {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-dash__overdue-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--p-text-color-secondary, #71717a);
+  text-align: center;
+}

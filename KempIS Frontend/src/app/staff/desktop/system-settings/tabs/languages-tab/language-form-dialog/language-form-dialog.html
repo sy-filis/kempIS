@@ -1,0 +1,72 @@
+<p-dialog
+  [header]="title()"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="!submitting()"
+  [dismissableMask]="!submitting()"
+  [style]="{ width: '28rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    class="kemp-is-language-form"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="kemp-is-language-form__field">
+      <label for="kemp-is-language-form-code">Kód</label>
+      <input
+        id="kemp-is-language-form-code"
+        pInputText
+        type="text"
+        autocomplete="off"
+        maxlength="10"
+        [ngModel]="code()"
+        (ngModelChange)="code.set($event)"
+        name="code"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    <div class="kemp-is-language-form__field">
+      <label for="kemp-is-language-form-name">Název</label>
+      <input
+        id="kemp-is-language-form-name"
+        pInputText
+        type="text"
+        autocomplete="off"
+        maxlength="100"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        required
+        [disabled]="submitting()"
+      />
+    </div>
+
+    @if (errorMessage(); as msg) {
+      <p-message
+        severity="error"
+        [text]="msg"
+      />
+    }
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Zrušit"
+      severity="secondary"
+      [text]="true"
+      [disabled]="submitting()"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      label="Uložit"
+      icon="pi pi-check"
+      [loading]="submitting()"
+      [disabled]="!canSubmit()"
+      (onClick)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>

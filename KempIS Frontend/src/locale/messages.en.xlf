@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="cs" trgLang="en">
+  <file id="ngi18n" original="ng.template">
+    <unit id="not-found.title">
+      <segment><source>Stránka nenalezena</source><target>Page not found</target></segment>
+    </unit>
+    <unit id="not-found.body">
+      <segment><source> Zkontrolujte prosím odkaz nebo se vraťte na hlavní stránku. </source><target>Please check the URL or return to the homepage.</target></segment>
+    </unit>
+    <unit id="not-found.back">
+      <segment><source>Zpět na hlavní stránku</source><target>Back to homepage</target></segment>
+    </unit>
+    <unit id="shell.brand">
+      <segment><source>Kemp Olšovec</source><target>Camp Olsovec</target></segment>
+    </unit>
+    <unit id="shell.footer.copyright">
+      <segment><source>© <ph id="0" equiv="INTERPOLATION" disp="{{ year }}"/> Kemp Olšovec</source><target>© <ph id="0" equiv="INTERPOLATION" disp="{{ year }}"/> Camp Olsovec</target></segment>
+    </unit>
+    <unit id="check-in-placeholder.title">
+      <segment><source>Online check-in</source><target>Online check-in</target></segment>
+    </unit>
+    <unit id="check-in-placeholder.body">
+      <segment><source> Tato stránka bude k dispozici v další verzi. </source><target>This page will be available in a later release.</target></segment>
+    </unit>
+    <unit id="detail-placeholder.title">
+      <segment><source>Detail rezervace</source><target>Reservation details</target></segment>
+    </unit>
+    <unit id="detail-placeholder.body">
+      <segment><source> Tato stránka bude k dispozici v další verzi. </source><target>This page will be available in a later release.</target></segment>
+    </unit>
+    <unit id="new-reservation.brand">
+      <segment><source>KempIS</source><target>KempIS</target></segment>
+    </unit>
+    <unit id="new-reservation.brand-sub">
+      <segment><source>Rezervace</source><target>Reservation</target></segment>
+    </unit>
+    <unit id="new-reservation.step.dates">
+      <segment><source>Termín</source><target>Dates</target></segment>
+    </unit>
+    <unit id="new-reservation.step.cottages">
+      <segment><source>Ubytování</source><target>Cottages</target></segment>
+    </unit>
+    <unit id="new-reservation.step.details">
+      <segment><source>Vaše údaje</source><target>Your details</target></segment>
+    </unit>
+    <unit id="new-reservation.step.confirmation">
+      <segment><source>Potvrzení</source><target>Confirmation</target></segment>
+    </unit>
+    <unit id="new-reservation.dates.heading">
+      <segment><source> Kdy si přejete přijet? </source><target>When would you like to stay?</target></segment>
+    </unit>
+    <unit id="new-reservation.dates.lead">
+      <segment><source> Vyberte data příjezdu a odjezdu. Volné chatky se načtou v dalším kroku. </source><target>Pick your check-in and check-out dates. Availability per cottage will load next.</target></segment>
+    </unit>
+    <unit id="new-reservation.dates.nights">
+      <segment><source>{VAR_PLURAL, plural, =1 {1 noc} few {<ph id="0" equiv="INTERPOLATION"/> noci} other {<ph id="1" equiv="INTERPOLATION"/> nocí}}</source><target>{VAR_PLURAL, plural, =1 {1 night} other {<ph id="1" equiv="INTERPOLATION"/> nights}}</target></segment>
+    </unit>
+    <unit id="new-reservation.dates.from">
+      <segment><source>Příjezd</source><target>Check-in</target></segment>
+    </unit>
+    <unit id="new-reservation.dates.to">
+      <segment><source>Odjezd</source><target>Check-out</target></segment>
+    </unit>
+    <unit id="new-reservation.dates.empty">
+      <segment><source> Vyberte v kalendáři rozsah pobytu. </source><target>Pick a date range from the calendar.</target></segment>
+    </unit>
+    <unit id="new-reservation.dates.reception">
+      <segment><source> Recepce je otevřena denně 8:00–22:00. Pozdější příjezd po dohodě. </source><target>Reception is open daily 08:00–22:00. Late arrivals possible by arrangement.</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.heading">
+      <segment><source> Vyberte ubytování </source><target>Choose your cottages</target></segment>
+    </unit>
+    <unit id="3557283225951443350">
+      <segment><source>{VAR_PLURAL, plural, =1 {1 noc} few {<ph id="0" equiv="INTERPOLATION"/> noci} other {<ph id="1" equiv="INTERPOLATION"/> nocí}}</source><target>{VAR_PLURAL, plural, =1 {1 night} other {<ph id="1" equiv="INTERPOLATION"/> nights}}</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.loading">
+      <segment><source> Načítám dostupnost… </source><target>Loading availability…</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.error">
+      <segment><source> Dostupnost se nepodařilo načíst. </source><target>Could not load availability.</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.sold-out">
+      <segment><source>Vyprodáno</source><target>Sold out</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.left">
+      <segment><source>Zbývá <ph id="0" equiv="INTERPOLATION" disp="{{ row.available }}"/> z <ph id="1" equiv="INTERPOLATION_1" disp="{{ row.capacity }}"/></source><target><ph id="0" equiv="INTERPOLATION" disp="{{ row.available }}"/> of <ph id="1" equiv="INTERPOLATION_1" disp="{{ row.capacity }}"/> left</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.sleeps">
+      <segment><source> Pro <ph id="0" equiv="ICU" disp="{row.capacity, plural, =1 {1 osobu} few
+                        {{{ row.capacity }} osoby} other
+                        {{{ row.capacity }} osob}}" subFlows="915927061292419937"/> </source><target>Sleeps <ph id="0" equiv="ICU" disp="{row.capacity, plural, =1 {1 osobu} few
+                        {{{ row.capacity }} osoby} other
+                        {{{ row.capacity }} osob}}" subFlows="915927061292419937"/></target></segment>
+    </unit>
+    <unit id="6850003206370253856">
+      <segment><source>{VAR_PLURAL, plural, =1 {1 osobu} few {<ph id="0" equiv="INTERPOLATION"/> osoby} other {<ph id="1" equiv="INTERPOLATION"/> osob}}</source><target>{VAR_PLURAL, plural, =1 {1 person} other {<ph id="1" equiv="INTERPOLATION"/> people}}</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.details">
+      <segment><source>Více informací</source><target>More info</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.event">
+      <segment><source><pc id="0" equivStart="START_ITALIC_TEXT" equivEnd="CLOSE_ITALIC_TEXT" type="fmt" dispStart="&lt;i
+                            class=&quot;pi pi-bell&quot;
+                            aria-hidden=&quot;true&quot;
+                          &gt;" dispEnd="&lt;/i&gt;"></pc> Probíhající akce: <pc id="1" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;"><ph id="2" equiv="INTERPOLATION" disp="{{ notice.name }}"/></pc></source><target><pc id="0" equivStart="START_ITALIC_TEXT" equivEnd="CLOSE_ITALIC_TEXT" type="fmt" dispStart="&lt;i
+                            class=&quot;pi pi-bell&quot;
+                            aria-hidden=&quot;true&quot;
+                          &gt;" dispEnd="&lt;/i&gt;"></pc> Event running: <pc id="1" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;"><ph id="2" equiv="INTERPOLATION" disp="{{ notice.name }}"/></pc></target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.footnote">
+      <segment><source> Vyberte počet kusů. Cenu vám potvrdíme v rezervačním e-mailu. </source><target>Pick the quantity you need. Pricing will be confirmed in your reservation email.</target></segment>
+    </unit>
+    <unit id="new-reservation.details.heading">
+      <segment><source> Vaše údaje </source><target>Your details</target></segment>
+    </unit>
+    <unit id="new-reservation.details.lead">
+      <segment><source> Použijeme je pro potvrzení rezervace. Žádné platby teď — platí se na místě. </source><target>We'll use these to confirm your booking. No payment now — pay on arrival.</target></segment>
+    </unit>
+    <unit id="new-reservation.contact.name">
+      <segment><source>Jméno</source><target>First name</target></segment>
+    </unit>
+    <unit id="new-reservation.contact.surname">
+      <segment><source>Příjmení</source><target>Surname</target></segment>
+    </unit>
+    <unit id="new-reservation.contact.email">
+      <segment><source>E-mail</source><target>Email</target></segment>
+    </unit>
+    <unit id="new-reservation.contact.phone">
+      <segment><source>Telefon</source><target>Phone</target></segment>
+    </unit>
+    <unit id="new-reservation.contact.note">
+      <segment><source>Poznámka (volitelné)</source><target>Note (optional)</target></segment>
+    </unit>
+    <unit id="new-reservation.details.privacy">
+      <segment><source> Vaše údaje použijeme jen pro správu rezervace. Potvrzovací e-mail vám zašleme během několika minut. </source><target>Your information is used only to manage your reservation. You'll receive a confirmation email within a few minutes.</target></segment>
+    </unit>
+    <unit id="new-reservation.details.recap">
+      <segment><source> Souhrn rezervace </source><target>Reservation summary</target></segment>
+    </unit>
+    <unit id="new-reservation.recap.pay">
+      <segment><source>Platba na místě</source><target>Pay on arrival</target></segment>
+    </unit>
+    <unit id="new-reservation.recap.pricing">
+      <segment><source>Ceny potvrdíme e-mailem</source><target>Pricing confirmed by email</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.heading">
+      <segment><source> Rezervace přijata </source><target>Reservation received</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.lead">
+      <segment><source> Potvrzení jsme zaslali na <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ model().email }}"/></pc>. </source><target>A confirmation has been sent to <pc id="0" equivStart="START_TAG_STRONG" equivEnd="CLOSE_TAG_STRONG" type="other" dispStart="&lt;strong&gt;" dispEnd="&lt;/strong&gt;"><ph id="1" equiv="INTERPOLATION" disp="{{ model().email }}"/></pc>.</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.ref">
+      <segment><source> Číslo rezervace </source><target>Booking reference</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.from-time">
+      <segment><source>od 14:00</source><target>from 14:00</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.to-time">
+      <segment><source>do 10:00</source><target>by 10:00</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.note">
+      <segment><source> Toto je žádost o rezervaci. Brzy ji potvrdíme e-mailem. K příjezdu si prosím vezměte doklad totožnosti. </source><target>This is a reservation request. We'll confirm it by email shortly. Please bring an ID at check-in.</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.contact">
+      <segment><source> Potřebujete něco změnit? Odpovězte na potvrzovací e-mail nebo zavolejte na recepci +420 725 896 488. </source><target>Need to change something? Reply to your confirmation email or call reception at +420 725 896 488.</target></segment>
+    </unit>
+    <unit id="new-reservation.summary.no-dates">
+      <segment><source>Termín nezvolen</source><target>No dates selected</target></segment>
+    </unit>
+    <unit id="new-reservation.summary.pick-dates">
+      <segment><source>Vyberte termín</source><target>Select dates</target></segment>
+    </unit>
+    <unit id="new-reservation.summary.cottages">
+      <segment><source> · <ph id="0" equiv="ICU" disp="{totalCottages(), plural,
+                =1 {1 ubytování}
+                few {{{ totalCottages() }} ubytování}
+                other {{{ totalCottages() }} ubytování}
+              }" subFlows="426786349484723226"/> </source><target> · <ph id="0" equiv="ICU" disp="{totalCottages(), plural,
+                =1 {1 ubytování}
+                few {{{ totalCottages() }} ubytování}
+                other {{{ totalCottages() }} ubytování}
+              }" subFlows="426786349484723226"/> </target></segment>
+    </unit>
+    <unit id="7345691115324344562">
+      <segment><source>{VAR_PLURAL, plural, =1 {1 ubytování} few {<ph id="0" equiv="INTERPOLATION"/> ubytování} other {<ph id="1" equiv="INTERPOLATION"/> ubytování}}</source><target>{VAR_PLURAL, plural, =1 {1 cottage} other {<ph id="1" equiv="INTERPOLATION"/> cottages}}</target></segment>
+    </unit>
+    <unit id="form.dates.from-required">
+      <segment><source>Vyberte datum příjezdu</source><target>Pick a check-in date</target></segment>
+    </unit>
+    <unit id="form.dates.to-required">
+      <segment><source>Vyberte datum odjezdu</source><target>Pick a check-out date</target></segment>
+    </unit>
+    <unit id="form.dates.past">
+      <segment><source>Datum nemůže být v minulosti</source><target>Date cannot be in the past</target></segment>
+    </unit>
+    <unit id="form.dates.order">
+      <segment><source>Datum odjezdu musí být po datu příjezdu</source><target>Check-out must be after check-in</target></segment>
+    </unit>
+    <unit id="form.name.required">
+      <segment><source>Vyplňte jméno</source><target>Enter a first name</target></segment>
+    </unit>
+    <unit id="form.surname.required">
+      <segment><source>Vyplňte příjmení</source><target>Enter a surname</target></segment>
+    </unit>
+    <unit id="form.email.required">
+      <segment><source>Vyplňte e-mail</source><target>Enter an email</target></segment>
+    </unit>
+    <unit id="form.email.invalid">
+      <segment><source>Neplatný e-mail</source><target>Invalid email</target></segment>
+    </unit>
+    <unit id="form.phone.required">
+      <segment><source>Vyplňte telefon</source><target>Enter a phone number</target></segment>
+    </unit>
+    <unit id="form.phone.invalid">
+      <segment><source>Neplatný formát telefonu</source><target>Invalid phone format</target></segment>
+    </unit>
+    <unit id="form.spots.required">
+      <segment><source>Vyberte aspoň jedno místo</source><target>Pick at least one cottage</target></segment>
+    </unit>
+    <unit id="form.spots.exceeds">
+      <segment><source>Překračuje volnou kapacitu</source><target>Exceeds available capacity</target></segment>
+    </unit>
+    <unit id="new-reservation.cottages.edit-dates">
+      <segment><source>Změnit termín</source><target>Edit dates</target></segment>
+    </unit>
+    <unit id="new-reservation.back">
+      <segment><source>Zpět</source><target>Back</target></segment>
+    </unit>
+    <unit id="new-reservation.confirm.manage">
+      <segment><source>Otevřít rezervaci</source><target>Open reservation</target></segment>
+    </unit>
+    <unit id="new-reservation.continue.dates">
+      <segment><source>Pokračovat</source><target>Continue</target></segment>
+    </unit>
+    <unit id="new-reservation.continue.cottages">
+      <segment><source>Pokračovat na údaje</source><target>Continue to details</target></segment>
+    </unit>
+    <unit id="new-reservation.continue.confirm">
+      <segment><source>Potvrdit rezervaci</source><target>Confirm reservation</target></segment>
+    </unit>
+    <unit id="submitted.title">
+      <segment><source>Děkujeme, vaše žádost byla odeslána</source><target>Thank you, your request has been submitted</target></segment>
+    </unit>
+    <unit id="submitted.body">
+      <segment><source> Recepce váš požadavek brzy potvrdí a pošle vám e-mail s odkazem pro správu rezervace a online check-in. </source><target>Reception will confirm your request shortly and email you a link to manage the reservation and complete online check-in.</target></segment>
+    </unit>
+    <unit id="submitted.email-hint">
+      <segment><source>Zkontrolujte si prosím i složku se spamem.</source><target>Please check your spam folder too.</target></segment>
+    </unit>
+    <unit id="submitted.back">
+      <segment><source>Zpět na hlavní stránku</source><target>Back to homepage</target></segment>
+    </unit>
+    <unit id="staff.login.title">
+      <segment><source>Přihlášení personálu</source><target>Staff sign-in</target></segment>
+    </unit>
+    <unit id="staff.login.button">
+      <segment><source>Přihlásit se</source><target>Sign in</target></segment>
+    </unit>
+    <unit id="staff.login.error.cancelled">
+      <segment><source>Přihlášení bylo zrušeno.</source><target>Sign-in was cancelled.</target></segment>
+    </unit>
+    <unit id="staff.login.error.unsupported">
+      <segment><source>Tento prohlížeč nepodporuje passkey.</source><target>This browser doesn't support passkeys.</target></segment>
+    </unit>
+    <unit id="staff.login.error.generic">
+      <segment><source>Přihlášení se nezdařilo. Zkuste to prosím znovu.</source><target>Sign-in failed. Please try again.</target></segment>
+    </unit>
+    <unit id="checkin.section.signature">
+      <segment><source> Podpis hosta </source><target>Guest signature</target></segment>
+    </unit>
+    <unit id="checkin.signature.lead">
+      <segment><source> Cizinci se musí podepsat na přihlašovací list — vyžaduje to zákon o pobytu cizinců. </source><target>Foreign guests must sign the registration form — required by Czech law on the residence of foreigners.</target></segment>
+    </unit>
+    <unit id="checkin.signature.placeholder">
+      <segment><source>Podepište se prstem nebo perem</source><target>Sign with your finger or pen</target></segment>
+    </unit>
+    <unit id="checkin.signature.clear">
+      <segment><source>Vymazat</source><target>Clear</target></segment>
+    </unit>
+    <unit id="checkin.signature.required">
+      <segment><source>Podepište se prosím</source><target>Please sign</target></segment>
+    </unit>
+    <unit id="checkin.brand">
+      <segment><source>KempIS</source><target>KempIS</target></segment>
+    </unit>
+    <unit id="checkin.title">
+      <segment><source>Online check-in</source><target>Online check-in</target></segment>
+    </unit>
+    <unit id="checkin.heading">
+      <segment><source> Online check-in </source><target> Online check-in </target></segment>
+    </unit>
+    <unit id="checkin.lead">
+      <segment><source> Vyplňte před příjezdem, ať se nezdržujete papírováním na recepci. </source><target> Fill this in before you arrive so you don't get stuck doing paperwork at reception. </target></segment>
+    </unit>
+    <unit id="checkin.section.personal">
+      <segment><source> Osobní údaje </source><target> Personal details </target></segment>
+    </unit>
+    <unit id="checkin.first-name">
+      <segment><source>Jméno</source><target>First name</target></segment>
+    </unit>
+    <unit id="checkin.surname">
+      <segment><source>Příjmení</source><target>Surname</target></segment>
+    </unit>
+    <unit id="checkin.birth-date">
+      <segment><source>Datum narození</source><target>Date of birth</target></segment>
+    </unit>
+    <unit id="checkin.section.address">
+      <segment><source> Adresa trvalého bydliště </source><target> Permanent address </target></segment>
+    </unit>
+    <unit id="checkin.street">
+      <segment><source>Ulice</source><target>Street</target></segment>
+    </unit>
+    <unit id="checkin.house-number">
+      <segment><source>Č.p.</source><target>No.</target></segment>
+    </unit>
+    <unit id="checkin.zip">
+      <segment><source>PSČ</source><target>ZIP</target></segment>
+    </unit>
+    <unit id="checkin.city">
+      <segment><source>Město</source><target>City</target></segment>
+    </unit>
+    <unit id="checkin.country">
+      <segment><source>Země</source><target>Country</target></segment>
+    </unit>
+    <unit id="checkin.section.citizenship">
+      <segment><source> Doklad totožnosti </source><target> Identity document </target></segment>
+    </unit>
+    <unit id="checkin.nationality">
+      <segment><source>Občanství</source><target>Citizenship</target></segment>
+    </unit>
+    <unit id="checkin.document-type">
+      <segment><source>Typ dokladu</source><target>Document type</target></segment>
+    </unit>
+    <unit id="checkin.biometric.label">
+      <segment><source>Biometrický pas</source><target>Biometric passport</target></segment>
+    </unit>
+    <unit id="checkin.biometric.hint">
+      <segment><source> Pas se symbolem čipu na obálce — vízum se neeviduje. </source><target> Passport with the chip symbol on the cover — no visa is recorded. </target></segment>
+    </unit>
+    <unit id="checkin.visa-option.label">
+      <segment><source> Pas s vízem </source><target> Passport with visa </target></segment>
+    </unit>
+    <unit id="checkin.visa-option.hint">
+      <segment><source> Pas bez biometrických údajů — uveďte schengenské / EU vízum. </source><target> Passport without biometric data — provide your Schengen / EU visa. </target></segment>
+    </unit>
+    <unit id="checkin.visa.heading">
+      <segment><source>Vízum vyžadováno</source><target>Visa required</target></segment>
+    </unit>
+    <unit id="checkin.visa.lead">
+      <segment><source> Pas je vydaný mimo EU, pro registraci ubytování je nutné uvést schengenské / EU vízum. </source><target> The passport was issued outside the EU; a Schengen / EU visa is required to register the stay. </target></segment>
+    </unit>
+    <unit id="checkin.visa.number">
+      <segment><source>Číslo víza</source><target>Visa number</target></segment>
+    </unit>
+    <unit id="checkin.section.vehicles">
+      <segment><source> Vozidla a přívěsy </source><target> Vehicles and trailers </target></segment>
+    </unit>
+    <unit id="checkin.plate.placeholder">
+      <segment><source>např. 5AB1234</source><target>e.g. 5AB1234</target></segment>
+    </unit>
+    <unit id="checkin.consent">
+      <segment><source> Potvrzuji správnost zadaných údajů. </source><target> I confirm that the data above is correct. </target></segment>
+    </unit>
+    <unit id="checkin.document-type.passport">
+      <segment><source>Cestovní pas</source><target>Passport</target></segment>
+    </unit>
+    <unit id="checkin.document-type.id">
+      <segment><source>Občanský průkaz</source><target>National ID</target></segment>
+    </unit>
+    <unit id="checkin.document-type.cz-residence-permit">
+      <segment><source>Povolení k pobytu v ČR</source><target>Czech residence permit</target></segment>
+    </unit>
+    <unit id="checkin.document-type.eu-residence-permit">
+      <segment><source>Povolení k pobytu v EU</source><target>EU residence permit</target></segment>
+    </unit>
+    <unit id="checkin.document-type.lost-passport">
+      <segment><source>Náhradní cestovní doklad</source><target>Emergency travel document</target></segment>
+    </unit>
+    <unit id="checkin.document-type.cz-diplomat">
+      <segment><source>Diplomatický průkaz ČR</source><target>Czech diplomatic ID</target></segment>
+    </unit>
+    <unit id="checkin.document-type.child-in-parent-passport">
+      <segment><source>Dítě zapsané v pasu rodiče</source><target>Child entered in parent's passport</target></segment>
+    </unit>
+    <unit id="checkin.document.passport-number">
+      <segment><source>Číslo pasu</source><target>Passport number</target></segment>
+    </unit>
+    <unit id="checkin.document.id-number">
+      <segment><source>Číslo dokladu</source><target>Document number</target></segment>
+    </unit>
+    <unit id="checkin.first-name.required">
+      <segment><source>Vyplňte jméno</source><target>First name is required</target></segment>
+    </unit>
+    <unit id="checkin.surname.required">
+      <segment><source>Vyplňte příjmení</source><target>Surname is required</target></segment>
+    </unit>
+    <unit id="checkin.birth-date.required">
+      <segment><source>Vyplňte datum narození</source><target>Date of birth is required</target></segment>
+    </unit>
+    <unit id="checkin.street.required">
+      <segment><source>Vyplňte ulici</source><target>Street is required</target></segment>
+    </unit>
+    <unit id="checkin.house-number.required">
+      <segment><source>Vyplňte č.p.</source><target>House number is required</target></segment>
+    </unit>
+    <unit id="checkin.zip.required">
+      <segment><source>Vyplňte PSČ</source><target>ZIP code is required</target></segment>
+    </unit>
+    <unit id="checkin.city.required">
+      <segment><source>Vyplňte město</source><target>City is required</target></segment>
+    </unit>
+    <unit id="checkin.country.required">
+      <segment><source>Vyberte zemi</source><target>Country is required</target></segment>
+    </unit>
+    <unit id="checkin.nationality.required">
+      <segment><source>Vyberte občanství</source><target>Citizenship is required</target></segment>
+    </unit>
+    <unit id="checkin.document-type.required">
+      <segment><source>Vyberte typ dokladu</source><target>Select a document type</target></segment>
+    </unit>
+    <unit id="checkin.document-number.required">
+      <segment><source>Vyplňte číslo dokladu</source><target>Document number is required</target></segment>
+    </unit>
+    <unit id="checkin.visa-number.required">
+      <segment><source>Vyplňte číslo víza</source><target>Visa number is required</target></segment>
+    </unit>
+    <unit id="checkin.visa-number.format">
+      <segment><source>Číslo víza ve formátu např. AB1234567</source><target>Visa number must look like e.g. AB1234567</target></segment>
+    </unit>
+    <unit id="checkin.plate.invalid">
+      <segment><source>Neplatné SPZ</source><target>Invalid licence plate</target></segment>
+    </unit>
+    <unit id="checkin.consent.required">
+      <segment><source>Potvrďte souhlas</source><target>Please confirm consent</target></segment>
+    </unit>
+    <unit id="checkin.submit">
+      <segment><source>Odeslat check-in</source><target>Submit check-in</target></segment>
+    </unit>
+    <unit id="checkin.save-draft">
+      <segment><source>Uložit a dokončit později</source><target>Save and finish later</target></segment>
+    </unit>
+    <unit id="checkin.plate.add">
+      <segment><source>Přidat další SPZ</source><target>Add another plate</target></segment>
+    </unit>
+    <unit id="checkin.plate.remove">
+      <segment><source>Odebrat SPZ</source><target>Remove plate</target></segment>
+    </unit>
+    <unit id="checkin.visa.tag">
+      <segment><source>Pas s výzovou povinností</source><target>Visa-bearing passport</target></segment>
+    </unit>
+    <unit id="checkin.passport-type.legend">
+      <segment><source>Typ pasu</source><target>Passport type</target></segment>
+    </unit>
+    <unit id="reservation-detail.brand">
+      <segment><source>KempIS</source><target>KempIS</target></segment>
+    </unit>
+    <unit id="reservation-detail.title">
+      <segment><source>Moje rezervace</source><target>My reservation</target></segment>
+    </unit>
+    <unit id="reservation-detail.loading">
+      <segment><source> Načítám rezervaci… </source><target> Loading reservation… </target></segment>
+    </unit>
+    <unit id="reservation-detail.error">
+      <segment><source> Rezervaci se nepodařilo načíst. Zkontrolujte odkaz z potvrzovacího e-mailu. </source><target> Could not load the reservation. Check the link in the confirmation e-mail. </target></segment>
+    </unit>
+    <unit id="reservation-detail.eyebrow">
+      <segment><source>Rezervace</source><target>Reservation</target></segment>
+    </unit>
+    <unit id="reservation-detail.nights-eyebrow">
+      <segment><source> <ph id="0" equiv="ICU" disp="{nights(), plural,
+              =1 {1 noc}
+              few {{{ nights() }} noci}
+              other {{{ nights() }} nocí}
+            }" subFlows="4522762628419283327"/> </source><target> <ph id="0" equiv="ICU" subFlows="3209760934187092996"/> </target></segment>
+    </unit>
+    <unit id="reservation-detail.note">
+      <segment><source>Poznámka</source><target>Note</target></segment>
+    </unit>
+    <unit id="reservation-detail.checkin.title">
+      <segment><source>Online check-in</source><target>Online check-in</target></segment>
+    </unit>
+    <unit id="reservation-detail.checkin.lead">
+      <segment><source> Sdílejte tento odkaz se zbytkem výpravy, ať mohou vyplnit své údaje před příjezdem. </source><target> Share this link with the rest of your party so they can submit their details before arrival. </target></segment>
+    </unit>
+    <unit id="reservation-detail.cottages">
+      <segment><source> Rezervované chatky </source><target> Booked cottages </target></segment>
+    </unit>
+    <unit id="reservation-detail.cottage-qty">
+      <segment><source> <ph id="0" equiv="ICU" disp="{c.qty, plural,
+                  =1 {1 chatka rezervována}
+                  few {{{ c.qty }} chatky rezervovány}
+                  other {{{ c.qty }} chatek rezervováno}
+                }" subFlows="7628901940471827210"/> </source><target> <ph id="0" equiv="ICU" subFlows="7628901940471827210"/> </target></segment>
+    </unit>
+    <unit id="599573182781560487">
+      <segment><source>{VAR_PLURAL, plural, =1 {1 chatka rezervována} few {<ph id="0" equiv="INTERPOLATION"/> chatky rezervovány} other {<ph id="1" equiv="INTERPOLATION"/> chatek rezervováno}}</source><target>{VAR_PLURAL, plural, =1 {1 cottage booked} other {<ph id="1" equiv="INTERPOLATION"/> cottages booked}}</target></segment>
+    </unit>
+    <unit id="reservation-detail.meals">
+      <segment><source> Porce stravy </source><target> Meal portions </target></segment>
+    </unit>
+    <unit id="reservation-detail.meals-total">
+      <segment><source> celkem <ph id="0" equiv="ICU" disp="{totalPortions(), plural,
+              =1 {1 porce}
+              few {{{ totalPortions() }} porce}
+              other {{{ totalPortions() }} porcí}
+            }" subFlows="6746060122246628968"/> </source><target> total <ph id="0" equiv="ICU" subFlows="6412812652267624626"/> </target></segment>
+    </unit>
+    <unit id="6412812652267624626">
+      <segment><source>{VAR_PLURAL, plural, =1 {1 porce} few {<ph id="0" equiv="INTERPOLATION"/> porce} other {<ph id="1" equiv="INTERPOLATION"/> porcí}}</source><target>{VAR_PLURAL, plural, =1 {1 portion} other {<ph id="1" equiv="INTERPOLATION"/> portions}}</target></segment>
+    </unit>
+    <unit id="reservation-detail.meals.day">
+      <segment><source>Den</source><target>Day</target></segment>
+    </unit>
+    <unit id="reservation-detail.meals.breakfast">
+      <segment><source>Snídaně</source><target>Breakfast</target></segment>
+    </unit>
+    <unit id="reservation-detail.meals.lunch">
+      <segment><source>Oběd</source><target>Lunch</target></segment>
+    </unit>
+    <unit id="reservation-detail.meals.lunch-package">
+      <segment><source>Balíček</source><target>Packed lunch</target></segment>
+    </unit>
+    <unit id="reservation-detail.meals.dinner">
+      <segment><source>Večeře</source><target>Dinner</target></segment>
+    </unit>
+    <unit id="reservation-detail.invoices">
+      <segment><source> Faktury </source><target> Invoices </target></segment>
+    </unit>
+    <unit id="reservation-detail.state.created">
+      <segment><source>Čeká na potvrzení</source><target>Awaiting confirmation</target></segment>
+    </unit>
+    <unit id="reservation-detail.state.confirmed">
+      <segment><source>Potvrzeno</source><target>Confirmed</target></segment>
+    </unit>
+    <unit id="reservation-detail.state.checked-in">
+      <segment><source>Pobyt probíhá</source><target>Stay in progress</target></segment>
+    </unit>
+    <unit id="reservation-detail.state.cancelled">
+      <segment><source>Zrušeno</source><target>Cancelled</target></segment>
+    </unit>
+    <unit id="reservation-detail.state.completed">
+      <segment><source>Dokončeno</source><target>Completed</target></segment>
+    </unit>
+    <unit id="reservation-detail.bill.deposit">
+      <segment><source>Záloha</source><target>Deposit</target></segment>
+    </unit>
+    <unit id="reservation-detail.bill.balance">
+      <segment><source>Doplatek</source><target>Balance due</target></segment>
+    </unit>
+    <unit id="reservation-detail.bill.tourist-tax">
+      <segment><source>Pobytová taxa</source><target>Tourist tax</target></segment>
+    </unit>
+    <unit id="reservation-detail.bill.cancellation">
+      <segment><source>Storno</source><target>Cancellation fee</target></segment>
+    </unit>
+    <unit id="reservation-detail.print">
+      <segment><source>Tisk</source><target>Print</target></segment>
+    </unit>
+    <unit id="reservation-detail.cancel">
+      <segment><source>Zrušit rezervaci</source><target>Cancel reservation</target></segment>
+    </unit>
+    <unit id="reservation-detail.download-invoice">
+      <segment><source>Stáhnout fakturu</source><target>Download invoice</target></segment>
+    </unit>
+    <unit id="reservation-detail.copy">
+      <segment><source>Kopírovat</source><target>Copy</target></segment>
+    </unit>
+    <unit id="reservation-detail.copied">
+      <segment><source>Zkopírováno</source><target>Copied</target></segment>
+    </unit>
+    <unit id="reservation-detail.copy-checkin">
+      <segment><source>Kopírovat odkaz pro online check-in</source><target>Copy online check-in link</target></segment>
+    </unit>
+    <unit id="reservation-detail.copy-checkin.copied">
+      <segment><source>Odkaz zkopírován</source><target>Link copied</target></segment>
+    </unit>
+    <unit id="reservation-detail.copy-field">
+      <segment><source>Odkaz pro online check-in</source><target>Online check-in link</target></segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.header">
+      <segment><source>Zrušit rezervaci?</source><target>Cancel reservation?</target></segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.message">
+      <segment><source>Tuto akci nelze vrátit zpět. Opravdu chcete rezervaci zrušit?</source><target>This action cannot be undone. Are you sure you want to cancel?</target></segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.accept">
+      <segment><source>Ano, zrušit</source><target>Yes, cancel</target></segment>
+    </unit>
+    <unit id="reservation-detail.cancel.confirm.reject">
+      <segment><source>Zpět</source><target>Back</target></segment>
+    </unit>
+
+  </file>
+</xliff>

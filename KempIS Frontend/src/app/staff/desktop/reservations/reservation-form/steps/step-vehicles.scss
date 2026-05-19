@@ -1,0 +1,438 @@
+.kemp-is-bill-step__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.125rem;
+}
+
+.kemp-is-bill-step__title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-bill-step__subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.84375rem;
+  color: var(--p-text-muted-color, #71717a);
+  max-width: 720px;
+}
+
+.kemp-is-bc {
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 10px;
+}
+
+.kemp-is-bc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  gap: 0.5rem;
+}
+
+.kemp-is-bc__title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  letter-spacing: -0.005em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kemp-is-bc__title-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--p-primary-50, #ecfdf5);
+  color: var(--p-primary-700, #047857);
+  border: 1px solid var(--p-primary-200, #a7f3d0);
+
+  i {
+    font-size: 0.6875rem;
+  }
+}
+
+.kemp-is-bc__title-icon--amber {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.kemp-is-bc__title-icon--warn {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.kemp-is-bc--banner {
+  grid-column: 1 / -1;
+}
+
+.kemp-is-bc__title-icon--mint {
+  background: oklch(0.95 0.04 150);
+  color: #065f46;
+  border-color: oklch(0.85 0.08 150);
+}
+
+.kemp-is-bc__head-meta {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-bc__body {
+  padding: 1rem;
+}
+
+.kemp-is-bc__body--flush {
+  padding: 0;
+}
+
+.kemp-is-bill__field-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  margin-bottom: 5px;
+}
+
+.kemp-is-bill__row-head {
+  background: var(--p-surface-50, #fafafa);
+  border-bottom: 1px solid var(--p-surface-200, #e4e4e7);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+  display: grid;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kemp-is-bill__row {
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+  display: grid;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.kemp-is-bill__cell-right {
+  text-align: right;
+}
+
+.kemp-is-bill__cell-center {
+  text-align: center;
+}
+
+.kemp-is-bill__numstepper {
+  width: 8rem;
+
+  input {
+    width: 3rem;
+    text-align: center;
+    font-family: var(--kemp-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    padding: 0.25rem 0.375rem;
+    font-size: 0.8125rem;
+  }
+
+  .p-inputnumber-button {
+    width: 1.75rem;
+  }
+}
+
+.kemp-is-bill__plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border: 2px solid #1a1a1a;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-family: var(--kemp-font-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 0.78125rem;
+  color: #0f1413;
+  min-width: 76px;
+}
+
+.kemp-is-bill__plate-country {
+  font-size: 0.4375rem;
+  color: #003399;
+  font-weight: 700;
+}
+
+.kemp-is-bill__plate--button {
+  cursor: pointer;
+  font-family: var(--kemp-font-mono);
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
+}
+
+.kemp-is-bill__plate--button:hover {
+  border-color: var(--p-primary-color, #10b981);
+  box-shadow: 0 0 0 3px var(--p-primary-50, #ecfdf5);
+}
+
+.kemp-is-bill__chips {
+  padding: 0.625rem 0.875rem;
+  background: var(--p-surface-50, #fafafa);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.kemp-is-bill__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 4px 8px;
+  border: 1px dashed var(--p-surface-200, #e4e4e7);
+  background: var(--p-surface-0, #fff);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.71875rem;
+  color: var(--p-text-color-emphasis, #27272a);
+  font-family: inherit;
+
+  i {
+    font-size: 0.5rem;
+    color: var(--p-primary-color, #10b981);
+  }
+}
+
+.kemp-is-bill__chip-rate {
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-bill__totals-strip {
+  background: var(--p-surface-0, #fff);
+  border: 1px solid var(--p-surface-200, #e4e4e7);
+  border-radius: 10px;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.kemp-is-bill__totals-cell {
+  flex: 1;
+  padding: 0.625rem 0.875rem;
+  border-right: 1px solid var(--p-surface-100, #f4f4f5);
+}
+
+.kemp-is-bill__totals-cell-label {
+  font-size: 0.59375rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-bill__totals-cell-value {
+  margin-top: 3px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--p-text-color-emphasis, #27272a);
+  font-variant-numeric: tabular-nums;
+}
+
+.kemp-is-bill__totals-grand {
+  padding: 0.625rem 1.125rem;
+  background: var(--p-primary-50, #ecfdf5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 200px;
+  align-items: flex-end;
+}
+
+.kemp-is-bill__totals-grand-label {
+  font-size: 0.59375rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-primary-700, #047857);
+}
+
+.kemp-is-bill__totals-grand-value {
+  margin-top: 3px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--p-primary-700, #047857);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.kemp-is-bill__vehicle-actions {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.kemp-is-bill__vehicle-edit {
+  padding: 0.875rem;
+  background: var(--p-primary-50, #ecfdf5);
+  border-bottom: 1px solid var(--p-primary-200, #a7f3d0);
+}
+
+.kemp-is-bill__vehicle-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.kemp-is-bill__vehicle-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.375rem;
+}
+
+.kemp-is-bill__unassigned-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.kemp-is-bill__unassigned-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kemp-is-bill__unassigned-field--grow {
+  flex: 1;
+  max-width: 320px;
+}
+
+.kemp-is-bill__unassigned-select {
+  width: 100%;
+}
+
+.kemp-is-bill__unassigned-action {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.125rem;
+}
+
+.kemp-is-bill__step2-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.875rem;
+  margin-bottom: 0.875rem;
+}
+
+.kemp-is-bill__empty {
+  padding: 1rem;
+  font-size: 0.78125rem;
+  color: var(--p-text-muted-color, #71717a);
+  text-align: center;
+}
+
+.kemp-is-bill__vehicle-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  align-items: center;
+  border-bottom: 1px solid var(--p-surface-100, #f4f4f5);
+}
+
+.kemp-is-bill__vehicle-row--clickable {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.kemp-is-bill__vehicle-row--clickable:hover {
+  background: var(--p-surface-50, #fafafa);
+}
+
+.kemp-is-bill__vehicle-row--clickable:focus-visible {
+  outline: 2px solid var(--p-primary-color, #10b981);
+  outline-offset: -2px;
+}
+
+.kemp-is-bill__vehicle-info {
+  min-width: 0;
+}
+
+.kemp-is-bill__vehicle-type {
+  font-size: 0.78125rem;
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kemp-is-bill__vehicle-meta {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+  margin-top: 2px;
+
+  b {
+    color: var(--p-text-color-emphasis, #27272a);
+  }
+}
+
+.kemp-is-bill__tents-grid {
+  grid-template-columns: 1fr 110px 100px;
+}
+
+.kemp-is-bill__tent-name {
+  font-weight: 500;
+  color: var(--p-text-color, #3f3f46);
+}
+
+.kemp-is-bill__tent-name--active {
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+}
+
+.kemp-is-bill__tent-rate {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color, #71717a);
+  margin-top: 2px;
+}
+
+.kemp-is-bill__tent-row--active {
+  background: var(--p-surface-0, #fff);
+}
+
+.kemp-is-bill__tent-total {
+  font-weight: 600;
+  color: var(--p-text-color-emphasis, #27272a);
+  font-size: 0.78125rem;
+}
+
+.kemp-is-bill__tent-total--zero {
+  color: var(--p-text-muted-color, #71717a);
+}
+
+.kemp-is-bill__numstepper-cell {
+  display: flex;
+  justify-content: center;
+}

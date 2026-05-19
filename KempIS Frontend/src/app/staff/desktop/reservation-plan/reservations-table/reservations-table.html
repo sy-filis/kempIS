@@ -1,0 +1,140 @@
+<p-table
+  [value]="displayedRows()"
+  [stripedRows]="true"
+  [scrollable]="true"
+  scrollHeight="flex"
+  [loading]="loading()"
+  [showGridlines]="false"
+  class="kemp-is-rt p-datatable-sm"
+  dataKey="id"
+  sortField="fromIso"
+  [sortOrder]="1"
+>
+  <ng-template
+    pTemplate="caption"
+    let-rows
+  >
+    <div class="kemp-is-rt__caption">
+      <span class="kemp-is-rt__caption-label">{{ summary() }}</span>
+      <span class="kemp-is-rt__caption-spacer"></span>
+      @if (showStateColumn()) {
+        <p-multiSelect
+          [options]="stateOptions()"
+          [ngModel]="selectedStates()"
+          (ngModelChange)="onStateFilterChange($event)"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Filtrovat podle stavu"
+          display="chip"
+          [showClear]="true"
+          class="kemp-is-rt__state-filter"
+          appendTo="body"
+        />
+      }
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th
+        pSortableColumn="number"
+        class="kemp-is-rt__col-id"
+      >
+        ID <p-sortIcon field="number" />
+      </th>
+      <th pSortableColumn="name">Jméno <p-sortIcon field="name" /></th>
+      <th pSortableColumn="surname">Příjmení <p-sortIcon field="surname" /></th>
+      <th
+        pSortableColumn="displayName"
+        class="kemp-is-rt__col-display-name"
+      >
+        Název <p-sortIcon field="displayName" />
+      </th>
+      <th class="kemp-is-rt__col-phone">Telefon</th>
+      <th
+        pSortableColumn="fromIso"
+        class="kemp-is-rt__col-date"
+      >
+        Příjezd <p-sortIcon field="fromIso" />
+      </th>
+      <th
+        pSortableColumn="toIso"
+        class="kemp-is-rt__col-date"
+      >
+        Odjezd <p-sortIcon field="toIso" />
+      </th>
+      <th
+        pSortableColumn="nights"
+        class="kemp-is-rt__col-num"
+      >
+        Nocí <p-sortIcon field="nights" />
+      </th>
+      <th>Chata</th>
+      @if (showStateColumn()) {
+        <th>Stav</th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template
+    pTemplate="body"
+    let-row
+  >
+    <tr
+      class="kemp-is-rt__row"
+      (click)="onRowClick(row)"
+    >
+      <td class="kemp-is-rt__cell-id kemp-mono">{{ row.number }}</td>
+      <td class="kemp-is-rt__cell-guest">
+        <span class="kemp-is-rt__guest-name">{{ row.name }}</span>
+        @if (row.isGroup) {
+          <i
+            class="pi pi-users kemp-is-rt__guest-icon"
+            title="Skupinová rezervace"
+            aria-label="Skupinová rezervace"
+          ></i>
+        }
+      </td>
+      <td class="kemp-is-rt__cell-guest">
+        <span class="kemp-is-rt__guest-name">{{ row.surname }}</span>
+      </td>
+      <td class="kemp-is-rt__cell-display-name">{{ row.displayName }}</td>
+      <td class="kemp-mono kemp-is-rt__cell-phone">{{ row.phone }}</td>
+      <td>{{ row.fromLabel }}</td>
+      <td>{{ row.toLabel }}</td>
+      <td class="kemp-is-rt__cell-num kemp-mono">{{ row.nights }}</td>
+      <td>{{ row.cottage }}</td>
+      @if (showStateColumn()) {
+        <td>
+          @let s = styleFor(row.stateKind);
+          <span
+            class="kemp-is-rt__badge"
+            [style.background]="s.bg"
+            [style.color]="s.fg"
+          >
+            <span
+              class="kemp-is-rt__badge-dot"
+              [style.background]="s.dot"
+            ></span>
+            {{ row.stateLabel }}
+          </span>
+        </td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td
+        [attr.colspan]="showStateColumn() ? 10 : 9"
+        class="kemp-is-rt__empty"
+      >
+        <i
+          class="pi pi-inbox"
+          aria-hidden="true"
+        ></i>
+        <span>{{ emptyMessage() }}</span>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

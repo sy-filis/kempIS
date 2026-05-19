@@ -1,0 +1,29 @@
+.kemp-is-spot-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kemp-is-spot-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  > label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--p-text-color-emphasis, #27272a);
+  }
+
+  > input,
+  > textarea,
+  > p-select {
+    width: 100%;
+  }
+}
+
+.kemp-is-spot-form__field--inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
