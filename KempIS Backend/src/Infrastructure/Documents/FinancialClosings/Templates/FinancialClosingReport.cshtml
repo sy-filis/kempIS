@@ -1,0 +1,165 @@
+@using System.Globalization
+@model Infrastructure.Documents.FinancialClosings.FinancialClosingReportModel
+@{
+  var cs = CultureInfo.GetCultureInfo("cs-CZ");
+  string fmt(decimal v) => v.ToString("N2", cs);
+  string fmtOrBlank(decimal v) => v == 0m ? string.Empty : fmt(v);
+  string titleDate = Model.ClosedAtUtc.ToString("dd.MM.yy HH:mm", cs);
+  string headerDate = Model.ClosedAtUtc.ToString("dd.MM.yyyy", cs);
+  int vatCount = Model.VatRates.Count;
+  int serviceCount = Model.ServiceTypeColumns.Count;
+}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Uzávěrka číslo: @Model.SequentialNumber</title>
+  <style>
+    @@page { size: A4 landscape; margin: 10mm; }
+    body { font-family: "Helvetica", "Arial", sans-serif; font-size: 8pt; color: #000; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4mm; }
+    .header .left, .header .right { font-size: 8pt; line-height: 1.3; }
+    .header .right { text-align: right; }
+    .header .title { text-align: center; font-size: 11pt; font-weight: bold; flex: 1; }
+    .section-title { text-align: center; font-weight: bold; background: #ddd; padding: 1mm; margin: 3mm 0 0 0; border: 1px solid #888; }
+    table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+    th, td { border-bottom: 1px solid #bbb; padding: 1mm 1.5mm; text-align: left; vertical-align: top; }
+    th { background: #f3f3f3; font-weight: normal; }
+    th.num, td.num { text-align: right; }
+    th.group { background: #e9e9e9; font-weight: bold; }
+    td.label { font-weight: bold; }
+    tr.subtotal td { border-top: 1px solid #888; font-weight: bold; }
+    tr.doc-total td { border-top: 1px solid #444; font-weight: bold; background: #f0f0f0; }
+    .storno { display: inline-block; width: 2mm; height: 2mm; border: 1px solid #000; margin-right: 1mm; vertical-align: middle; }
+    .storno.checked { background: #000; }
+    .footer-totals { margin-top: 8mm; font-size: 9pt; }
+    .footer-totals table { width: 50%; margin-left: auto; }
+    .footer-totals td { border: none; padding: 0.5mm 2mm; }
+    .footer-totals td.lbl { font-weight: bold; }
+    .footer-totals td.val { text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="left">
+      @Model.CampName<br />
+      @Model.CampStreet<br />
+      @Model.CampCityZip
+    </div>
+    <div class="title">
+      Uzávěrka číslo: @Model.SequentialNumber (@titleDate)
+    </div>
+    <div class="right">
+      Strana 1<br />
+      @headerDate<br />
+      Recepce @Model.CashierLabel
+    </div>
+  </div>
+
+  @foreach (var paymentSection in Model.Sections)
+  {
+    <div class="section-title">@paymentSection.Title</div>
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">Doklad<br />Storno</th>
+          @foreach (var col in Model.ServiceTypeColumns)
+          {
+            <th class="num" rowspan="2">@col</th>
+          }
+          <th class="num" rowspan="2">Celkem</th>
+          @foreach (var rate in Model.VatRates)
+          {
+            if (rate > 0m)
+            {
+              <th class="num group">Základ (@rate.ToString("0.##", cs)%)</th>
+            }
+            else
+            {
+              <th class="num group" rowspan="2">Osvob. od DPH</th>
+            }
+          }
+          @foreach (var rate in Model.VatRates.Where(r => r > 0m))
+          {
+            <th class="num group">DPH (@rate.ToString("0.##", cs)%)</th>
+          }
+        </tr>
+        <tr>
+          @foreach (var rate in Model.VatRates.Where(r => r > 0m))
+          {
+            <th class="num">@rate.ToString("0.##", cs)%</th>
+          }
+          @foreach (var rate in Model.VatRates.Where(r => r > 0m))
+          {
+            <th class="num">@rate.ToString("0.##", cs)%</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var bill in paymentSection.Bills)
+        {
+          <tr>
+            <td>
+              @bill.BillNumber
+              <span class="storno @(bill.IsStorno ? "checked" : string.Empty)"></span>
+            </td>
+            @foreach (var col in Model.ServiceTypeColumns)
+            {
+              <td class="num">@fmtOrBlank(bill.ServiceTypeAmounts.TryGetValue(col, out var v) ? v : 0m)</td>
+            }
+            <td class="num">@fmt(bill.Total)</td>
+            @foreach (var rate in Model.VatRates)
+            {
+              <td class="num">@fmtOrBlank(bill.VatBases.TryGetValue(rate, out var b) ? b : 0m)</td>
+            }
+            @foreach (var rate in Model.VatRates.Where(r => r > 0m))
+            {
+              <td class="num">@fmtOrBlank(bill.VatAmounts.TryGetValue(rate, out var a) ? a : 0m)</td>
+            }
+          </tr>
+        }
+        <tr class="subtotal">
+          <td class="label">Mezisoučet:</td>
+          @foreach (var col in Model.ServiceTypeColumns)
+          {
+            <td class="num">@fmtOrBlank(paymentSection.Subtotal.ServiceTypeAmounts.TryGetValue(col, out var v) ? v : 0m)</td>
+          }
+          <td class="num">@fmt(paymentSection.Subtotal.Total)</td>
+          @foreach (var rate in Model.VatRates)
+          {
+            <td class="num">@fmtOrBlank(paymentSection.Subtotal.VatBases.TryGetValue(rate, out var b) ? b : 0m)</td>
+          }
+          @foreach (var rate in Model.VatRates.Where(r => r > 0m))
+          {
+            <td class="num">@fmtOrBlank(paymentSection.Subtotal.VatAmounts.TryGetValue(rate, out var a) ? a : 0m)</td>
+          }
+        </tr>
+        <tr class="doc-total">
+          <td class="label">Celk. dokl.:</td>
+          @foreach (var col in Model.ServiceTypeColumns)
+          {
+            <td class="num">@fmtOrBlank(paymentSection.DocumentTotal.ServiceTypeAmounts.TryGetValue(col, out var v) ? v : 0m)</td>
+          }
+          <td class="num">@fmt(paymentSection.DocumentTotal.Total)</td>
+          @foreach (var rate in Model.VatRates)
+          {
+            <td class="num">@fmtOrBlank(paymentSection.DocumentTotal.VatBases.TryGetValue(rate, out var b) ? b : 0m)</td>
+          }
+          @foreach (var rate in Model.VatRates.Where(r => r > 0m))
+          {
+            <td class="num">@fmtOrBlank(paymentSection.DocumentTotal.VatAmounts.TryGetValue(rate, out var a) ? a : 0m)</td>
+          }
+        </tr>
+      </tbody>
+    </table>
+  }
+
+  <div class="footer-totals">
+    <table>
+      <tr><td class="lbl">Základy:</td><td class="val">@fmt(Model.Footer.TotalNet)</td></tr>
+      <tr><td class="lbl">DPH:</td><td class="val">@fmt(Model.Footer.TotalVat)</td></tr>
+      <tr><td class="lbl">Celkem:</td><td class="val">@fmt(Model.Footer.GrandTotal)</td></tr>
+    </table>
+  </div>
+</body>
+</html>

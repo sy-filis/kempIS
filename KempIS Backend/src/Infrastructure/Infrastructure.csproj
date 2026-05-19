@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Localization" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.Playwright" />
+    <PackageReference Include="QRCoder" />
+    <PackageReference Include="RazorLight" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Documents\Bills\Resources\BillResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Documents\Bills\Resources\BillResources.cs.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Documents\Bills\Templates\Bill.cshtml" />
+    <EmbeddedResource Include="Documents\Bills\Templates\BillSticker.cshtml" />
+    <EmbeddedResource Include="Documents\FinancialClosings\Templates\FinancialClosingReport.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<InternalsVisibleTo Include="ArchitectureTests" />
+	<InternalsVisibleTo Include="Infrastructure.UnitTests" />
+	<InternalsVisibleTo Include="Application.UnitTests" />
+	<InternalsVisibleTo Include="Web.Api" />
+	<InternalsVisibleTo Include="Web.Api.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database\Migrations\" />
+    <Folder Include="Persistence\Services\" />
+    <Folder Include="Persistence\Reservations\" />
+    <Folder Include="Persistence\Operations\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,24 @@
+<Project>
+  <Import Project="..\Directory.Build.props" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--
+      Sonar / analyzer rules that conflict with idiomatic test code.
+      Kept narrow on purpose - widen only with justification.
+      CA1001  : IDisposable ownership (IAsyncLifetime covers async disposal)
+      CA1707  : underscores in identifiers (Method_Scenario_Expected naming)
+      CA1720  : identifier contains type name (e.g. a 'Single' accessor on a capture list)
+      S101    : type naming (Given_When_Then style fixtures)
+      S1144   : unused private members (builders expose fluent setters that may be unused in a given test)
+      S2699   : tests should contain assertions (Shouldly/NSubstitute extension calls trip this)
+      S3881   : IDisposable pattern (xUnit lifetime covers disposal)
+      S4144   : methods should not have identical implementations (parameterised tests look duplicated)
+    -->
+    <NoWarn>$(NoWarn);CA1001;CA1707;CA1720;S101;S1144;S2699;S3881;S4144</NoWarn>
+  </PropertyGroup>
+</Project>

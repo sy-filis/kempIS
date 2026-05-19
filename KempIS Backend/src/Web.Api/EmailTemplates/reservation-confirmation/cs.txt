@@ -1,0 +1,11 @@
+Vaše rezervace {{Number}} je potvrzena
+---
+Dobrý den,
+
+vaše rezervace v kempu Olšovec byla potvrzena.
+
+Číslo rezervace: {{Number}}
+Od: {{From}}
+Do: {{To}}
+
+Online check-in a další informace: {{GuestLink}}

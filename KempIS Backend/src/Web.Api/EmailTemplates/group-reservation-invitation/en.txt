@@ -1,0 +1,12 @@
+Your group reservation ({{From}} - {{To}}) is ready
+---
+Hello {{OrganizerName}},
+
+Your group reservation has been created.
+
+Reservation ID: {{Id}}
+Secret: {{Secret}}
+From: {{From}}
+To: {{To}}
+
+Share the Reservation ID and Secret with attendees so they can book their spots.

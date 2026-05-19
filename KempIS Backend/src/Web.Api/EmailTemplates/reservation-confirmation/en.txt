@@ -1,0 +1,11 @@
+Your reservation {{Number}} is confirmed
+---
+Hello,
+
+your reservation at Olšovec camp has been confirmed.
+
+Reservation number: {{Number}}
+From: {{From}}
+To: {{To}}
+
+Online check-in and details: {{GuestLink}}

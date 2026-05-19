@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Bill_TitleRegular" xml:space="preserve"><value>Tax invoice</value></data>
+  <data name="Bill_TitleRepair" xml:space="preserve"><value>Corrective tax invoice</value></data>
+  <data name="Bill_RepairReason" xml:space="preserve"><value>Reason for repair</value></data>
+  <data name="Bill_IssuedAt" xml:space="preserve"><value>Issued at</value></data>
+  <data name="Bill_Payer" xml:space="preserve"><value>Payer</value></data>
+  <data name="Bill_Item_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Bill_Item_UnitPrice" xml:space="preserve"><value>Price incl. VAT</value></data>
+  <data name="Bill_Item_Vat" xml:space="preserve"><value>VAT %</value></data>
+  <data name="Bill_Item_Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Bill_TotalDue" xml:space="preserve"><value>Total due</value></data>
+  <data name="Bill_PaymentMethod" xml:space="preserve"><value>Payment method</value></data>
+  <data name="Bill_Thanks" xml:space="preserve"><value>Thank you for your stay.</value></data>
+  <data name="Bill_PaidByInvoice" xml:space="preserve"><value>Paid by invoice</value></data>
+  <data name="Bill_Deducted" xml:space="preserve"><value>Deducted</value></data>
+  <data name="Bill_VatRecap" xml:space="preserve"><value>VAT recap</value></data>
+  <data name="Bill_VatRate" xml:space="preserve"><value>Rate</value></data>
+  <data name="Bill_VatRecapNet" xml:space="preserve"><value>Net</value></data>
+  <data name="Bill_VatRecapVat" xml:space="preserve"><value>VAT</value></data>
+  <data name="Bill_VatRecapGross" xml:space="preserve"><value>Gross</value></data>
+  <data name="Bill_VatRecapTotal" xml:space="preserve"><value>Total</value></data>
+  <data name="Camp_Cin" xml:space="preserve"><value>CIN:</value></data>
+  <data name="Camp_Tin" xml:space="preserve"><value>VAT ID:</value></data>
+  <data name="Bill_TaxableSupplyDate" xml:space="preserve"><value>Taxable supply date</value></data>
+  <data name="Bill_Item_NetUnitPrice" xml:space="preserve"><value>Unit price</value></data>
+  <data name="Bill_Item_RecapSingle" xml:space="preserve"><value>J</value></data>
+  <data name="Bill_Item_RecapDay" xml:space="preserve"><value>D</value></data>
+  <data name="Bill_PaymentType_Cash" xml:space="preserve"><value>Cash</value></data>
+  <data name="Bill_PaymentType_Card" xml:space="preserve"><value>Card</value></data>
+</root>

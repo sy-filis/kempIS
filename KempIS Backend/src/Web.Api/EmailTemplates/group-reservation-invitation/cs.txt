@@ -1,0 +1,12 @@
+Vaše skupinová rezervace ({{From}} - {{To}}) je připravena
+---
+Dobrý den {{OrganizerName}},
+
+vaše skupinová rezervace byla vytvořena.
+
+ID rezervace: {{Id}}
+Tajný klíč: {{Secret}}
+Od: {{From}}
+Do: {{To}}
+
+Sdílejte ID rezervace a tajný klíč s účastníky, aby si mohli rezervovat svá místa.

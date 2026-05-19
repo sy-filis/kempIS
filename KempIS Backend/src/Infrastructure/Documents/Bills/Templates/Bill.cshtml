@@ -1,0 +1,199 @@
+@using System.Globalization
+@using Infrastructure.Documents.Bills
+@model Infrastructure.Documents.Bills.BillRazorModel
+<!DOCTYPE html>
+<html lang="@Model.Bill.LanguageCode">
+<head>
+  <meta charset="utf-8" />
+  <title>@(Model.Bill.IsRepair ? Model.L["Bill_TitleRepair"] : Model.L["Bill_TitleRegular"]) @Model.Bill.Number</title>
+  <style>
+    body { font-family: "Helvetica", "Arial", sans-serif; font-size: 11pt; color: #222; padding: 24px; }
+    h1 { font-size: 18pt; margin: 0 0 16px 0; }
+    h3 { font-size: 13pt; margin: 20px 0 4px 0; }
+    .meta, .parties { display: flex; justify-content: space-between; margin-bottom: 16px; }
+    .party { flex: 1; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border-bottom: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+    th.num, td.num { text-align: right; }
+    tfoot td { font-weight: bold; border-top: 2px solid #222; }
+    .thanks { margin-top: 32px; font-style: italic; }
+    .repair-reason { margin: 12px 0; padding: 8px 10px; background: #fafafa; border-left: 3px solid #888; }
+    .repair-reason .label { font-weight: bold; margin-right: 6px; }
+    .repair-reason .value { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="camp-header">
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.Name))
+    {
+      <div>@Model.Bill.Camp.Name</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.Street))
+    {
+      <div>@Model.Bill.Camp.Street</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.CityZip))
+    {
+      <div>@Model.Bill.Camp.CityZip</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.Cin))
+    {
+      <div>@Model.L["Camp_Cin"] @Model.Bill.Camp.Cin</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.Tin))
+    {
+      <div>@Model.L["Camp_Tin"] @Model.Bill.Camp.Tin</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.Phone))
+    {
+      <div>tel: @Model.Bill.Camp.Phone</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.Email))
+    {
+      <div>@Model.Bill.Camp.Email</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Bill.Camp.Web))
+    {
+      <div>@Model.Bill.Camp.Web</div>
+    }
+  </div>
+  <h1>@(Model.Bill.IsRepair ? Model.L["Bill_TitleRepair"] : Model.L["Bill_TitleRegular"]) @Model.Bill.Number</h1>
+  @if (Model.Bill.IsRepair && !string.IsNullOrWhiteSpace(Model.Bill.RepairReason))
+  {
+    <div class="repair-reason">
+      <span class="label">@Model.L["Bill_RepairReason"]:</span>
+      <span class="value">@Model.Bill.RepairReason</span>
+    </div>
+  }
+
+  <div class="meta">
+    <div>@Model.L["Bill_IssuedAt"]: @Model.Bill.IssuedAtUtc.ToString("d", CultureInfo.CurrentCulture)</div>
+    <div>@Model.L["Bill_TaxableSupplyDate"]: @Model.Bill.IssuedAtUtc.ToString("d", CultureInfo.CurrentCulture)</div>
+  </div>
+
+  <div class="parties">
+    @if (Model.Bill.LegalEntity is not null)
+    {
+      <div class="party">
+        <strong>@Model.L["Bill_Payer"]</strong><br />
+        @Model.Bill.LegalEntity.Name<br />
+        @Model.Bill.LegalEntity.Address.Street<br />
+        @Model.Bill.LegalEntity.Address.PostalCode @Model.Bill.LegalEntity.Address.City<br />
+        @Model.Bill.LegalEntity.Address.Country<br />
+        @Model.L["Camp_Cin"] @Model.Bill.LegalEntity.Cin@if (!string.IsNullOrWhiteSpace(Model.Bill.LegalEntity.Tin))
+        {
+          <text> &nbsp; @Model.L["Camp_Tin"] @Model.Bill.LegalEntity.Tin</text>
+        }
+      </div>
+    }
+    else
+    {
+      <div class="party">
+        <strong>@Model.L["Bill_Payer"]</strong><br />
+        @Model.Bill.Payer.Name<br />
+        @Model.Bill.Payer.Street<br />
+        @Model.Bill.Payer.PostalCode @Model.Bill.Payer.City<br />
+        @Model.Bill.Payer.Country
+      </div>
+    }
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>@Model.L["Bill_Item_Description"]</th>
+        <th class="num">@Model.L["Bill_Item_NetUnitPrice"]</th>
+        <th class="num">@Model.L["Bill_Item_UnitPrice"]</th>
+        <th class="num">@Model.L["Bill_Item_RecapSingle"]</th>
+        <th class="num">@Model.L["Bill_Item_RecapDay"]</th>
+        <th class="num">@Model.L["Bill_Item_Vat"]</th>
+        <th class="num">@Model.L["Bill_Item_Total"]</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var line in Model.Bill.Lines)
+      {
+        <tr>
+          <td>@line.Description@(line.VehiclesAndSpotsSuffix is null ? "" : " " + line.VehiclesAndSpotsSuffix)</td>
+          <td class="num">@line.NetUnitPrice.ToString("N2", System.Globalization.CultureInfo.CurrentCulture)</td>
+          <td class="num">@line.UnitPrice.ToString("N2", System.Globalization.CultureInfo.CurrentCulture)</td>
+          <td class="num">@line.RecapSingleQuantity</td>
+          <td class="num">@line.RecapDayQuantity</td>
+          <td class="num">@line.VatRatePercentage.ToString("0.##", System.Globalization.CultureInfo.CurrentCulture)</td>
+          <td class="num">@line.LineTotal.ToString("N2", System.Globalization.CultureInfo.CurrentCulture)</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (Model.Bill.Deductions.Count > 0)
+  {
+    @foreach (var deduction in Model.Bill.Deductions)
+    {
+      <h3>@Model.L["Bill_PaidByInvoice"] @deduction.InvoiceNumber</h3>
+      <table>
+        <thead>
+          <tr>
+            <th class="num">@Model.L["Bill_VatRate"]</th>
+            <th class="num">@Model.L["Bill_VatRecapNet"]</th>
+            <th class="num">@Model.L["Bill_VatRecapVat"]</th>
+            <th class="num">@Model.L["Bill_VatRecapGross"]</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var recapLine in deduction.VatRecap)
+          {
+            <tr>
+              <td class="num">@recapLine.VatRatePercentage.ToString("0.##", System.Globalization.CultureInfo.CurrentCulture) %</td>
+              <td class="num">@recapLine.NetTotal.ToString("N2", System.Globalization.CultureInfo.CurrentCulture)</td>
+              <td class="num">@recapLine.VatAmount.ToString("N2", System.Globalization.CultureInfo.CurrentCulture)</td>
+              <td class="num">@recapLine.GrossTotal.ToString("N2", System.Globalization.CultureInfo.CurrentCulture)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p><strong>@Model.L["Bill_Deducted"]:</strong> -@deduction.DeductedAmount.ToString("N2", System.Globalization.CultureInfo.CurrentCulture)</p>
+    }
+  }
+
+  @if (Model.Bill.VatRecap.Count > 0)
+  {
+    <h3>@Model.L["Bill_VatRecap"]</h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="num">@Model.L["Bill_VatRate"]</th>
+          <th class="num">@Model.L["Bill_VatRecapNet"]</th>
+          <th class="num">@Model.L["Bill_VatRecapVat"]</th>
+          <th class="num">@Model.L["Bill_VatRecapGross"]</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var recapLine in Model.Bill.VatRecap)
+        {
+          <tr>
+            <td class="num">@recapLine.VatRatePercentage.ToString("0.##", CultureInfo.CurrentCulture) %</td>
+            <td class="num">@recapLine.NetTotal.ToString("N2", CultureInfo.CurrentCulture)</td>
+            <td class="num">@recapLine.VatAmount.ToString("N2", CultureInfo.CurrentCulture)</td>
+            <td class="num">@recapLine.GrossTotal.ToString("N2", CultureInfo.CurrentCulture)</td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <td class="num">@Model.L["Bill_VatRecapTotal"]</td>
+          <td class="num">@Model.Bill.VatRecap.Sum(r => r.NetTotal).ToString("N2", CultureInfo.CurrentCulture)</td>
+          <td class="num">@Model.Bill.VatRecap.Sum(r => r.VatAmount).ToString("N2", CultureInfo.CurrentCulture)</td>
+          <td class="num">@Model.Bill.GrossSubtotal.ToString("N2", CultureInfo.CurrentCulture)</td>
+        </tr>
+      </tfoot>
+    </table>
+  }
+
+  <p><strong>@Model.L["Bill_TotalDue"]:</strong> @Model.Bill.Total.ToString("N2", CultureInfo.CurrentCulture)</p>
+
+  <p><strong>@Model.L["Bill_PaymentMethod"]:</strong> @Model.L["Bill_PaymentType_" + Model.Bill.PaymentType]</p>
+
+  <p class="thanks">@Model.L["Bill_Thanks"]</p>
+</body>
+</html>

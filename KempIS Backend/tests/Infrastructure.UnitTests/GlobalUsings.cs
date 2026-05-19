@@ -1,0 +1,6 @@
+global using Microsoft.EntityFrameworkCore;
+global using NSubstitute;
+global using Shouldly;
+global using TestUtilities;
+global using TestUtilities.Fakes;
+global using Xunit;
