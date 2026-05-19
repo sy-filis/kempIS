@@ -1,0 +1,72 @@
+services:
+  web-api:
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    volumes:
+      - ./secrets/appsettings.Production.json:/app/appsettings.Production.json:ro
+      - ./secrets/edoklady.pfx:/etc/kempis/edoklady.pfx:ro
+      - dpkeys:/home/app/.aspnet/DataProtection-Keys
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  frontend:
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  postgres:
+    restart: unless-stopped
+    shm_size: 256mb
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  redis:
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - redisdata:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  seq:
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  caddy-lan:
+    restart: unless-stopped
+    ports:
+      - "${LAN_BIND_ADDRESS:-0.0.0.0}:${LAN_HTTP_PORT:-80}:80"
+      - "${LAN_BIND_ADDRESS:-0.0.0.0}:${LAN_HTTPS_PORT:-443}:443"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  caddy-wan:
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  redisdata:

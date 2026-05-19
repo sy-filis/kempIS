@@ -1,0 +1,24 @@
+services:
+  web-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Frontend__BaseUrl: http://localhost:4200
+      ConnectionStrings__Database: Host=postgres;Port=5432;Database=${POSTGRES_DB:-kempis};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      ConnectionStrings__Redis: redis:6379
+    ports:
+      - "5000:5000"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  seq:
+    ports:
+      - "8081:80"
+      - "5341:5341"

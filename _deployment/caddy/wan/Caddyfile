@@ -1,0 +1,40 @@
+{
+  email {env.CADDY_WAN_EMAIL}
+}
+
+{$CADDY_WAN_DOMAIN} {
+  encode zstd gzip
+
+  tls {
+    dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+  }
+
+  header {
+    Strict-Transport-Security    "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options       "nosniff"
+    Content-Security-Policy      "frame-ancestors {$WAN_FRAME_ANCESTORS}"
+    Referrer-Policy              "no-referrer"
+    Permissions-Policy           "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    Cross-Origin-Opener-Policy   "same-origin"
+    Cross-Origin-Resource-Policy "{$WAN_CORP}"
+    -Server
+  }
+
+  @get_availability       { method GET  path /api/availability }
+  @get_nationalities      { method GET  path /api/nationalities }
+  @get_guest_view         { method GET  path /api/reservations/*/guest }
+  @post_web_reservation   { method POST path /api/reservations/web }
+  @post_guest_cancel      { method POST path /api/reservations/*/guest/cancel }
+  @post_guest_checkin     { method POST path /api/reservations/*/guest/check-in }
+
+  handle @get_availability     { reverse_proxy web-api:5000 }
+  handle @get_nationalities    { reverse_proxy web-api:5000 }
+  handle @get_guest_view       { reverse_proxy web-api:5000 }
+  handle @post_web_reservation { reverse_proxy web-api:5000 }
+  handle @post_guest_cancel    { reverse_proxy web-api:5000 }
+  handle @post_guest_checkin   { reverse_proxy web-api:5000 }
+
+  handle {
+    respond 403
+  }
+}

@@ -1,0 +1,7 @@
+# .env carries POSTGRES_PASSWORD, CLOUDFLARE_API_TOKEN, TUNNEL_TOKEN
+.env
+
+# Secrets directory is volume-mounted into web-api. Templates only.
+/secrets/*
+!/secrets/.gitkeep
+!/secrets/*.example

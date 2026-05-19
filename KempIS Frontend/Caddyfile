@@ -1,0 +1,28 @@
+:80 {
+  root * /usr/share/caddy
+  encode zstd gzip
+
+  redir /en /en/ 301
+
+  @en path /en/*
+  handle @en {
+    try_files {path} /en/index.html
+    file_server
+  }
+
+  handle {
+    try_files {path} /index.html
+    file_server
+  }
+
+  header /index.html    Cache-Control "no-store"
+  header /en/index.html Cache-Control "no-store"
+  header /*.css         Cache-Control "public, max-age=31536000, immutable"
+  header /*.js          Cache-Control "public, max-age=31536000, immutable"
+  header /*.woff2       Cache-Control "public, max-age=31536000, immutable"
+  header /assets/*      Cache-Control "public, max-age=31536000, immutable"
+  header /en/*.css      Cache-Control "public, max-age=31536000, immutable"
+  header /en/*.js       Cache-Control "public, max-age=31536000, immutable"
+  header /en/*.woff2    Cache-Control "public, max-age=31536000, immutable"
+  header /en/assets/*   Cache-Control "public, max-age=31536000, immutable"
+}

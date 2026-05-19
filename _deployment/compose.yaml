@@ -1,0 +1,129 @@
+name: kempis
+
+services:
+  web-api:
+    image: ${WEBAPI_IMAGE:-kempis/web-api:local}
+    pull_policy: ${WEBAPI_PULL_POLICY:-missing}
+    container_name: kempis-web-api
+    build:
+      context: "../KempIS Backend"
+      dockerfile: src/Web.Api/Dockerfile
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - kempis
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-kempis/frontend:local}
+    pull_policy: ${FRONTEND_PULL_POLICY:-missing}
+    container_name: kempis-frontend
+    build:
+      context: "../KempIS Frontend"
+      dockerfile: Dockerfile
+    networks:
+      - kempis
+
+  postgres:
+    image: postgres:18
+    container_name: kempis-postgres
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+      POSTGRES_DB: ${POSTGRES_DB:-kempis}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-kempis}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - kempis
+
+  redis:
+    image: redis:7-alpine
+    container_name: kempis-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - kempis
+
+  seq:
+    image: datalust/seq:2024.3
+    container_name: kempis-seq
+    profiles: ["seq"]
+    environment:
+      ACCEPT_EULA: "Y"
+    volumes:
+      - seqdata:/data
+    networks:
+      - kempis
+
+  caddy-lan:
+    image: ${CADDY_IMAGE:-kempis/caddy:local}
+    pull_policy: ${CADDY_PULL_POLICY:-missing}
+    container_name: kempis-caddy-lan
+    profiles: ["proxy"]
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    environment:
+      CADDY_LAN_DOMAIN: ${CADDY_LAN_DOMAIN}
+      CADDY_LAN_EMAIL: ${CADDY_LAN_EMAIL}
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
+    volumes:
+      - ./caddy/lan/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_lan_data:/data
+      - caddy_lan_config:/config
+    depends_on:
+      web-api:
+        condition: service_started
+      frontend:
+        condition: service_started
+    networks:
+      - kempis
+
+  caddy-wan:
+    image: ${CADDY_IMAGE:-kempis/caddy:local}
+    pull_policy: ${CADDY_PULL_POLICY:-missing}
+    container_name: kempis-caddy-wan
+    profiles: ["proxy"]
+    environment:
+      CADDY_WAN_DOMAIN: ${CADDY_WAN_DOMAIN}
+      CADDY_WAN_EMAIL: ${CADDY_WAN_EMAIL}
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
+      WAN_FRAME_ANCESTORS: ${WAN_FRAME_ANCESTORS:-'none'}
+      WAN_CORP: ${WAN_CORP:-same-site}
+    volumes:
+      - ./caddy/wan/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_wan_data:/data
+      - caddy_wan_config:/config
+    depends_on:
+      web-api:
+        condition: service_started
+    networks:
+      - kempis
+
+networks:
+  kempis:
+    driver: bridge
+
+volumes:
+  pgdata:
+  seqdata:
+  dpkeys:
+  caddy_lan_data:
+  caddy_lan_config:
+  caddy_wan_data:
+  caddy_wan_config:
